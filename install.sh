@@ -74,4 +74,7 @@ function linker {
 
 setup_gitconfig
 linker
-sh ./osx/defaults.sh
+if [ "$(uname -s)" == "Darwin" ]; then
+    echo "Running OSX-specific scripts."
+    sh ./osx/defaults.sh
+fi
