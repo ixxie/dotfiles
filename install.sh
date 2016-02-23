@@ -50,11 +50,9 @@ function link_file() {
 # Taken from https://github.com/holman/dotfiles/blob/master/script/bootstrap
 setup_gitconfig () {
   if [ ! -f git/.gitconfig.local ]; then
-
     git_credential='cache'
     
-    if [ "$(uname -s)" == "Darwin" ]
-    then
+    if [ "$(uname -s)" == "Darwin" ]; then
       git_credential='osxkeychain'
     fi
 
@@ -76,3 +74,4 @@ function linker {
 
 setup_gitconfig
 linker
+sh ./osx/defaults.sh
