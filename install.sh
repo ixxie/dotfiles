@@ -74,7 +74,9 @@ function linker {
 
 setup_gitconfig
 linker
-if [ "$(uname -s)" == "Darwin" ]; then
+if [ "$OSTYPE" == "darwin"* ]; then
     echo "Running OSX-specific scripts."
     sh ./osx/defaults.sh
+elif [ "$OSTYPE" == "linux-gnu" ]; then
+    echo "Running Linux-specific scripts."
 fi
