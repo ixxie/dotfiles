@@ -79,4 +79,5 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     sh ./osx/defaults.sh
 elif [[ "$OSTYPE" == "linux-gnu" ]]; then
     echo "Running Linux-specific scripts."
+    # TODO
 fi
