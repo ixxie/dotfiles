@@ -1,4 +1,4 @@
-export PS1="\u @ \h - [\w]:  "
+export PS1="\u :: [\w]: "
 
 alias showAll='defaults write com.apple.finder AppleShowAllFiles YES'
 alias hideAll='defaults write com.apple.finder AppleShowAllFiles NO'
