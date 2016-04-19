@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Install the script by moving the two script files 
 # to the user home directory ~ (hiding them with a dot .)
