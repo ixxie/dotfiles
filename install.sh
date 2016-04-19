@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-#
-# bootstrap links dotfiles.
+
 
 dot_root=$(pwd -P)
 
