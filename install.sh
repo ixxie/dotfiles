@@ -70,6 +70,7 @@ function linker {
     link_file "git/.gitignore" ".gitignore"
     link_file "git/.gitconfig.local" ".gitconfig.local"
     link_file "tmux/.tmux.conf" ".tmux.conf"
+    link_file "vim/.vimrc" ".vimrc"
 }
 
 setup_gitconfig
