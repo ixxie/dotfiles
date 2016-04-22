@@ -1,3 +1,10 @@
+"
+" Colors
+" " " " "
+set background=dark
+colorscheme base16-eighties
+
+"
 " General
 " " " " "
 set number
@@ -10,6 +17,7 @@ set nobackup
 set nowritebackup
 set noswapfile
 
+"
 " Format
 " " " " " "
 set autoindent
