@@ -79,7 +79,9 @@ linker
 if [[ "$OSTYPE" == "darwin"* ]]; then
     echo "Running OSX-specific scripts."
     sh ./osx/defaults.sh
+    echo "Done."
 elif [[ "$OSTYPE" == "linux-gnu" ]]; then
     echo "Running Linux-specific scripts."
+    echo "Nothing here yet."
     # TODO
 fi

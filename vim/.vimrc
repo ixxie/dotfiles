@@ -17,6 +17,9 @@ set nobackup
 set nowritebackup
 set noswapfile
 filetype off
+filetype plugin indent on
+let g:autoclose_vim_commentmode = 1 	" for vim-autoclose plugin
+
 
 "
 " Format
@@ -53,6 +56,7 @@ call vundle#begin()
 Plugin 'VundleVim/Vundle.vim'
 Plugin 'scrooloose/syntastic'
 Plugin 'vim-airline/vim-airline'
+Plugin 'vim-airline/vim-airline-themes'
 Plugin 'spf13/vim-autoclose'
 " Plugins end
 if hasVundle == 0
@@ -61,3 +65,21 @@ if hasVundle == 0
     :PluginInstall
 endif
 call vundle#end()
+
+"
+" Syntastic
+" " " " " "
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+
+"
+" Airline
+" " " " "
+set laststatus=2	" always show airline
+let g:airline#extensions#tabline#enabled = 1 " show tabline
+
