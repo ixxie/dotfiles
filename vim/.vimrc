@@ -58,6 +58,7 @@ Plugin 'scrooloose/syntastic'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
 Plugin 'spf13/vim-autoclose'
+Plugin 'airblade/vim-gitgutter'
 " Plugins end
 if hasVundle == 0
     echo "Installing Vundles, please ignore key map error messages"
