@@ -3,7 +3,7 @@ if application "Spotify" is running then
 		set trackName to the name of the current track
 		set trackArtist to the artist of the current track
 		try
-			return trackName & " - " & trackArtist
+			return trackName & " :: " & trackArtist
 		on error err
 		end try
 	end tell
