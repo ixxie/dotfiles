@@ -50,7 +50,7 @@ function link_file() {
 setup_gitconfig () {
   if [ ! -f git/.gitconfig.local ]; then
     git_credential='cache'
-    
+
     if [ "$(uname -s)" == "Darwin" ]; then
       git_credential='osxkeychain'
     fi
@@ -69,7 +69,6 @@ function linker {
     link_file "git/.gitconfig" ".gitconfig"
     link_file "git/.gitignore" ".gitignore"
     link_file "git/.gitconfig.local" ".gitconfig.local"
-    link_file "tmux/.tmux.conf" ".tmux.conf"
     link_file "vim/.vimrc" ".vimrc"
     link_file "vim/colors/base16-eighties.vim" ".vim/colors/base16-eighties.vim"
 }
@@ -79,9 +78,10 @@ linker
 if [[ "$OSTYPE" == "darwin"* ]]; then
     echo "Running OSX-specific scripts."
     sh ./osx/defaults.sh
+    link_file "tmux/.tmux-osx.conf" ".tmux.conf"
     echo "Done."
 elif [[ "$OSTYPE" == "linux-gnu" ]]; then
     echo "Running Linux-specific scripts."
-    echo "Nothing here yet."
-    # TODO
+    link_file "tmux/.tmux-linux.conf" ".tmux.conf"
+    echo "Done."
 fi
