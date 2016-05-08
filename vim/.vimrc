@@ -8,6 +8,7 @@ colorscheme base16-eighties
 " General
 " " " " "
 set number
+set relativenumber
 set history=500
 set autoread
 set showcmd
@@ -17,7 +18,7 @@ set nobackup
 set nowritebackup
 set noswapfile
 filetype off
-filetype plugin indent on
+filetype plugin on
 let g:autoclose_vim_commentmode = 1 	" for vim-autoclose plugin
 
 
