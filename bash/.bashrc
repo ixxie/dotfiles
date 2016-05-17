@@ -1,7 +1,12 @@
+# Prompt
 export PS1="[\w]: "
 
+# Aliases
+alias cl='clear'
+# OSX
 alias showAll='defaults write com.apple.finder AppleShowAllFiles YES'
 alias hideAll='defaults write com.apple.finder AppleShowAllFiles NO'
+
 
 # Colors for ls
 if ls --color=auto &> /dev/null; then
