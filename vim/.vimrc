@@ -5,39 +5,6 @@ set background=dark
 colorscheme base16-eighties
 
 "
-" General
-" " " " "
-set number
-set relativenumber
-set history=500
-set autoread
-set showcmd
-set showmode
-set nocompatible
-set nobackup
-set nowritebackup
-set noswapfile
-filetype off
-filetype plugin on
-let g:autoclose_vim_commentmode = 1 	" for vim-autoclose plugin
-
-
-"
-" Format
-" " " " "
-set autoindent
-set smartindent
-set smarttab
-set shiftwidth=2
-set softtabstop=2
-set tabstop=2
-set expandtab
-set list listchars=tab:\ \ ,trail:·
-set colorcolumn=80
-set showmatch
-syntax on
-
-"
 " Vundle
 " " " " "
 " Following script stolen from: 
@@ -60,6 +27,7 @@ Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
 Plugin 'spf13/vim-autoclose'
 Plugin 'airblade/vim-gitgutter'
+Plugin 'rust-lang/rust.vim'
 " Plugins end
 if hasVundle == 0
     echo "Installing Vundles, please ignore key map error messages"
@@ -67,6 +35,38 @@ if hasVundle == 0
     :PluginInstall
 endif
 call vundle#end()
+
+"
+" General
+" " " " "
+set number
+set relativenumber
+set history=500
+set autoread
+set showcmd
+set showmode
+set nocompatible
+set nobackup
+set nowritebackup
+set noswapfile
+filetype plugin on
+let g:autoclose_vim_commentmode = 1 	" for vim-autoclose plugin
+
+
+"
+" Format
+" " " " "
+set autoindent
+set smartindent
+set smarttab
+set shiftwidth=2
+set softtabstop=2
+set tabstop=2
+set expandtab
+set list listchars=tab:\ \ ,trail:·
+set colorcolumn=80
+set showmatch
+syntax on
 
 "
 " Syntastic
