@@ -52,16 +52,15 @@ set noswapfile
 filetype plugin on
 let g:autoclose_vim_commentmode = 1 	" for vim-autoclose plugin
 
-
 "
 " Format
 " " " " "
 set autoindent
 set smartindent
 set smarttab
-set shiftwidth=2
-set softtabstop=2
-set tabstop=2
+set shiftwidth=4
+set softtabstop=4
+set tabstop=4
 set expandtab
 set list listchars=tab:\ \ ,trail:·
 set colorcolumn=80
