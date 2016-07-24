@@ -83,5 +83,6 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 elif [[ "$OSTYPE" == "linux-gnu" ]]; then
     echo "Running Linux-specific scripts."
     link_file "tmux/.tmux-linux.conf" ".tmux.conf"
+    link_file "linux/terminalrc" ".config/xfce4/terminal/terminalrc"
     echo "Done."
 fi
