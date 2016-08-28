@@ -3,6 +3,7 @@
 URxvt.font: xft:monospace:size=10
 URxvt.letterSpace: -1
 URxvt.scrollBar: false
+URxvt.geometry: 80x40
 
 ! Color
 
