@@ -75,6 +75,7 @@ function linker {
 
 setup_gitconfig
 linker
+
 if [[ "$OSTYPE" == "darwin"* ]]; then
     echo "Running OSX-specific scripts."
     sh ./osx/defaults.sh
@@ -83,6 +84,12 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 elif [[ "$OSTYPE" == "linux-gnu" ]]; then
     echo "Running Linux-specific scripts."
     link_file "tmux/.tmux-linux.conf" ".tmux.conf"
-    link_file "linux/terminalrc" ".config/xfce4/terminal/terminalrc"
+    link_file "linux/xfce-term/terminalrc" ".config/xfce4/terminal/terminalrc"
+    link_file "linux/openbox/autostart" ".config/openbox/autostart"
+    link_file "linux/openbox/environment" ".config/openbox/environment"
+    link_file "linux/openbox/menu.xml" ".config/openbox/menu.xml"
+    link_file "linux/openbox/rc.xml" ".config/openbox/rc.xml"
+    link_file "linux/scripts/.bar.sh" ".bar.sh"
+    link_file "linux/scripts/.feeder.sh" ".feeder.sh"
     echo "Done."
 fi

@@ -8,7 +8,7 @@ MiscBell=FALSE
 MiscBordersDefault=TRUE
 MiscCursorBlinks=FALSE
 MiscCursorShape=TERMINAL_CURSOR_SHAPE_BLOCK
-MiscDefaultGeometry=80x24
+MiscDefaultGeometry=160x40
 MiscInheritGeometry=FALSE
 MiscMenubarDefault=FALSE
 MiscMouseAutohide=FALSE
@@ -21,4 +21,5 @@ MiscTabPosition=GTK_POS_TOP
 MiscHighlightUrls=TRUE
 ShortcutsNoMnemonics=TRUE
 FontName=Monospace 10
+ScrollingBar=TERMINAL_SCROLLBAR_NONE
 
