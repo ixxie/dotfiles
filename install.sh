@@ -66,6 +66,7 @@ setup_gitconfig () {
 function linker {
     link_file "bash/.bash_profile" ".bash_profile"
     link_file "bash/.bashrc" ".bashrc"
+    link_file "bash/base16-shell" ".config/base16-shell"
     link_file "git/.gitconfig" ".gitconfig"
     link_file "git/.gitignore" ".gitignore"
     link_file "git/.gitconfig.local" ".gitconfig.local"
