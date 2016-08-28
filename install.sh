@@ -92,5 +92,7 @@ elif [[ "$OSTYPE" == "linux-gnu" ]]; then
     link_file "linux/openbox/rc.xml" ".config/openbox/rc.xml"
     link_file "linux/scripts/.bar.sh" ".bar.sh"
     link_file "linux/scripts/.feeder.sh" ".feeder.sh"
+    link_file "linux/.xinitrc" ".xinitrc"
+    link_file "linux/.Xresources" ".Xresources"
     echo "Done."
 fi

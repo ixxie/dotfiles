@@ -1,0 +1,12 @@
+! Personal settings
+
+URxvt.font: xft:monospace:size=10
+URxvt.letterSpace: -1
+URxvt.scrollBar: false
+
+! Color
+
+*.foreground:   #d3d0c8
+*.background:   #2d2d2d
+*.cursorColor:  #d3d0c8
+
