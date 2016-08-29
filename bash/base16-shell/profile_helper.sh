@@ -2,7 +2,7 @@
 script_dir=$(cd $(dirname ${BASH_SOURCE[0]}) && pwd)
 
 if [ -f ~/.base16_theme ]; then
-  script_name=$(basename $(readlink -f ~/.base16_theme) .sh)
+  script_name=$(basename $(readlink ~/.base16_theme) .sh)
   echo "export BASE16_THEME=${script_name}"
   echo ". ~/.base16_theme"
 fi

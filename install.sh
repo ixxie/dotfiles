@@ -79,8 +79,8 @@ linker
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
     echo "Running OSX-specific scripts."
-    sh ./osx/defaults.sh
     link_file "tmux/.tmux-osx.conf" ".tmux.conf"
+    sh ./osx/defaults.sh
     echo "Done."
 elif [[ "$OSTYPE" == "linux-gnu" ]]; then
     echo "Running Linux-specific scripts."
