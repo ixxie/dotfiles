@@ -5,15 +5,19 @@ clock() {
 }
 
 volume() {
-    amixer get Master | egrep -o '[0-9]+\%' | head -n 1
+    if [[ $(amixer get Master | grep -E -o '\[off\]' | head -n 1) ]]; then
+        echo "--%"
+    else
+        amixer get Master | grep -E -o '[0-9]+\%' | head -n 1
+    fi
 }
 
 battery() {
-    if [[ $(acpi | egrep -o '[0-9]+\%') ]]; then
-        acpi | egrep -o '[0-9]+\%'
+    if [[ $(acpi | grep -E -o '[0-9]+\%') ]]; then
+        acpi | grep -E -o '[0-9]+\%'
     else
-        echo "N/A"
-    fi  
+        echo "--%"
+    fi
 }
 
 while true; do
