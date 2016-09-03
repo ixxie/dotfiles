@@ -1,4 +1,6 @@
-### Credits/Thanks
+ My dotfiles.
+
+#### Credits/Thanks
 
 * [Mathias Bynens' .osx script](https://github.com/mathiasbynens/dotfiles/blob/master/.osx)
 
@@ -6,4 +8,6 @@
 
 * [Holman's bootstrap](https://github.com/holman/dotfiles/blob/master/script/bootstrap)
 
-* [base16](https://github.com/chriskempson/base16)
+* Color scheme for term and vim: [base16](https://github.com/chriskempson/base16)
+
+* Heavily modified [yellow](https://github.com/dylanaraps/dotfiles/tree/master/themes/yellow) to suit my own taste.
