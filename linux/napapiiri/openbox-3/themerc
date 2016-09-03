@@ -1,0 +1,61 @@
+# -- Window --
+window.*.title.bg: Solid Flat
+window.*.label.bg: Parentrelative
+window.label.text.justify: center
+# Window, active
+window.active.title.bg.color: #76a2a2
+window.active.border.color: #76a2a2
+window.active.label.text.color: #f0f0f0
+# Window, inactive
+window.inactive.title.bg.color: #a27676
+window.inactive.border.color: #a27676
+window.inactive.label.text.color: #f0f0f0
+# Window, button
+window.*.button.*.image.color: #f0f0f0
+window.*.button.unpressed.bg: Parentrelative
+window.*.button.toggled.unpressed.bg: Parentrelative
+window.*.button.disabled.bg: Parentrelative
+window.*.button.hover.bg: Solid Flat
+window.active.button.hover.bg.color: #679898
+window.inactive.button.hover.bg.color: #986767
+window.*.button.toggled.hover.bg: Solid Flat
+window.active.button.toggled.hover.bg.color: #679898
+window.inactive.button.toggled.hover.bg.color: #986767
+window.*.button.pressed.bg: Solid Flat
+window.active.button.pressed.bg.color: #5d8989
+window.inactive.button.pressed.bg.color: #895d5d
+window.*.button.toggled.pressed.bg: Solid Flat
+window.active.button.toggled.pressed.bg.color: #5d8989
+window.inactive.button.toggled.pressed.bg.color: #895d5d
+# Window, padding
+window.handle.width: 0
+window.client.padding.width: 0
+
+# -- Menu --
+menu.*.bg: Solid Flat
+menu.*.bg.color: #f0f0f0
+menu.items.active.bg.color: #d9d9d9
+menu.*.text.color: #70838c
+menu.border.color: #f0f0f0
+menu.separator.color: #d9d9d9
+# Menu, border
+menu.border.width: 2
+# Menu, overlap
+menu.overlap.x: -10
+menu.overlap.y: 0
+# Menu, padding
+menu.separator.padding.height: 3
+
+# -- OSD --
+osd.hilight.bg.color: #f0f0f0
+osd.hilight.bg: Solid Flat
+osd.unhilight.bg.color: #d9d9d9
+osd.unhilight.bg: Solid Flat
+
+# -- General --
+# Border
+border.width: 2
+# Padding
+padding.width: 5
+padding.height: 5
+
