@@ -1,0 +1,18 @@
+[submodule "vim/pack/plugins/start/vim-airline"]
+	path = vim/pack/plugins/start/vim-airline
+	url = https://github.com/vim-airline/vim-airline.git
+[submodule "vim/pack/plugins/start/syntastic"]
+	path = vim/pack/plugins/start/syntastic
+	url = https://github.com/scrooloose/syntastic
+[submodule "vim/pack/plugins/start/autoclose"]
+	path = vim/pack/plugins/start/autoclose
+	url = https://github.com/spf13/vim-autoclose
+[submodule "vim/pack/plugins/start/git-gutter"]
+	path = vim/pack/plugins/start/git-gutter
+	url = https://github.com/airblade/vim-gitgutter
+[submodule "vim/pack/plugins/start/rust-vim"]
+	path = vim/pack/plugins/start/rust-vim
+	url = https://github.com/rust-lang/rust.vim
+[submodule "vim/pack/plugins/start/vim-airline-themes"]
+	path = vim/pack/plugins/start/vim-airline-themes
+	url = https://github.com/vim-airline/vim-airline-themes

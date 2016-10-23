@@ -71,6 +71,7 @@ function linker {
     link_file "git/.gitignore" ".gitignore"
     link_file "git/.gitconfig.local" ".gitconfig.local"
     link_file "vim/.vimrc" ".vimrc"
+    link_file "vim/pack/" ".vim/pack"
     link_file "vim/colors/base16-eighties.vim" ".vim/colors/base16-eighties.vim"
 }
 
