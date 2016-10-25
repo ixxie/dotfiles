@@ -77,6 +77,7 @@ function linker {
 
 setup_gitconfig
 linker
+git submodule update --init --recursive
 
 if [[ "$OSTYPE" == "darwin"* ]]; then
     echo "Running OSX-specific scripts."
