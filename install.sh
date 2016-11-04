@@ -11,7 +11,7 @@ function link_file() {
 
     # Check for directory.
     if [ ! -e "${dst%/*}" ]; then
-        read -r -p "No directory at target. Create a directory for '$dst' [y/n]? " prompt
+        read -r -p "$(tput setaf 3)No directory at target. Create a directory for '$dst' [y/n]? $(tput sgr0)" prompt
         if [[ ! $prompt =~ ^[Yy]$ ]]; then
             return
         fi
@@ -26,14 +26,14 @@ function link_file() {
 
     # Check if overwriting directory or file.
     if [ -d "$dst" ]; then
-        read -r -p "Directory '$dst' already exists. Do you wish to overwrite it [y/n]? " prompt
+        read -r -p "$(tput setaf 3)Directory '$dst' already exists. Do you wish to overwrite it [y/n]? $(tput sgr0)" prompt
         if [[ ! $prompt =~ ^[Yy]$ ]]; then
             return
         fi
 
         rm -rf "$dst"
     elif [ -e "$dst" ]; then
-        read -r -p "File '$dst' already exists. Do you wish to overwrite it [y/n]? " prompt
+        read -r -p "$(tput setaf 3)File '$dst' already exists. Do you wish to overwrite it [y/n]? $(tput sgr0)" prompt
         if [[ ! $prompt =~ ^[Yy]$ ]]; then
             return
         fi
@@ -42,7 +42,7 @@ function link_file() {
     fi
 
     # Create symbolic link.
-    echo "Symlinking $dst"
+    echo "$(tput setaf 6)Symlinking$(tput sgr0) $dst"
     ln -s "$src" "$dst"
 }
 
@@ -55,9 +55,9 @@ setup_gitconfig () {
       git_credential='osxkeychain'
     fi
 
-    read -r -p "What is your GitHub author name? " git_authorname
+    read -r -p "$(tput setaf 3)What is your GitHub author name? $(tput sgr0)" git_authorname
 
-    read -r -p "What is your github author email? " git_authoremail
+    read -r -p "$(tput setaf 3)What is your github author email? $(tput sgr0)" git_authoremail
 
     sed -e "s/AUTHORNAME/$git_authorname/g" -e "s/AUTHOREMAIL/$git_authoremail/g" -e "s/GIT_CREDENTIAL_HELPER/$git_credential/g" git/.gitconfig.local.example > git/.gitconfig.local
   fi
@@ -75,17 +75,20 @@ function linker {
     link_file "vim/colors/base16-eighties.vim" ".vim/colors/base16-eighties.vim"
 }
 
+echo "$(tput bold && tput setaf 2)Setting up .gitconfig$(tput sgr0)"
 setup_gitconfig
+echo "$(tput bold && tput setaf 2)Linking non-specific files.$(tput sgr0)"
 linker
+echo "$(tput bold && tput setaf 2)Initializing submodules.$(tput sgr0)"
 git submodule update --init --recursive
 
+echo "$(tput bold && tput setaf 2)Running OS-specific tasks.$(tput sgr0)"
 if [[ "$OSTYPE" == "darwin"* ]]; then
-    echo "Running OSX-specific scripts."
+    echo "$(tput setaf 2)Running OSX-specific scripts.$(tput sgr0)"
     link_file "tmux/.tmux-osx.conf" ".tmux.conf"
     sh ./osx/defaults.sh
-    echo "Done."
 elif [[ "$OSTYPE" == "linux-gnu" ]]; then
-    echo "Running Linux-specific scripts."
+    echo "$(tput setaf 2)Running Linux-specific scripts.$(tput sgr0)"
     link_file "tmux/.tmux-linux.conf" ".tmux.conf"
     link_file "linux/xfce-term/" ".config/xfce4/terminal"
     link_file "linux/openbox/" ".config/openbox"
@@ -94,5 +97,5 @@ elif [[ "$OSTYPE" == "linux-gnu" ]]; then
     link_file "linux/.xinitrc" ".xinitrc"
     link_file "linux/.Xresources" ".Xresources"
     link_file "linux/napapiiri/" ".themes/napapiiri"
-    echo "Done."
 fi
+echo "$(tput bold && tput setaf 2)Done."$(tput sgr0)
