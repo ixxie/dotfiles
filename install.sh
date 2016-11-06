@@ -86,7 +86,10 @@ echo "$(tput bold && tput setaf 2)Running OS-specific tasks.$(tput sgr0)"
 if [[ "$OSTYPE" == "darwin"* ]]; then
     echo "$(tput setaf 2)Running OSX-specific scripts.$(tput sgr0)"
     link_file "tmux/.tmux-osx.conf" ".tmux.conf"
-    sh ./osx/defaults.sh
+    read -r -p "$(tput setaf 3)Run defaults.sh? $(tput sgr0)" prompt
+    if [[ $prompt =~ ^[Yy]$ ]]; then
+        sh ./osx/defaults.sh
+    fi
 elif [[ "$OSTYPE" == "linux-gnu" ]]; then
     echo "$(tput setaf 2)Running Linux-specific scripts.$(tput sgr0)"
     link_file "tmux/.tmux-linux.conf" ".tmux.conf"
