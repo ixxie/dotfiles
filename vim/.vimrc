@@ -54,4 +54,5 @@ let g:syntastic_check_on_wq = 0
 " " " " "
 set laststatus=2	" always show airline
 let g:airline#extensions#tabline#enabled = 1 " show tabline
+let g:syntastic_cpp_compiler_options = '-std=c++11 -stdlib=libc++'
 
