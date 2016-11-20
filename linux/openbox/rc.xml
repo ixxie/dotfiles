@@ -334,7 +334,7 @@
     <!-- Application keybinds -->
     <keybind key="C-A-T">
       <action name="Execute">
-        <command>urxvt</command>
+        <command>xfce4-terminal</command>
       </action>
     </keybind>
     <keybind key="C-A-F">
