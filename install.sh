@@ -100,5 +100,6 @@ elif [[ "$OSTYPE" == "linux-gnu" ]]; then
     link_file "linux/.xinitrc" ".xinitrc"
     link_file "linux/.Xresources" ".Xresources"
     link_file "linux/napapiiri/" ".themes/napapiiri"
+    link_file "linux/i3/" ".config/i3"
 fi
 echo "$(tput bold && tput setaf 2)Done."$(tput sgr0)
