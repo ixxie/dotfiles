@@ -30,17 +30,20 @@ in
             [ 
                 flux
             ];
-
+            
             variables = 
             {
                 FLUX_HOME = [ "/home/ixxie/Fluxstack" ];
             };
         };
 
-        security = {
-            sudo = {
-                extraConfig = ''
-                Defaults:root,%wheel env_keep+=FLUX_HOME
+        security = 
+        {
+            sudo = 
+            {
+                extraConfig = 
+                ''
+                    Defaults:root,%wheel env_keep+=FLUX_HOME
                 '';
             };
         }; 
