@@ -8,10 +8,13 @@
 
 		systemPackages = 
 			with pkgs; [
+				calibre
 				chromium
+				evince
 				kodi
 				gimp
 				gnome3.geary
+				gparted
 				irssi
 				lm_sensors
 				nix-repl
