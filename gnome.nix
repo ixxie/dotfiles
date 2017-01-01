@@ -1,11 +1,12 @@
-{ pkgs, ... }: { 
+{ pkgs, ... }: 
 
-    services = {
-
+{ 
+    services = 
+    {
         # Enable the X11 windowing system.
 
-        xserver = {
-        
+        xserver = 
+        {
             enable = true;
             xkbOptions = "eurosign:e";
             layout = "us";
@@ -13,9 +14,12 @@
             # Enable the Gnome Desktop Environment.
 
             displayManager.gdm.enable = true;
-            desktopManager = {
 
-                gnome3 = {
+            desktopManager = 
+            {
+
+                gnome3 = 
+                {
                             enable = true;
                 };
                 

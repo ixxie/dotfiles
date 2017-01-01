@@ -2,8 +2,9 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }: {
+{ config, pkgs, ... }: 
 
+{
   # The NixOS release
 	system.stateVersion = "16.09";
 
@@ -23,5 +24,4 @@
       ./gnome.nix
       ./custom.nix
     ];
-
 }
