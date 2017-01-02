@@ -19,12 +19,15 @@
     # };
 
     # Set your time zone.
-    time.timeZone = "Europe/Amsterdam";
+    # time.timeZone = "Europe/Amsterdam";
 
     # Define user accounts. Don't forget to set a rd with ‘passwd’.
-    users = {
-        extraUsers = { 
-            $username = {
+    users = 
+    {
+        extraUsers = 
+        { 
+            $username = 
+            {
                 home = "/home/$username";
                 extraGroups = [ "wheel" "networkmanager" ];
                 isNormalUser = true;
