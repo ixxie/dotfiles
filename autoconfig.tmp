@@ -19,7 +19,7 @@
     # };
 
     # Set your time zone.
-    # time.timeZone = "$timezone";
+    time.timeZone = "$timezone";
 
     # Define user accounts. Don't forget to set a rd with ‘passwd’.
     users = 
