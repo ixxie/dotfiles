@@ -16,6 +16,7 @@
 
   imports =
     [
+      ./autoconfig.nix
       ./hardware-configuration.nix
       ./fluxscript.nix
       ./fluxbase.nix
