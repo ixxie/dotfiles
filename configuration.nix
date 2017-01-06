@@ -1,8 +1,6 @@
-
 { config, pkgs, ... }: 
 
 {
-
     # The NixOS release
 	system.stateVersion = "16.09";
 
@@ -14,11 +12,10 @@
     imports =
     [
         ./hardware-configuration.nix
+        ./modules/fluxbase.nix
         ./modules/fluxdev.nix
         ./modules/fluxscript.nix
-        ./modules/fluxbase.nix
         ./modules/gnome.nix
-        ./modules/i18n.nix
         ./modules/efiboot.nix
     ];
 
@@ -28,8 +25,10 @@
     # Set your time zone.
     time.timeZone = "Europe/Helsinki";
 
+
     # Enter keyboard layout
-    services.xserver.layout = "altgr-intl";
+    services.xserver.layout = "us";
+    services.xserver.xkbVariant = "altgr-intl";
 
     # Define user accounts*. 
     users.extraUsers = 
@@ -45,14 +44,24 @@
     # * Password is set using the ‘passwd <username>’ command. 
     
 
+    # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+
     # Custom configuration options:
 
     services.xserver.libinput.buttonMapping = "1 1 3 4 5 6 7 8 9";
 
+    #services.xserver.displayManager.gdm.enable = true;
 
     # Options to help with Troubleshooting:
 
     # Enable wireless support via wpa_supplicant.
     # networking.wireless.enable = true;  
     
+    # Select internationalisation properties.
+    # i18n = {
+    #   consoleFont = "Lat2-Terminus16";
+    #   consoleKeyMap = "us";
+    #   defaultLocale = "en_US.UTF-8";
+    # };
+
 }

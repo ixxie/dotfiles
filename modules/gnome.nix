@@ -4,7 +4,6 @@
     services = 
     {
         # Enable the X11 windowing system.
-
         xserver = 
         {
             enable = true;
@@ -23,4 +22,15 @@
             };
         };
     };
+
+
+	environment = 
+	{
+		systemPackages = 
+			with pkgs; 
+            [
+                gnome3.gnome-shell-extensions
+			]; 
+	};
+
 }
