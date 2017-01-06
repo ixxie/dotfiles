@@ -42,14 +42,13 @@
             uid = 1000;
         };
     };
-    # (* Password is set using the ‘passwd <username>’ command. )
+    # * Password is set using the ‘passwd <username>’ command. 
     
 
     # Custom configuration options:
 
     services.xserver.libinput.buttonMapping = "1 1 3 4 5 6 7 8 9";
 
-        #   #   #   #   #
 
     # Options to help with Troubleshooting:
 

@@ -18,7 +18,7 @@
             {
                 gnome3 = 
                 {
-                            enable = true;
+                    enable = true;
                 }; 
             };
         };
