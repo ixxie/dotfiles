@@ -33,7 +33,7 @@ in
             
             variables = 
             {
-                FLUX_HOME = [ "/home/$username/Fluxstack" ];
+                FLUX_HOME = [ "/home/ixxie/Fluxstack" ];
             };
         };
 

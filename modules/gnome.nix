@@ -9,7 +9,6 @@
         {
             enable = true;
             xkbOptions = "eurosign:e";
-            layout = "us";
 
             # Enable the Gnome Desktop Environment.
 

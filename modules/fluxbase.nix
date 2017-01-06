@@ -17,11 +17,13 @@
 				gparted
 				irssi
 				lm_sensors
+				manpages
 				nix-repl
 				numix-gtk-theme
 				numix-icon-theme
 				skype
 				transmission
+				transmission_gtk
 				vlc
 				zsh
 			]; 
