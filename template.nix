@@ -62,7 +62,7 @@
     # services.xserver.libinput.buttonMapping = "1 1 3 4 5 6 7 8 9";
 
     # Enable gnome GDM
-    services.xserver.displayManager.gdm.enable = true;
+    # services.xserver.displayManager.gdm.enable = true;
 
 
     # Options to help with Troubleshooting:
