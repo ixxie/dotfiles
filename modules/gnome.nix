@@ -23,14 +23,4 @@
         };
     };
 
-
-	environment = 
-	{
-		systemPackages = 
-			with pkgs; 
-            [
-                gnome3.gnome-shell-extensions
-			]; 
-	};
-
 }

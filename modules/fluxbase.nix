@@ -1,9 +1,8 @@
+{ config, pkgs, ... }: 
 
-{ config, pkgs, stdenv,... }: { 
+{ 
 
-	# Use ZSH for default shell.
-	users.defaultUserShell = "/var/run/current-system/sw/bin/zsh";
-
+	# Basic Package Suite
 	environment = 
 	{
 		systemPackages = 
@@ -11,6 +10,7 @@
 			[
 				calibre
 				chromium
+				ddate
 				evince
 				kodi
 				gimp
@@ -20,21 +20,22 @@
 				manpages
 				nix-repl
 				skype
-				transmission
 				transmission_gtk
 				vlc
 				zsh
 			]; 
 	};
 
-    nixpkgs.config.chromium = {
+    nixpkgs.config.chromium = 
+	{
 
 		enablePepperFlash = true;
 		enablePepperPDF = true;
-		
-	 };
+		#enableWideVine = true;
+	};
 
-	services = {
+	services = 
+	{
 
 		# Enable the OpenSSH daemon.
 		openssh.enable = true;

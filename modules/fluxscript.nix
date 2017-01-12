@@ -30,11 +30,6 @@ in
             [ 
                 flux
             ];
-            
-            variables = 
-            {
-                FLUX_HOME = [ "/home/ixxie/Fluxstack" ];
-            };
         };
 
         security = 
