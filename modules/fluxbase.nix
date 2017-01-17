@@ -9,9 +9,10 @@
 			with pkgs; 
 			[
 				calibre
-				chromium
+				# chromium
 				ddate
 				evince
+				google-chrome
 				kodi
 				gimp
 				gparted
@@ -22,17 +23,18 @@
 				skype
 				transmission_gtk
 				vlc
+				qemu
 				zsh
 			]; 
 	};
 
-    nixpkgs.config.chromium = 
-	{
+    # nixpkgs.config.chromium = 
+	# {
 
-		enablePepperFlash = true;
-		enablePepperPDF = true;
-		#enableWideVine = true;
-	};
+	# 	enablePepperFlash = true;
+	# 	enablePepperPDF = true;
+	# 	enableWideVine = true;
+	# };
 
 	services = 
 	{
