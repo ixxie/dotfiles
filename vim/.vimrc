@@ -11,7 +11,6 @@ let base16colorspace=256
 " General
 " " " " "
 set number
-set relativenumber
 set history=500
 set autoread
 set showcmd
