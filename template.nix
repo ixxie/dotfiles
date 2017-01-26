@@ -18,6 +18,7 @@
         ./modules/fluxscript.nix
         ./modules/gnome.nix
         ./modules/efiboot.nix
+        ./modules/unstable.nix
     ];
 
     #####################
@@ -40,18 +41,18 @@
     # Define user accounts*. 
     users.extraUsers = 
     { 
-        username = 
+        myusername = 
         {
-            home = "/home/username";
+            home = "/home/myusername";
             extraGroups = [ "wheel" "networkmanager" ];
             isNormalUser = true;
             uid = 1000;
         };
     };
-    # * Password is set using the ‘passwd <username>’ command. 
+    # * Password is set using the ‘passwd <myusername>’ command. 
     
     # Set path for flux
-    environment.variables.FLUX_HOME = [ "/home/username/Fluxstack" ];
+    environment.variables.FLUX_HOME = [ "/home/myusername/Fluxstack" ];
 
 
     ###################

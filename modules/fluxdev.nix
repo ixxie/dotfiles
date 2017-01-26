@@ -9,6 +9,8 @@
 			idea.idea-community
 			jre
 		    gitAndTools.gitFull
+			graphviz
+			nix-prefetch-git
 			rWrapper
 		    sbt
 		    vscode

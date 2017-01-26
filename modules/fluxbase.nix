@@ -1,14 +1,12 @@
 { config, pkgs, ... }: 
 
 { 
-
 	# Basic Package Suite
 	environment = 
 	{
 		systemPackages = 
 			with pkgs; 
 			[
-				calibre
 				# chromium
 				ddate
 				evince
