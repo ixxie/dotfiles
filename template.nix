@@ -59,13 +59,6 @@
     # Custom Settings #
     ###################
 
-    # Mouse Button Mapping (maps middle to left button)
-    # services.xserver.libinput.buttonMapping = "1 1 3 4 5 6 7 8 9";
-
-    # Enable gnome GDM
-    # services.xserver.displayManager.gdm.enable = true;
-
-
     # Options to help with Troubleshooting:
 
     # Enable wireless support via wpa_supplicant.
