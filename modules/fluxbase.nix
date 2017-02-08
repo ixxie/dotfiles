@@ -18,7 +18,6 @@
 				lm_sensors
 				manpages
 				nix-repl
-				pocketsphinx
 				skype
 				transmission_gtk
 				vlc

@@ -1,6 +1,5 @@
 { config, pkgs, ... }: 
 
-
 {
     # The NixOS release
 	system.stateVersion = "16.09";
