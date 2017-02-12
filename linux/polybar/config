@@ -39,7 +39,7 @@ padding-right = 2
 module-margin-left = 2
 module-margin-right = 2
 
-font-0 = fixed:pixelsize=10;1
+font-0 = GohuGohuFont:pixelsize=11;1
 font-1 = siji:pixelsize=10;1
 
 modules-left = xworkspaces
