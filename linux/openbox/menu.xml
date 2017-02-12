@@ -18,6 +18,11 @@
 		</item>
 	</menu>
 	<menu id="apps-net-menu" label="Internet">
+		<item label="Chrome">
+			<action name="Execute">
+				<execute>google-chrome-stable</execute>
+			</action>
+		</item>
 		<item label="Firefox">
 			<action name="Execute">
 				<command>firefox</command>
@@ -75,17 +80,17 @@
 				<prompt>yes</prompt>
 			</action>
 		</item>
-        <item label="Reboot">
-            <action name="Execute">
-                <prompt>Are you sure you want to reboot?</prompt>
-                <execute>systemctl reboot</execute>
-            </action>
-        </item>
-        <item label="Shutdown">
-            <action name="Execute">
-                <prompt>Are you sure you want to shutdown?</prompt>
-                <execute>systemctl poweroff</execute>
-            </action>
-        </item>
+		<item label="Reboot">
+			<action name="Execute">
+				<prompt>Are you sure you want to reboot?</prompt>
+				<execute>systemctl reboot</execute>
+			</action>
+		</item>
+		<item label="Shutdown">
+			<action name="Execute">
+				<prompt>Are you sure you want to shutdown?</prompt>
+				<execute>systemctl poweroff</execute>
+			</action>
+		</item>
 	</menu>
 </openbox_menu>
