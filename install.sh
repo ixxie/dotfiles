@@ -82,24 +82,23 @@ linker
 echo "$(tput bold && tput setaf 2)Initializing submodules.$(tput sgr0)"
 git submodule update --init --recursive
 
-echo "$(tput bold && tput setaf 2)Running OS-specific tasks.$(tput sgr0)"
 if [[ "$OSTYPE" == "darwin"* ]]; then
-    echo "$(tput setaf 2)Running OSX-specific scripts.$(tput sgr0)"
+    echo "$(tput bold &&tput setaf 2)Running OSX-specific scripts.$(tput sgr0)"
     link_file "tmux/.tmux-osx.conf" ".tmux.conf"
     read -r -p "$(tput setaf 3)Run defaults.sh? $(tput sgr0)" prompt
     if [[ $prompt =~ ^[Yy]$ ]]; then
         sh ./osx/defaults.sh
     fi
 elif [[ "$OSTYPE" == "linux-gnu" ]]; then
-    echo "$(tput setaf 2)Running Linux-specific scripts.$(tput sgr0)"
+    echo "$(tput bold && tput setaf 2)Running Linux-specific scripts.$(tput sgr0)"
     link_file "tmux/.tmux-linux.conf" ".tmux.conf"
     link_file "linux/xfce-term/" ".config/xfce4/terminal"
     link_file "linux/openbox/" ".config/openbox"
-    link_file "linux/scripts/.bar.sh" ".bar.sh"
-    link_file "linux/scripts/.feeder.sh" ".feeder.sh"
     link_file "linux/.xinitrc" ".xinitrc"
     link_file "linux/.Xresources" ".Xresources"
     link_file "linux/napapiiri/" ".themes/napapiiri"
     link_file "linux/i3/" ".config/i3"
+    link_file "linux/polybar/" ".config/polybar"
 fi
 echo "$(tput bold && tput setaf 2)Done."$(tput sgr0)
+

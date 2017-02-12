@@ -1,2 +1,2 @@
 sh ~/.fehbg &
-~/.bar.sh &
+~/.config/polybar/launch.sh
