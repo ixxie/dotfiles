@@ -344,7 +344,7 @@
     </keybind>
     <keybind key="W-space">
       <action name="Execute">
-        <command>dmenu_run -l 10 -i -nf "#f0f0f0" -nb "#595959" -sb "#666666" -x 533 -y 250 -w 300 -h 30 -s 0</command>
+        <command>dmenu_run -i -m 0 -fn "gohugohufont" -nb "#222" -sb "#444" -sf "#6699ff"</command>
       </action>
     </keybind>
   </keyboard>

@@ -20,7 +20,7 @@ good = #55aa55
 [bar/bar1]
 monitor = DP-0
 width = 100%
-height = 20
+height = 14
 radius = 0
 fixed-center = true
 
