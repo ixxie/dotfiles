@@ -1,2 +1,2 @@
-sh ~/.fehbg &
+nitrogen --restore &
 ~/.config/polybar/launch.sh
