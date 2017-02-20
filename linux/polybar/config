@@ -18,6 +18,7 @@ good = #55aa55
 blue = #0066ff
 
 [bar/bar1]
+monitor = DP-0
 width = 100%
 height = 14
 radius = 0
@@ -127,7 +128,7 @@ label-discharging-underline = ${colors.primary}
 
 format-full-prefix = "FULL: "
 format-full-prefix-foreground = ${colors.foreground-alt}
-format-full-underline = ${colors.good}
+label-full-underline = ${colors.good}
 
 [module/wlan]
 type = internal/network
