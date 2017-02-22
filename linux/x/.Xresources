@@ -1,0 +1,34 @@
+! ! ! ! ! ! ! ! ! ! !
+! Personal settings !
+! ! ! ! ! ! ! ! ! ! !
+
+! U-Rxvt
+
+URxvt.font: xft:xos4 terminus:size=12
+URxvt.letterSpace: 0
+URxvt.scrollBar: false
+URxvt.geometry: 80x40
+
+URxvt.iso14755: false
+URxvt.iso14755_52: false
+URxvt.perl-ext-common: default,clipboard
+
+! Font
+
+Xft.autohint: 0
+Xft.antialias: 1
+Xft.hinting: true
+Xft.hintstyle: hintslight
+Xft.rgba: rgb
+Xft.lcdfilter: lcddefault
+
+! Cursor
+
+Xcursor.size: 16
+
+! Color
+
+*.foreground:   #d3d0c8
+*.background:   #2d2d2d
+*.cursorColor:  #d3d0c8
+

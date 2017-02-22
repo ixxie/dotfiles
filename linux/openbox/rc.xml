@@ -316,21 +316,6 @@
       </action>
     </keybind>
     <!-- Volume keybinds -->
-    <keybind key="XF86AudioRaiseVolume">
-      <action name="Execute">
-        <command>amixer -D pulse set Master 5%+ unmute</command>
-      </action>
-    </keybind>
-    <keybind key="XF86AudioLowerVolume">
-      <action name="Execute">
-        <command>amixer -D pulse set Master 5%- unmute</command>
-      </action>
-    </keybind>
-    <keybind key="XF86AudioMute">
-      <action name="Execute">
-        <command>amixer -D pulse set Master toggle</command>
-      </action>
-    </keybind>
     <!-- Application keybinds -->
     <keybind key="C-A-T">
       <action name="Execute">

@@ -94,11 +94,13 @@ elif [[ "$OSTYPE" == "linux-gnu" ]]; then
     link_file "tmux/.tmux-linux.conf" ".tmux.conf"
     link_file "linux/xfce-term/" ".config/xfce4/terminal"
     link_file "linux/openbox/" ".config/openbox"
-    link_file "linux/.xinitrc" ".xinitrc"
-    link_file "linux/.Xresources" ".Xresources"
+    link_file "linux/x/.xinitrc" ".xinitrc"
+    link_file "linux/x/.Xresources" ".Xresources"
+    link_file "linux/x/.xbindkeysrc" ".xbindkeysrc"
     link_file "linux/napapiiri/" ".themes/napapiiri"
     link_file "linux/i3/" ".config/i3"
     link_file "linux/polybar/" ".config/polybar"
+    link_file "linux/compton/compton.conf" ".config/compton.conf"
 fi
 echo "$(tput bold && tput setaf 2)Done."$(tput sgr0)
 
