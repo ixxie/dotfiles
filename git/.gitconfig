@@ -1,8 +1,8 @@
 [include]
-        path = ~/.gitconfig.local
+    path = ~/.gitconfig.local
 [color]
-	ui = true
+    ui = true
 [core]
     editor = vim
-	excludesfile = ~/.gitignore
+    excludesfile = ~/.gitignore
 
