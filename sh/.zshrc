@@ -8,7 +8,6 @@ for config ($HOME/.zsh/*.zsh) source $config
 # Init better autocomplete
 autoload -U compinit
 compinit
-zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
 zstyle ':completion:*' insert-tab pending
 
 # Set $TERM to 256color
