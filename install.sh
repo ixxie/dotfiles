@@ -66,6 +66,8 @@ function linker {
     link_file "sh/.bash_profile" ".bash_profile"
     link_file "sh/.bashrc" ".bashrc"
     link_file "sh/base16-shell" ".config/base16-shell"
+    link_file "sh/.zshrc" ".zshrc"
+    link_file "sh/.zsh/" ".zsh"
     link_file "git/.gitconfig" ".gitconfig"
     link_file "git/.gitignore" ".gitignore"
     link_file "git/.gitconfig.local" ".gitconfig.local"
