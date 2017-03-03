@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-
 dot_root=$(pwd -P)
 
 set -e
@@ -64,9 +63,9 @@ setup_gitconfig () {
 }
 
 function linker {
-    link_file "bash/.bash_profile" ".bash_profile"
-    link_file "bash/.bashrc" ".bashrc"
-    link_file "bash/base16-shell" ".config/base16-shell"
+    link_file "sh/.bash_profile" ".bash_profile"
+    link_file "sh/.bashrc" ".bashrc"
+    link_file "sh/base16-shell" ".config/base16-shell"
     link_file "git/.gitconfig" ".gitconfig"
     link_file "git/.gitignore" ".gitignore"
     link_file "git/.gitconfig.local" ".gitconfig.local"
