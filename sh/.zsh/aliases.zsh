@@ -7,7 +7,7 @@ fi
 
 # => Aliases
 alias cl='clear'
-alias ip='dig +short myip.opendns.com @resolver1.opendns.com'
+alias myip='dig +short myip.opendns.com @resolver1.opendns.com'
 
 # => MacOS
 alias showAll='defaults write com.apple.finder AppleShowAllFiles YES && killall Finder'
