@@ -22,6 +22,7 @@
 				transmission_gtk
 				vlc
 				qemu
+				simple-scan
 				zsh
 			]; 
 	};
