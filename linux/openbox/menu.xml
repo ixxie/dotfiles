@@ -16,6 +16,14 @@
 				</startupnotify>
 			</action>
 		</item>
+        <item label="Urxvt">
+            <action name="Execute">
+                <command>urxvt</command>
+                <startupnotify>
+                    <enabled>yes</enabled>
+                </startupnotify>
+            </action>
+        </item>
 	</menu>
 	<menu id="apps-net-menu" label="Internet">
 		<item label="Chrome">
