@@ -22,4 +22,4 @@ setopt HIST_VERIFY # Dont execute outright when entering line w/ hist expansion
 setopt NO_LIST_BEEP # Dont beep on an ambiguous completion
 setopt COMPLETE_ALIASES # Make alias distinct command for completion purposes
 setopt PROMPT_SUBST # Allow parameter/arithmetic expansion & command substitution
-setopt MENU_COMPLETE
+setopt AUTO_MENU
