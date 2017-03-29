@@ -14,6 +14,7 @@
         ./hardware-configuration.nix
         ./modules/fluxbase.nix
         ./modules/fluxdev.nix
+        ./modules/fluxpub.nix
         ./modules/fluxscript.nix
         ./modules/gnome.nix
         ./modules/efiboot.nix
