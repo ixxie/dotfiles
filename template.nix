@@ -2,24 +2,27 @@
 
 {
     # The NixOS release
-	system.stateVersion = "16.09";
+	system.stateVersion = "17.03";
 
     # Allow proprietary packages & enable all firmware.
     nixpkgs.config.allowUnfree = true;
     hardware.enableAllFirmware = true;
 
-    # Include the following modules:
+    # nix.gc
+
+    # Include the following configuration modules:
     imports =
-    [
-        ./hardware-configuration.nix
-        ./modules/fluxbase.nix
-        ./modules/fluxdev.nix
-        ./modules/fluxpub.nix
-        ./modules/fluxscript.nix
-        ./modules/gnome.nix
-        ./modules/efiboot.nix
-        ./modules/unstable.nix
-    ];
+        [
+            ./hardware-configuration.nix
+            ./modules/fluxbase.nix
+            ./modules/fluxdev.nix
+            ./modules/fluxpub.nix
+            ./modules/fluxsci.nix
+            ./modules/fluxscript.nix
+            ./modules/gnome.nix
+            ./modules/efiboot.nix
+            ./modules/unstable.nix
+        ];
 
     #####################
     # Personal Settings #
