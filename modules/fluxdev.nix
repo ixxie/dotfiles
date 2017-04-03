@@ -2,7 +2,7 @@
 { pkgs, ... }: { 
 
 	environment.systemPackages = 
-		with pkgs; with eclipses; 
+		with pkgs;
 		[
 			idea.idea-community
 			jre
