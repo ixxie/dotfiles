@@ -23,6 +23,7 @@
 				vlc
 				qemu
 				simple-scan
+				testdisk
 				zsh
 			]; 
 	};

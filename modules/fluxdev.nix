@@ -10,7 +10,6 @@
 			graphviz
 			nix-prefetch-git
 			nixops
-			rWrapper
 		    sbt
 		    vscode
 		]; 
