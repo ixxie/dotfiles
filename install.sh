@@ -102,6 +102,12 @@ elif [[ "$OSTYPE" == "linux-gnu" ]]; then
     link_file "linux/i3/" ".config/i3"
     link_file "linux/polybar/" ".config/polybar"
     link_file "linux/compton/compton.conf" ".config/compton.conf"
+    if [[ -f /etc/arch-release ]]; then
+        read -r -p "$(tput setaf 3)Run pacman.sh? $(tput sgr0)" prompt
+        if [[ $prompt =~ ^[Yy]$ ]]; then
+            sh ./linux/scripts/pacman.sh
+        fi
+    fi
 fi
 echo "$(tput bold && tput setaf 2)Done."$(tput sgr0)
 
