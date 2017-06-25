@@ -19,6 +19,7 @@ set nocompatible
 set nobackup
 set nowritebackup
 set noswapfile
+set incsearch
 filetype plugin on
 let g:autoclose_vim_commentmode = 1 	" for vim-autoclose plugin
 
