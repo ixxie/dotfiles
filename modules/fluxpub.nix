@@ -19,6 +19,7 @@ environment =
 			with pkgs; 
 			[
                 fluxtex
+                pandoc
             ];
 };
 

@@ -7,17 +7,17 @@
 		systemPackages = 
 			with pkgs; 
 			[
-				# chromium
 				ddate
 				evince
 				google-chrome
-				kodi
+				#kodi
 				gimp
 				gparted
 				irssi
 				lm_sensors
 				manpages
 				nix-repl
+				openssh
 				skype
 				transmission_gtk
 				vlc
@@ -27,14 +27,6 @@
 				zsh
 			]; 
 	};
-
-    # nixpkgs.config.chromium = 
-	# {
-
-	# 	enablePepperFlash = true;
-	# 	enablePepperPDF = true;
-	# 	enableWideVine = true;
-	# };
 
 	services = 
 	{

@@ -12,5 +12,9 @@
 			nixops
 		    sbt
 		    vscode
+			aqemu
+			kvm
 		]; 
+
+	virtualisation.libvirtd.enableKVM = true;
 }
