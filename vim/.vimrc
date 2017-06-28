@@ -21,7 +21,7 @@ set nowritebackup
 set noswapfile
 set incsearch
 filetype plugin on
-let g:autoclose_vim_commentmode = 1 	" for vim-autoclose plugin
+let g:autoclose_vim_commentmode=1 " for vim-autoclose plugin
 
 "
 " Format
@@ -33,7 +33,8 @@ set shiftwidth=4 " sw=4
 set softtabstop=4 " sts=4
 set tabstop=4 " ts=4
 set expandtab
-set list listchars=tab:\ \ ,trail:·
+set list listchars=tab:\ \ ,nbsp:¬,extends:»,precedes:«,trail:·
+set showbreak=↳\ 
 set colorcolumn=80
 set showmatch
 syntax on
@@ -52,15 +53,15 @@ autocmd Filetype clojure setlocal ts=2 sts=2 sw=2
 set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
 set statusline+=%*
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
-let g:syntastic_cpp_compiler_options = '-std=c++11 -stdlib=libc++'
+let g:syntastic_always_populate_loc_list=1
+let g:syntastic_auto_loc_list=1
+let g:syntastic_check_on_open=1
+let g:syntastic_check_on_wq=0
+let g:syntastic_cpp_compiler_options='-std=c++11 -stdlib=libc++'
 
 "
 " Airline
 " " " " "
-set laststatus=2	" always show airline
-let g:airline#extensions#tabline#enabled = 1 " show tabline
+set laststatus=2 " always show airline
+let g:airline#extensions#tabline#enabled=1 " show tabline
 
