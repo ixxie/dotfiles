@@ -138,7 +138,7 @@ elif [[ "$OSTYPE" == "linux-gnu" ]]; then
     link_file "linux/compton/compton.conf" ".config/compton.conf"
 
     if [[ -f /etc/arch-release ]]; then
-        read -r -p "$(echo_c "Run pacman.sh " 3)" prompt
+        read -r -p "$(echo_c "Run pacman.sh? " 3)" prompt
         if [[ $prompt =~ ^[Yy]$ ]]; then
             sh ./linux/scripts/pacman.sh
         fi
