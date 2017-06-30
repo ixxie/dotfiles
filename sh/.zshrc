@@ -16,10 +16,15 @@ case "$TERM" in
 esac
 
 # Env variable for Polybar
-if [[ $HOST == "vervy" ]]; then
-    export MONITOR="DP-0"
-else
-    export MONITOR="$(xrandr | grep " connected" | cut -d ' ' -f 1 | head -n 1)"
+if [[ "$(uname -s)" == "Linux" ]]; then
+    if [[ $HOST == "vervy" ]]; then
+        export MONITOR="DP-0"
+    else
+        export MONITOR="$(xrandr \
+                            | grep ' connected' \
+                            | cut -d ' ' -f 1 \
+                            | head -n 1)"
+    fi
 fi
 
 export PATH="${PATH}:${HOME}/.local/bin"
