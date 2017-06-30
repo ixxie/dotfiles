@@ -1,6 +1,6 @@
-# Zsh hook for the urxvt title bar
+# Zsh hook for the xterm title bar
 preexec () {
-    print -Pn "\e]2;urxvt :: $1\a"
+    print -Pn "\e]2;xterm :: $1\a"
 }
 
 # Makes colorizing output a bit easier.
