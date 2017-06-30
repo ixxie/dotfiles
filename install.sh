@@ -123,6 +123,11 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     if [[ $prompt =~ ^[Yy]$ ]]; then
         sh ./osx/defaults.sh
     fi
+
+    read -r -p "$(echo_c "Run homebrew.sh? " 3)" prompt
+    if [[ $prompt =~ ^[Yy]$ ]]; then
+        sh ./osx/homebrew.sh
+    fi
 elif [[ "$OSTYPE" == "linux-gnu" ]]; then
     echo_c "Running Linux-specific stuff." 2 -b
 
