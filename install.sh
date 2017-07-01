@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-dot_root=$(pwd -P)
+dot_root="$(cd "$(dirname "$0")" && pwd -P)"
 
 set -e
 
@@ -26,12 +26,11 @@ function echo_c {
 #   None
 ##################################################
 function link_file {
-    local src="$dot_root/$1"
-    local dst="$HOME/$2"
+    local src="$dot_root/$1" dst="$HOME/$2"
 
-    # Check for directory.
-    if [ ! -e "${dst%/*}" ]; then
-        read -r -p "$(echo_c "No directory at target. Create a directory for '$dst' [y/n]? " 3)" prompt
+    # Check for directory. %/* removes the string suffix /* from $dst
+    if [[ ! -e "${dst%/*}" ]]; then
+        read -r -p "$(echo_c "No directory at '$dst'. Create one [y/n]? " 3)" prompt
         if [[ ! $prompt =~ ^[Yy]$ ]]; then
             return
         fi
@@ -40,20 +39,20 @@ function link_file {
     fi
 
     # Unlink if link already exists.
-    if [ -L "$dst" ]; then
+    if [[ -L "$dst" ]]; then
         unlink "$dst"
     fi
 
     # Check if overwriting directory or file.
-    if [ -d "$dst" ]; then
-        read -r -p "$(echo_c "Directory '$dst' already exists. Do you wish to overwrite it [y/n]? " 3)" prompt
+    if [[ -d "$dst" ]]; then
+        read -r -p "$(echo_c "Directory '$dst' already exists. Overwrite it [y/n]? " 3)" prompt
         if [[ ! $prompt =~ ^[Yy]$ ]]; then
             return
         fi
 
         rm -rf "$dst"
-    elif [ -e "$dst" ]; then
-        read -r -p "$(echo_c "File '$dst' already exists. Do you wish to overwrite it [y/n]? " 3)" prompt
+    elif [[ -e "$dst" ]]; then
+        read -r -p "$(echo_c "File '$dst' already exists. Overwrite it [y/n]? " 3)" prompt
         if [[ ! $prompt =~ ^[Yy]$ ]]; then
             return
         fi
@@ -61,7 +60,7 @@ function link_file {
         rm "$dst"
     fi
 
-    echo "$(echo_c "Symlinking" 6) $dst"
+    echo "$(echo_c "Linking" 6) $src $(echo_c "->" 6) $dst"
     ln -s "$src" "$dst"
 }
 
@@ -72,17 +71,20 @@ function link_file {
 #   None
 ##################################################
 function setup_gitconfig {
-  if [ ! -f git/.gitconfig.local ]; then
+  if [[ ! -f $dot_root/git/.gitconfig.local ]]; then
     git_credential='cache'
 
-    if [ "$(uname -s)" == "Darwin" ]; then
+    if [[ "$(uname -s)" == "Darwin" ]]; then
       git_credential='osxkeychain'
     fi
 
     read -r -p "$(echo_c "What is your git user.name? " 3)" git_authorname
     read -r -p "$(echo_c "What is your git user.email? " 3)" git_authoremail
 
-    sed -e "s/AUTHORNAME/$git_authorname/g" -e "s/AUTHOREMAIL/$git_authoremail/g" -e "s/GIT_CREDENTIAL_HELPER/$git_credential/g" git/.gitconfig.local.example > git/.gitconfig.local
+    sed -e "s/AUTHORNAME/$git_authorname/g" \
+        -e "s/AUTHOREMAIL/$git_authoremail/g" \
+        -e "s/GIT_CREDENTIAL_HELPER/$git_credential/g" \
+        $dot_root/git/.gitconfig.local.example > $dot_root/git/.gitconfig.local
   fi
 }
 
@@ -105,7 +107,7 @@ function linker {
     link_file "vim/colors/base16-eighties.vim" ".vim/colors/base16-eighties.vim"
 }
 
-echo_c "Setting up .gitconfig" 2 -b
+echo_c "Configuring name and email for git" 2 -b
 setup_gitconfig
 
 echo_c "Linking common files." 2 -b
@@ -114,7 +116,7 @@ linker
 echo_c "Initializing submodules." 2 -b
 git submodule update --init --recursive
 
-if [[ "$OSTYPE" == "darwin"* ]]; then
+if [[ "$(uname -s)" == "Darwin" ]]; then
     echo_c "Running MacOS-specific stuff." 2 -b
 
     link_file "tmux/.tmux-osx.conf" ".tmux.conf"
@@ -128,7 +130,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     if [[ $prompt =~ ^[Yy]$ ]]; then
         sh ./osx/homebrew.sh
     fi
-elif [[ "$OSTYPE" == "linux-gnu" ]]; then
+elif [[ "$(uname -s)" == "Linux" ]]; then
     echo_c "Running Linux-specific stuff." 2 -b
 
     link_file "tmux/.tmux-linux.conf" ".tmux.conf"
@@ -142,16 +144,18 @@ elif [[ "$OSTYPE" == "linux-gnu" ]]; then
     link_file "linux/polybar/" ".config/polybar"
     link_file "linux/compton/compton.conf" ".config/compton.conf"
 
-    if [[ -f /etc/arch-release ]]; then
+    if [[ -e /etc/arch-release ]]; then
         read -r -p "$(echo_c "Run pacman.sh? " 3)" prompt
         if [[ $prompt =~ ^[Yy]$ ]]; then
             sh ./linux/scripts/pacman.sh
         fi
     fi
 
-    read -r -p "$(echo_c "Run lein_install.sh? " 3)" prompt
-    if [[ $prompt =~ ^[Yy]$ ]]; then
-        sh ./linux/scripts/lein_install.sh
+    if [[ ! -e $HOME/.local/bin/lein ]]; then
+        read -r -p "$(echo_c "Run lein_install.sh? " 3)" prompt
+        if [[ $prompt =~ ^[Yy]$ ]]; then
+            sh ./linux/scripts/lein_install.sh
+        fi
     fi
 fi
 

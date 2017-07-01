@@ -1,5 +1,5 @@
 # Zsh hook for the xterm title bar
-preexec () {
+function preexec {
     print -Pn "\e]2;xterm :: $1\a"
 }
 
@@ -7,7 +7,7 @@ preexec () {
 # $1: string to be colorized
 # $2: tput color code
 # $3: flag for bold text
-echo_c () {
+function echo_c {
     if [[ $3 == "-b" ]]; then
         echo "$(tput bold && tput setaf $2)$1$(tput sgr0)"
     else
@@ -17,7 +17,7 @@ echo_c () {
 
 # Timer for various simple timing needs.
 # $1: time in seconds (mandatory)
-timer () {
+function timer {
     if [[ $1 == "" ]]; then
         echo "$(echo_c "ERROR:" 1 -b) Missing parameter"
         return

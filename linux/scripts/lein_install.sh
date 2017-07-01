@@ -5,7 +5,7 @@ set -e
 dst="$HOME/.local/bin"
 
 if [[ ! -e $dst ]]; then
-    read -r -p "$(tput setaf 3)No directory at '$dst'. Create one? $(tput sgr0)" prompt
+    read -r -p "$(tput setaf 3)No directory at '$dst'. Create one [y/n]? $(tput sgr0)" prompt
     if [[ ! $prompt =~ ^[Yy]$ ]]; then
         exit 0;
     fi
