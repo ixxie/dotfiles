@@ -15,7 +15,8 @@ brew install git \
              valgrind \
              tmux \
              vim \
-             python
+             python \
+             leiningen
 
 brew cask install java \
                   iterm2

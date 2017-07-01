@@ -148,6 +148,11 @@ elif [[ "$OSTYPE" == "linux-gnu" ]]; then
             sh ./linux/scripts/pacman.sh
         fi
     fi
+
+    read -r -p "$(echo_c "Run lein_install.sh? " 3)" prompt
+    if [[ $prompt =~ ^[Yy]$ ]]; then
+        sh ./linux/scripts/lein_install.sh
+    fi
 fi
 
 echo_c "Done." 2 -b
