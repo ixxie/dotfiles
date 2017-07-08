@@ -89,6 +89,22 @@ function setup_gitconfig {
 }
 
 ##################################################
+# Sets the monitor for polybar
+# Arguments:
+#   None
+##################################################
+function setup_polybar_monitor {
+    if [[ ! -f $dot_root/linux/polybar/config ]]; then
+        read -r -p \
+            "$(echo_c "Specify a monitor for polybar (empty for default): " 3)" \
+            monitor
+
+        sed -e "s/MONITOR/$monitor/g" \
+            $dot_root/linux/polybar/template > $dot_root/linux/polybar/config
+    fi
+}
+
+##################################################
 # Links the common files and directories.
 # Arguments:
 #   None
@@ -143,6 +159,8 @@ elif [[ "$(uname -s)" == "Linux" ]]; then
     link_file "linux/i3/" ".config/i3"
     link_file "linux/polybar/" ".config/polybar"
     link_file "linux/compton/compton.conf" ".config/compton.conf"
+
+    setup_polybar_monitor
 
     if [[ -e /etc/arch-release ]]; then
         read -r -p "$(echo_c "Run pacman.sh? " 3)" prompt

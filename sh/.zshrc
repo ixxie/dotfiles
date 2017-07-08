@@ -15,16 +15,4 @@ case "$TERM" in
     xterm) TERM=xterm-256color
 esac
 
-# Env variable for Polybar
-if [[ "$(uname -s)" == "Linux" ]]; then
-    if [[ $HOST == "vervy" ]]; then
-        export MONITOR="DP-0"
-    else
-        export MONITOR="$(xrandr \
-                            | grep ' connected' \
-                            | cut -d ' ' -f 1 \
-                            | head -n 1)"
-    fi
-fi
-
 export PATH="${PATH}:${HOME}/.local/bin"
