@@ -2,7 +2,7 @@ Dotfiles.
 
 ### Credits/Thanks
 
-* [Mathias Bynens' .osx script](https://github.com/mathiasbynens/dotfiles/blob/master/.osx)
+* [Mathias Bynens' .macos script](https://github.com/mathiasbynens/dotfiles/blob/master/.macos)
 
 * [nobootsound](https://github.com/teored90/nobootsound)
 

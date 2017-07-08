@@ -142,16 +142,16 @@ cd -
 if [[ "$(uname -s)" == "Darwin" ]]; then
     echo_c "Running MacOS-specific stuff." 2 -b
 
-    link_file "tmux/.tmux-osx.conf" ".tmux.conf"
+    link_file "tmux/.tmux-mac.conf" ".tmux.conf"
 
     read -r -p "$(echo_c "Run defaults.sh [y/n]? " 3)" prompt
     if [[ $prompt =~ ^[Yy]$ ]]; then
-        sh ./osx/defaults.sh
+        sh ./mac/defaults.sh
     fi
 
     read -r -p "$(echo_c "Run homebrew.sh [y/n]? " 3)" prompt
     if [[ $prompt =~ ^[Yy]$ ]]; then
-        sh ./osx/homebrew.sh
+        sh ./mac/homebrew.sh
     fi
 elif [[ "$(uname -s)" == "Linux" ]]; then
     echo_c "Running Linux-specific stuff." 2 -b

@@ -4,7 +4,7 @@
 sudo -v
 
 # Mute boot chime.
-sudo sh ./osx/mute.sh
+sudo ./mac/mute.sh
 
 # Disable transparency in the menu bar and elsewhere on Yosemite
 defaults write com.apple.universalaccess reduceTransparency -bool true

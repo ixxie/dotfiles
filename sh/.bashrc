@@ -7,7 +7,7 @@ export PS1="[\w]: "
 
 # Aliases
 alias cl='clear'
-# OSX
+# Mac
 alias showAll='defaults write com.apple.finder AppleShowAllFiles YES'
 alias hideAll='defaults write com.apple.finder AppleShowAllFiles NO'
 
