@@ -77,12 +77,6 @@ function link_file {
 ##################################################
 function setup_gitconfig {
   if [[ ! -f $DOT_ROOT/git/.gitconfig.local ]]; then
-    git_credential="cache"
-
-    if [[ "$(uname -s)" == "Darwin" ]]; then
-      git_credential="osxkeychain"
-    fi
-
     read -r -p "$(echo_c "What is your git user.name? " 3)" git_authorname
     read -r -p "$(echo_c "What is your git user.email? " 3)" git_authoremail
 
