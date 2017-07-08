@@ -1,8 +1,3 @@
-# Zsh hook for the xterm title bar
-function preexec {
-    print -Pn "\e]2;xterm :: $1\a"
-}
-
 # Makes colorizing output a bit easier.
 # $1: string to be colorized
 # $2: tput color code
