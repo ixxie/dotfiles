@@ -129,8 +129,10 @@ setup_gitconfig
 echo_c "Linking common files." 2 -b
 linker
 
+cd $dot_root
 echo_c "Initializing submodules." 2 -b
 git submodule update --init --recursive
+cd -
 
 if [[ "$(uname -s)" == "Darwin" ]]; then
     echo_c "Running MacOS-specific stuff." 2 -b
