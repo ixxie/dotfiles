@@ -9,14 +9,4 @@ fi
 
 brew doctor
 
-brew install git \
-             htop \
-             rust \
-             valgrind \
-             tmux \
-             vim \
-             python \
-             leiningen
-
-brew cask install java \
-                  iterm2
+brew bundle
