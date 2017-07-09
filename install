@@ -145,7 +145,7 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
 
     read -r -p "$(echo_c "Run homebrew.sh [y/n]? " 3)" prompt
     if [[ $prompt =~ ^[Yy]$ ]]; then
-        sh $DOT_ROOT/mac/homebrew.sh
+        sh $DOT_ROOT/mac/brew/homebrew.sh
     fi
 
     read -r -p "$(echo_c "Run prefs.sh [y/n]? " 3)" prompt
