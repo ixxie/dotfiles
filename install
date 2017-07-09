@@ -140,12 +140,12 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
 
     read -r -p "$(echo_c "Run defaults.sh [y/n]? " 3)" prompt
     if [[ $prompt =~ ^[Yy]$ ]]; then
-        sh ./mac/defaults.sh
+        sh $DOT_ROOT/mac/defaults.sh
     fi
 
     read -r -p "$(echo_c "Run homebrew.sh [y/n]? " 3)" prompt
     if [[ $prompt =~ ^[Yy]$ ]]; then
-        sh ./mac/homebrew.sh
+        sh $DOT_ROOT/mac/homebrew.sh
     fi
 elif [[ "$(uname -s)" == "Linux" ]]; then
     echo_c "Running Linux-specific stuff." 2 -b
@@ -166,14 +166,14 @@ elif [[ "$(uname -s)" == "Linux" ]]; then
     if [[ -e /etc/arch-release ]]; then
         read -r -p "$(echo_c "Run pacman.sh [y/n]? " 3)" prompt
         if [[ $prompt =~ ^[Yy]$ ]]; then
-            sh ./linux/scripts/pacman.sh
+            sh $DOT_ROOT/linux/scripts/pacman.sh
         fi
     fi
 
     if [[ ! -e $HOME/.local/bin/lein ]]; then
         read -r -p "$(echo_c "Run lein_install.sh [y/n]? " 3)" prompt
         if [[ $prompt =~ ^[Yy]$ ]]; then
-            sh ./linux/scripts/lein_install.sh
+            sh $DOT_ROOT/linux/scripts/lein_install.sh
         fi
     fi
 fi
