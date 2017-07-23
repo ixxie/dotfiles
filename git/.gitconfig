@@ -18,3 +18,41 @@
 
 [diff "bin"]
     textconv = hexdump -v -C
+
+[alias]
+    a = add
+    aa = add -A
+    ap = add -p
+
+    pub = "!git push -u origin $(git symbolic-ref --short HEAD)"
+
+    plr = pull --rebase
+
+    c = commit
+    ca = commit --amend
+    can = commit --amend --no-edit
+
+    co = checkout
+
+    d = diff
+    dc = diff --cached
+    di = "!d() { git diff --patch-with-stat HEAD~$1; }; \
+           git diff-index --quiet HEAD -- || clear; d"
+
+    s = status
+
+    st = stash
+    stp = stash pop
+
+    l = log --pretty=oneline --graph --abbrev-commit
+    sh = shortlog -sn
+
+    b = branch
+
+    cp = cherry-pick
+    ri = rebase -i
+
+    un = reset HEAD --
+
+    g = grep
+
