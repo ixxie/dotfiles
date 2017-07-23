@@ -1,7 +1,7 @@
 {
   "url": "https://github.com/ixxie/flux",
-  "rev": "f2b75c2e794bc060028a3375406ae7ac692ec610",
-  "date": "2017-05-20T14:14:22+03:00",
-  "sha256": "0xm2c5k772hp5npy67cj43rilnrg6d7nmljj9mx67d4798kkl2nk",
+  "rev": "a16ffbb041ddcd10e17ef207a758e0eeb1e43af7",
+  "date": "2017-06-28T22:22:11+03:00",
+  "sha256": "17c6r8bwcbf6q78jc9xwvjhyh4vnhx7h63i8l8mbikywifa3q7s9",
   "fetchSubmodules": true
 }

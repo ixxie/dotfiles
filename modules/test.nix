@@ -10,9 +10,8 @@ let
     streamFiles = map 
                     (file: streamsDir + ("/" + file) ) 
                     (attrNames (readDir streamsDir));
-    
 
-    fetchStream =
+    fetchStream = 
             (jsonFile: 
                 pkgs.fetchgit 
                         (removeAttrs
@@ -25,21 +24,18 @@ let
 
     importStream =
             (stream:
-                import stream + /nix/. {}
+                import "${stream}/nix/" {}
             );
 
- 
 
     streams = map fetchStream streamFiles;
-
     pkglist = map importStream streams;
 
 in
 
 { 
-
     environment = 
         {
-            systemPackages = streams;
+            systemPackages = pkglist;
         };
 }

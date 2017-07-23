@@ -1,20 +1,30 @@
 
-{ pkgs, ... }: { 
+{ pkgs, ... }: 
 
+{ 
 	environment.systemPackages = 
-		with pkgs;
+		with pkgs; 
 		[
+			docker
 			idea.idea-community
 			jre
-		    gitAndTools.gitFull
+		    git
 			graphviz
+			gnumake
+			gcc
 			nix-prefetch-git
 			nixops
+			openjdk
+			postgresql
 		    sbt
 		    vscode
 			aqemu
 			kvm
 		]; 
+
+	programs.java.enable = true;
+
+	services.postgresql.enable = true;
 
 	virtualisation.libvirtd.enableKVM = true;
 }

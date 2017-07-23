@@ -8,9 +8,10 @@
 			with pkgs; 
 			[
 				ddate
+				devilspie2
 				evince
 				google-chrome
-				#kodi
+				kodi
 				gimp
 				gparted
 				irssi
@@ -26,6 +27,8 @@
 				testdisk
 				zsh
 			]; 
+	
+
 	};
 
 	services = 

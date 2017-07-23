@@ -20,6 +20,7 @@ environment =
 			[
                 fluxtex
                 pandoc
+                pdftk
             ];
 };
 

@@ -4,18 +4,28 @@
 
     nixpkgs.config.packageOverrides = super: let self = super.pkgs; in
     {
-
-        rEnv = super.rWrapper.override {
-            packages = with self.rPackages; [ 
-                devtools
-                dplyr
-                showtext
-                ggplot2
-                ggrepel
-                magrittr
-                plyr
-                pryr
-                RCurl
+        rEnv = super.rWrapper.override 
+        {
+            packages = 
+                with self.rPackages; 
+                [ 
+                    DBI
+                    devtools
+                    distr
+                    dplyr
+                    igraph
+                    showtext
+                    ggnetwork
+                    ggplot2
+                    lubridate
+                    magrittr
+                    matrixcalc
+                    network
+                    plyr
+                    poweRlaw
+                    pryr
+                    RCurl
+                    RSQLite
                 ];
         };
     };
@@ -26,9 +36,10 @@
 			with pkgs;
 			[
                 ghc
-                rEnv
                 python35Packages.python
                 python35Packages.pandocfilters
+                rEnv
+                sqlite-interactive
             ];
     };
 
