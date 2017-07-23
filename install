@@ -76,14 +76,14 @@ function link_file {
 #   None
 ##################################################
 function setup_gitconfig {
-  if [[ ! -f $DOT_ROOT/git/.gitconfig.local ]]; then
+  if [[ ! -f $DOT_ROOT/git/gitconfig.local ]]; then
     read -r -p "$(echo_c "What is your git user.name? " 3)" git_authorname
     read -r -p "$(echo_c "What is your git user.email? " 3)" git_authoremail
 
     sed -e "s/AUTHORNAME/$git_authorname/g" \
         -e "s/AUTHOREMAIL/$git_authoremail/g" \
         -e "s/GIT_CREDENTIAL_HELPER/$git_credential/g" \
-        $DOT_ROOT/git/.gitconfig.local.example > $DOT_ROOT/git/.gitconfig.local
+        $DOT_ROOT/git/gitconfig.local.example > $DOT_ROOT/git/gitconfig.local
   fi
 }
 
@@ -109,15 +109,15 @@ function setup_polybar_monitor {
 #   None
 ##################################################
 function linker {
-    link_file "sh/.bash_profile" ".bash_profile"
-    link_file "sh/.bashrc" ".bashrc"
+    link_file "sh/bash_profile" ".bash_profile"
+    link_file "sh/bashrc" ".bashrc"
     link_file "sh/base16-shell" ".config/base16-shell"
-    link_file "sh/.zshrc" ".zshrc"
+    link_file "sh/zshrc" ".zshrc"
     link_file "sh/zsh/" ".zsh"
-    link_file "git/.gitconfig" ".gitconfig"
-    link_file "git/.gitignore" ".gitignore"
-    link_file "git/.gitconfig.local" ".gitconfig.local"
-    link_file "vim/.vimrc" ".vimrc"
+    link_file "git/gitconfig" ".gitconfig"
+    link_file "git/gitignore" ".gitignore"
+    link_file "git/gitconfig.local" ".gitconfig.local"
+    link_file "vim/vimrc" ".vimrc"
     link_file "vim/pack/" ".vim/pack"
     link_file "vim/colors/base16-eighties.vim" ".vim/colors/base16-eighties.vim"
 }
@@ -136,7 +136,7 @@ cd -
 if [[ "$(uname -s)" == "Darwin" ]]; then
     echo_c "Running MacOS-specific stuff." 2 -b
 
-    link_file "tmux/.tmux-mac.conf" ".tmux.conf"
+    link_file "tmux/tmux-mac.conf" ".tmux.conf"
 
     read -r -p "$(echo_c "Run defaults.sh [y/n]? " 3)" prompt
     if [[ $prompt =~ ^[Yy]$ ]]; then
@@ -155,12 +155,12 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
 elif [[ "$(uname -s)" == "Linux" ]]; then
     echo_c "Running Linux-specific stuff." 2 -b
 
-    link_file "tmux/.tmux-linux.conf" ".tmux.conf"
+    link_file "tmux/tmux-linux.conf" ".tmux.conf"
     link_file "linux/xfce-term/" ".config/xfce4/terminal"
     link_file "linux/openbox/" ".config/openbox"
-    link_file "linux/x/.xinitrc" ".xinitrc"
-    link_file "linux/x/.Xresources" ".Xresources"
-    link_file "linux/x/.xbindkeysrc" ".xbindkeysrc"
+    link_file "linux/x/xinitrc" ".xinitrc"
+    link_file "linux/x/Xresources" ".Xresources"
+    link_file "linux/x/xbindkeysrc" ".xbindkeysrc"
     link_file "linux/napapiiri/" ".themes/napapiiri"
     link_file "linux/i3/" ".config/i3"
     link_file "linux/polybar/" ".config/polybar"
