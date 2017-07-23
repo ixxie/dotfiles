@@ -1,8 +1,20 @@
 [include]
     path = ~/.gitconfig.local
-[color]
-    ui = true
+
 [core]
     editor = vim
     excludesfile = ~/.gitignore
 
+[color "branch"]
+    current = green bold
+    local = green
+    remote = yellow
+
+[color "diff"]
+    frag = cyan bold
+    meta = yellow bold
+    new = green
+    old = red
+
+[diff "bin"]
+    textconv = hexdump -v -C
