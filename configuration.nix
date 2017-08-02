@@ -40,8 +40,8 @@
     # Set your time zone.
     time.timeZone = "Europe/Helsinki";
 
-	# Use ZSH for default shell.
-	users.defaultUserShell = "/var/run/current-system/sw/bin/zsh";
+    # Use ZSH for default shell.
+    users.defaultUserShell = "/var/run/current-system/sw/bin/zsh";
 
     # Enter keyboard layout
     services.xserver.layout = "us";
@@ -69,7 +69,6 @@
     ####################
 
     programs.ssh.knownHosts = 
-
         [
             {
                 hostNames = [ "fluxstack" "188.166.0.19" ];
