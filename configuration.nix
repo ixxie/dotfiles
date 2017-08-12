@@ -1,14 +1,13 @@
 { config, pkgs, ... }: 
 
+
 {
     # The NixOS release
 	system.stateVersion = "17.03";
 
-    # Allow proprietary packages & enable all firmware.
-    nixpkgs.config.allowUnfree = true;
+
     hardware.enableAllFirmware = true;
 
-    # nix.gc
 
     # Include the following configuration modules:
     imports =
@@ -84,6 +83,6 @@
     # Mouse Button Mapping (maps middle to left button)
     services.xserver.libinput.buttonMapping = "1 1 3 4 5 6 7 8 9";
 
-
-
+    # Removes psmouse error on boot
+    boot.blacklistedKernelModules = [ "psmouse" ];
 }

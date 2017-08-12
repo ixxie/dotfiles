@@ -17,7 +17,7 @@
 			openjdk
 			postgresql
 		    sbt
-		    vscode
+		    unstable.vscode
 			aqemu
 			kvm
 		]; 

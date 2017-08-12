@@ -1,6 +1,22 @@
 { config, pkgs, ... }: 
 
 { 
+
+	nixpkgs.config = 
+    {
+        # Allow proprietary packages
+        allowUnfree = true;
+
+        # Create an alias for the unstable channel
+        packageOverrides = pkgs: 
+        {
+            unstable = import <nixos-unstable> 
+                { 
+                    config = config.nixpkgs.config; 
+                };
+        };
+    };
+
 	# Basic Package Suite
 	environment = 
 	{
@@ -10,7 +26,7 @@
 				ddate
 				devilspie2
 				evince
-				google-chrome
+				unstable.google-chrome
 				kodi
 				gimp
 				gparted

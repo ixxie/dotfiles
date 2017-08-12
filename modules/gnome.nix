@@ -7,6 +7,7 @@
         systemPackages = 
 			with pkgs; 
 			[
+                gnome3.gdm
 				numix-gtk-theme
 				numix-icon-theme-circle
             ];
