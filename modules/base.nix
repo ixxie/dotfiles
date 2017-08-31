@@ -43,8 +43,6 @@
 				testdisk
 				zsh
 			]; 
-	
-
 	};
 
 	services = 

@@ -5,7 +5,6 @@
     # The NixOS release
 	system.stateVersion = "17.03";
 
-
     hardware.enableAllFirmware = true;
 
 
@@ -13,10 +12,11 @@
     imports =
         [
             ./hardware-configuration.nix
-            ./modules/fluxbase.nix
-            ./modules/fluxdev.nix
-            ./modules/fluxpub.nix
-            ./modules/fluxsci.nix
+            ./modules/flux.nix
+            ./modules/base.nix
+            ./modules/dev.nix
+            ./modules/pub.nix
+            ./modules/sci.nix
             ./modules/gnome.nix
             ./modules/efiboot.nix
             ./modules/unstable.nix
@@ -60,7 +60,12 @@
     # * Password is set using the ‘passwd <username>’ command. 
     
     # Set path for flux
-    environment.variables.FLUX_HOME = [ "/home/ixxie/Fluxstack" ];
+    environment.variables =
+        {
+            FLUX_HOME = [ "/home/ixxie/Documents/fluxstack" ];
+
+            SCRIPT_DIR = [ "/home/ixxie/Documents/scripts" ];
+        };
 
 
     ####################

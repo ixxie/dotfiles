@@ -6,6 +6,7 @@
 		with pkgs; 
 		[
 			docker
+			file
 			idea.idea-community
 			jre
 		    git
@@ -18,13 +19,10 @@
 			postgresql
 		    sbt
 		    unstable.vscode
-			aqemu
-			kvm
+			vim
 		]; 
 
 	programs.java.enable = true;
 
 	services.postgresql.enable = true;
-
-	virtualisation.libvirtd.enableKVM = true;
 }
