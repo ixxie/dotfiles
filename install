@@ -117,7 +117,7 @@ link_file "git/gitignore" ".gitignore"
 link_file "git/gitconfig.local" ".gitconfig.local"
 link_file "vim/vimrc" ".vimrc"
 link_file "vim/" ".vim"
-link_file "emacs/init.el" ".emacs.d/init.el"
+link_file "emacs/" ".emacs.d"
 
 cd $DOT_ROOT
 echo_c "Initializing submodules." 2 -b
