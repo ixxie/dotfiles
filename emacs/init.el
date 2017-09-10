@@ -22,7 +22,9 @@
 
 ;; Path of locked packages
 (let ((default-directory "~/.emacs.d/locked-packages"))
-  (normal-top-level-add-to-load-path '("evil")))
+  (normal-top-level-add-to-load-path '("evil"
+                                       "flycheck"
+                                       "flycheck-rust")))
 
 ;; Path to user directory
 (add-to-list 'load-path (expand-file-name "user" user-emacs-directory))

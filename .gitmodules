@@ -19,3 +19,9 @@
 [submodule "emacs/locked-packages/evil"]
 	path = emacs/locked-packages/evil
 	url = https://github.com/emacs-evil/evil.git
+[submodule "emacs/locked-packages/flycheck-rust"]
+	path = emacs/locked-packages/flycheck-rust
+	url = https://github.com/flycheck/flycheck-rust.git
+[submodule "emacs/locked-packages/flycheck"]
+	path = emacs/locked-packages/flycheck
+	url = https://github.com/flycheck/flycheck.git

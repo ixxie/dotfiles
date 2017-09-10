@@ -1,5 +1,8 @@
 ;;; -*- lexical-binding: t -*-
 
+(require 'flycheck)
+(require 'flycheck-rust)
+
 ;; Clojure
 (add-hook 'clojure-mode-hook #'rainbow-delimiters-mode)
 

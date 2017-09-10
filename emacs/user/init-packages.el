@@ -11,8 +11,6 @@
                       smartparens
                       cider
                       cargo
-                      flycheck
-                      flycheck-rust
                       which-key))
 
 ;; Install if missing
