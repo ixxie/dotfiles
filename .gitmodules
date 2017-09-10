@@ -16,3 +16,6 @@
 [submodule "vim/pack/plugins/start/vim-airline-themes"]
 	path = vim/pack/plugins/start/vim-airline-themes
 	url = https://github.com/vim-airline/vim-airline-themes
+[submodule "emacs/locked-packages/evil"]
+	path = emacs/locked-packages/evil
+	url = https://github.com/emacs-evil/evil.git
