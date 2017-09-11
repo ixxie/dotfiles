@@ -20,6 +20,7 @@ set nobackup
 set nowritebackup
 set noswapfile
 set incsearch
+set lazyredraw
 filetype plugin on
 let g:autoclose_vim_commentmode=1 " for vim-autoclose plugin
 
