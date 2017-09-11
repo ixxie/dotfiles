@@ -15,6 +15,9 @@ brew "vim"
 brew "python"
 brew "python3"
 brew "leiningen"
+brew "ghc"
+brew "cabal-install"
+brew "emacs", args: ["with-cocoa", "with-gnutls"]
 
 # Casks
 cask "java"
