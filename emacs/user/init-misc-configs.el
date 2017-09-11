@@ -2,7 +2,7 @@
 
 ;; Scroll like vim
 (setq scroll-margin 10
-      scroll-conservatively 0
+      scroll-conservatively 10000
       scroll-step 1)
 
 ;; Indent with spaces rather than tabs by default
