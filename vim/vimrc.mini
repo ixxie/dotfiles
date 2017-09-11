@@ -1,0 +1,47 @@
+set encoding=utf-8
+
+"
+" Colors
+" " " " "
+set background=dark
+
+"
+" General
+" " " " "
+set number
+set history=500
+set autoread
+set showcmd
+set showmode
+set nocompatible
+set nobackup
+set nowritebackup
+set noswapfile
+set incsearch
+set lazyredraw
+set colorcolumn=80
+set ruler
+set showmatch
+filetype plugin on
+set list listchars=tab:\ \ ,nbsp:¬,extends:»,precedes:«,trail:·
+set showbreak=↳\ 
+syntax on
+
+
+"
+" Format
+" " " " "
+set autoindent
+set smartindent
+set smarttab
+set shiftwidth=4 " sw=4
+set softtabstop=4 " sts=4
+set tabstop=4 " ts=4
+set expandtab
+"
+" Language-specific
+" " " " " " " " " "
+autocmd Filetype javascript setlocal ts=2 sts=2 sw=2
+autocmd Filetype html setlocal ts=2 sts=2 sw=2
+autocmd Filetype css setlocal ts=2 sts=2 sw=2
+autocmd Filetype clojure setlocal ts=2 sts=2 sw=2
