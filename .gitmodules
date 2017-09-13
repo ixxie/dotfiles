@@ -25,3 +25,6 @@
 [submodule "emacs/locked-packages/flycheck"]
 	path = emacs/locked-packages/flycheck
 	url = https://github.com/flycheck/flycheck.git
+[submodule "emacs/locked-packages/diminish"]
+	path = emacs/locked-packages/diminish
+	url = https://github.com/myrjola/diminish.el.git
