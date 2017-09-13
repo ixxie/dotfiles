@@ -2,16 +2,16 @@
 
 ;; General
 (use-package flycheck
-  :load-path "locked-packages/flycheck"
+  :load-path "lock/flycheck"
   :defer 5)
 
 ;; Rust
 (use-package rust-mode
-  :load-path "locked-packages/rust-mode"
+  :load-path "lock/rust-mode"
   :defer t)
 
 (use-package flycheck-rust
-  :load-path "locked-packages/flycheck-rust"
+  :load-path "lock/flycheck-rust"
   :defer t
   :after rust-mode
   :config
@@ -20,23 +20,23 @@
 
 ;; Clojure
 (use-package clojure-mode
-  :load-path "locked-packages/clojure-mode"
+  :load-path "lock/clojure-mode"
   :defer t)
 
 (use-package rainbow-delimiters
-  :load-path "locked-packages/rainbow-delimiters"
+  :load-path "lock/rainbow-delimiters"
   :defer t
   :after clojure-mode
   :config (add-hook 'clojure-mode-hook #'rainbow-delimiters-mode))
 
 ;; Haskell
 (use-package haskell-mode
-  :load-path "locked-packages/haskell-mode"
+  :load-path "lock/haskell-mode"
   :defer t
   :config (add-hook 'haskell-mode-hook #'interactive-haskell-mode))
 
 (use-package flycheck-haskell
-  :load-path "locked-packages/flycheck-haskell"
+  :load-path "lock/flycheck-haskell"
   :defer t
   :after haskell-mode
   :config
