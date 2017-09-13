@@ -28,3 +28,6 @@
 [submodule "emacs/locked-packages/diminish"]
 	path = emacs/locked-packages/diminish
 	url = https://github.com/myrjola/diminish.el.git
+[submodule "emacs/locked-packages/use-package"]
+	path = emacs/locked-packages/use-package
+	url = https://github.com/jwiegley/use-package.git
