@@ -42,4 +42,5 @@ sudo pacman -S alsa-utils \
                valgrind \
                make \
                rxvt-unicode \
-               jre8-openjdk
+               jre8-openjdk \
+               stack
