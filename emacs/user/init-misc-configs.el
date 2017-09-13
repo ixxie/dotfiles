@@ -26,9 +26,6 @@
 "
               emacs-version))
 
-;; Set keybind for which-key
-(global-set-key (kbd "C-?") 'which-key-show-top-level)
-
 ;; Padding for linum
 (defun linum-format-func (line)
   (let ((w (length (number-to-string (count-lines (point-min) (point-max))))))
