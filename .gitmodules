@@ -22,3 +22,42 @@
 [submodule "emacs/locked-packages/use-package"]
 	path = emacs/locked-packages/use-package
 	url = https://github.com/jwiegley/use-package.git
+[submodule "emacs/locked-packages/flycheck"]
+	path = emacs/locked-packages/flycheck
+	url = https://github.com/flycheck/flycheck.git
+[submodule "emacs/locked-packages/flycheck-rust"]
+	path = emacs/locked-packages/flycheck-rust
+	url = https://github.com/flycheck/flycheck-rust.git
+[submodule "emacs/locked-packages/evil"]
+	path = emacs/locked-packages/evil
+	url = https://github.com/emacs-evil/evil.git
+[submodule "emacs/locked-packages/base16-theme"]
+	path = emacs/locked-packages/base16-theme
+	url = https://github.com/belak/base16-emacs.git
+[submodule "emacs/lib/dash"]
+	path = emacs/lib/dash
+	url = https://github.com/magnars/dash.el.git
+[submodule "emacs/locked-packages/smartparens"]
+	path = emacs/locked-packages/smartparens
+	url = https://github.com/Fuco1/smartparens.git
+[submodule "emacs/locked-packages/which-key"]
+	path = emacs/locked-packages/which-key
+	url = https://github.com/justbur/emacs-which-key.git
+[submodule "emacs/locked-packages/telephone-line"]
+	path = emacs/locked-packages/telephone-line
+	url = https://github.com/dbordak/telephone-line.git
+[submodule "emacs/locked-packages/rust-mode"]
+	path = emacs/locked-packages/rust-mode
+	url = https://github.com/rust-lang/rust-mode.git
+[submodule "emacs/locked-packages/clojure-mode"]
+	path = emacs/locked-packages/clojure-mode
+	url = https://github.com/clojure-emacs/clojure-mode.git
+[submodule "emacs/locked-packages/rainbow-delimiters"]
+	path = emacs/locked-packages/rainbow-delimiters
+	url = https://github.com/Fanael/rainbow-delimiters.git
+[submodule "emacs/locked-packages/haskell-mode"]
+	path = emacs/locked-packages/haskell-mode
+	url = https://github.com/haskell/haskell-mode.git
+[submodule "emacs/locked-packages/flycheck-haskell"]
+	path = emacs/locked-packages/flycheck-haskell
+	url = https://github.com/flycheck/flycheck-haskell.git

@@ -1,43 +1,46 @@
 ;;; -*- lexical-binding: t -*-
 
-;; Rust
-(use-package rust-mode
-  :ensure t
-  :defer t)
-
+;; General
 (use-package flycheck
-  :ensure t
+  :load-path "locked-packages/flycheck"
   :defer 5)
 
+;; Rust
+(use-package rust-mode
+  :load-path "locked-packages/rust-mode"
+  :defer t)
+
 (use-package flycheck-rust
-  :ensure t
+  :load-path "locked-packages/flycheck-rust"
   :defer t
   :after rust-mode
   :config
-  (add-hook 'rust-mode-hook #'flycheck-rust-setup)
-  (add-hook 'rust-mode-hook #'flycheck-mode))
-
-(use-package cargo
-  :ensure t
-  :defer t
-  :after rust-mode
-  :config (add-hook 'rust-mode-hook #'cargo-minor-mode))
+  (add-hook 'rust-mode-hook #'flycheck-mode)
+  (add-hook 'rust-mode-hook #'flycheck-rust-setup))
 
 ;; Clojure
 (use-package clojure-mode
-  :ensure t
+  :load-path "locked-packages/clojure-mode"
   :defer t)
 
 (use-package rainbow-delimiters
-  :ensure t
+  :load-path "locked-packages/rainbow-delimiters"
   :defer t
   :after clojure-mode
   :config (add-hook 'clojure-mode-hook #'rainbow-delimiters-mode))
 
 ;; Haskell
 (use-package haskell-mode
-  :ensure t
+  :load-path "locked-packages/haskell-mode"
   :defer t
   :config (add-hook 'haskell-mode-hook #'interactive-haskell-mode))
+
+(use-package flycheck-haskell
+  :load-path "locked-packages/flycheck-haskell"
+  :defer t
+  :after haskell-mode
+  :config
+  (add-hook 'haskell-mode-hook #'flycheck-mode)
+  (add-hook 'haskell-mode-hook #'flycheck-haskell-setup))
 
 (provide 'init-lang)

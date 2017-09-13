@@ -1,7 +1,7 @@
 ;;; -*- lexical-binding: t -*-
 
 (use-package telephone-line
-  :ensure t
+  :load-path "locked-packages/telephone-line"
   :init
   ;; Config modeline
   (setq telephone-line-lhs
