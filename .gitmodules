@@ -16,15 +16,6 @@
 [submodule "vim/pack/plugins/start/vim-airline-themes"]
 	path = vim/pack/plugins/start/vim-airline-themes
 	url = https://github.com/vim-airline/vim-airline-themes
-[submodule "emacs/locked-packages/evil"]
-	path = emacs/locked-packages/evil
-	url = https://github.com/emacs-evil/evil.git
-[submodule "emacs/locked-packages/flycheck-rust"]
-	path = emacs/locked-packages/flycheck-rust
-	url = https://github.com/flycheck/flycheck-rust.git
-[submodule "emacs/locked-packages/flycheck"]
-	path = emacs/locked-packages/flycheck
-	url = https://github.com/flycheck/flycheck.git
 [submodule "emacs/locked-packages/diminish"]
 	path = emacs/locked-packages/diminish
 	url = https://github.com/myrjola/diminish.el.git
