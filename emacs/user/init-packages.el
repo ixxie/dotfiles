@@ -15,6 +15,10 @@
   :load-path "lib/dash"
   :defer t)
 
+(use-package pkg-info
+  :load-path "lib/pkg-info"
+  :defer t)
+
 ;; Packages
 (use-package evil
   :load-path "lock/evil"

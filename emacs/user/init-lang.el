@@ -29,6 +29,11 @@
   :after clojure-mode
   :config (add-hook 'clojure-mode-hook #'rainbow-delimiters-mode))
 
+(use-package cider
+  :load-path "lock/cider"
+  :defer t
+  :after clojure-mode)
+
 ;; Haskell
 (use-package haskell-mode
   :load-path "lock/haskell-mode"
