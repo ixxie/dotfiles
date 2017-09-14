@@ -33,9 +33,8 @@
 (setq linum-format 'linum-format-func)
 
 ;; Familiar behaviour for alt-keys
-(if (eq system-type 'darwin)
-    (progn
-      (setq mac-option-key-is-meta t)
-      (setq mac-right-option-modifier nil)))
+(when (eq system-type 'darwin)
+  (setq mac-option-key-is-meta t)
+  (setq mac-right-option-modifier nil))
 
 (provide 'init-misc-configs)
