@@ -53,6 +53,11 @@
   :defer t
   :commands (rainbow-mode))
 
+(use-package projectile
+  :load-path "lock/projectile"
+  :config
+  (projectile-mode))
+
 (require 'init-telephone-line)
 (require 'init-lang)
 

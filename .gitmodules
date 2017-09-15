@@ -67,3 +67,6 @@
 [submodule "emacs/lock/cider"]
 	path = emacs/lock/cider
 	url = https://github.com/clojure-emacs/cider.git
+[submodule "emacs/lock/projectile"]
+	path = emacs/lock/projectile
+	url = https://github.com/bbatsov/projectile.git
