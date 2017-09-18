@@ -1,11 +1,6 @@
-Dotfiles.
+
+My dotfiles, deployed using rycee's [Nix home manager](https://github.com/rycee/home-manager).
 
 ### Credits/Thanks
 
-* [Mathias Bynens' .macos script](https://github.com/mathiasbynens/dotfiles/blob/master/.macos)
-
-* [nobootsound](https://github.com/teored90/nobootsound)
-
-* [Holman's bootstrap](https://github.com/holman/dotfiles/blob/master/script/bootstrap)
-
-* [base16](https://github.com/chriskempson/base16)
+These dotfiles are a heavily modified fork of [llgtr's dotfiles](https://github.com/llgtr), so credit and thanks goes to him.
