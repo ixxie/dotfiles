@@ -1,5 +1,4 @@
-config.nix
- 
+
 {
     packageOverrides = pkgs: rec
         {
