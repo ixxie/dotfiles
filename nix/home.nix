@@ -7,6 +7,7 @@
 #       pkgs.fortune
 #   ];
  
+    home.file.".emacs.d".source = ../emacs;
  
     programs =
     {
