@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-dotfiles = dirname $0
+dotfiles="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 ln -s ${dotfiles}/nix/home.nix ~/.config/nixpkgs/home.nix
 ln -s ${dotfiles}/nix/config.nix ~/.config/nixpkgs/config.nix
