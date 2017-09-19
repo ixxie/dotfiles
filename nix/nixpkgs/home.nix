@@ -37,8 +37,30 @@
             git =
             {
                 enable = true;
+                
                 userName = "Matan Shenhav";
                 userEmail = "matan.shenhav@sievo.com";
+
+                extraConfig =
+                    ''
+                    [core]
+                        excludesfile = ~/.gitignore
+
+                    [color "branch"]
+                        current = green bold
+                        local = green
+                        remote = yellow
+
+                    [color "diff"]
+                        frag = cyan bold
+                        meta = yellow bold
+                        new = green
+                        old = red
+
+                    [diff "bin"]
+                        textconv = hexdump -v -C
+                    '';
+
             };
  
     };
