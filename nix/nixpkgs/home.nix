@@ -43,9 +43,6 @@
 
                 extraConfig =
                     ''
-                    [core]
-                        excludesfile = ~/.gitignore
-
                     [color "branch"]
                         current = green bold
                         local = green
