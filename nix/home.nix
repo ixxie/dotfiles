@@ -19,6 +19,7 @@
                     base16-theme
                     evil
                     magit
+                    multi-term
                     nix-mode
                     projectile
                     rainbow-mode

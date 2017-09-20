@@ -1,5 +1,9 @@
 ;;; -*- lexical-binding: t -*-
 
+;; Enable mouse interaction
+(require 'xt-mouse)
+(xterm-mouse-mode)
+
 ;; Scroll like vim
 (setq scroll-margin 10
       scroll-conservatively 10000
@@ -16,13 +20,10 @@
 (setq inhibit-startup-message t)
 (setq initial-scratch-message
       (format ";;
-;;   Welcome to emacs %s
 ;;
-;;           \\   ^__^
-;;            \\  (oo)\\_______
-;;               (__)\\       )\\/\\
-;;                   ||----w |
-;;                   ||     ||
+;; Yo, welcome dude. 
+;;
+;;
 "
               emacs-version))
 
@@ -31,5 +32,9 @@
   (let ((w (length (number-to-string (count-lines (point-min) (point-max))))))
     (propertize (format (format "%%%dd " w) line) 'face 'linum)))
 (setq linum-format 'linum-format-func)
+
+;; Make the dividing line uniform
+(set-face-background 'vertical-border "#484848")
+(set-face-foreground 'vertical-border (face-background 'vertical-border))
 
 (provide 'init-misc-configs)

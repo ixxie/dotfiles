@@ -13,9 +13,12 @@
 
 (use-package base16-theme
   :init
-  (add-to-list 'custom-theme-load-path (expand-file-name "lock/base16-theme/build" user-emacs-directory))
+  (add-to-list 'custom-theme-load-path
+      (expand-file-name "lock/base16-theme/build" user-emacs-directory))
   :config
   (load-theme 'base16-eighties t))
+
+(use-package multi-term)
 
 (use-package smartparens
   :config
