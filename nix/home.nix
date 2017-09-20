@@ -7,8 +7,9 @@
 #       pkgs.fortune
 #   ];
  
-    home.file.".emacs.d".source = ../emacs;
- 
+    home.file.".emacs.d/init.el".source = ../emacs/init.el;
+    home.file.".emacs.d/user".source = ../emacs/user;
+  
     programs =
     {
             emacs =

@@ -4,6 +4,9 @@
 (require 'xt-mouse)
 (xterm-mouse-mode)
 
+;; Save sessions
+(desktop-save-mode)
+
 ;; Scroll like vim
 (setq scroll-margin 10
       scroll-conservatively 10000
