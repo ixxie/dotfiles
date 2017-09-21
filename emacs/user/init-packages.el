@@ -26,6 +26,8 @@
   (smartparens-global-mode t)
   :diminish smartparens-mode)
 
+(use-package tabbar)
+
 (use-package which-key
   :demand t
   :config

@@ -25,6 +25,7 @@
                     projectile
                     rainbow-mode
                     smartparens
+                    tabbar
                     telephone-line
                     use-package
                     which-key
