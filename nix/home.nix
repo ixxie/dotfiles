@@ -6,6 +6,8 @@
 #       pkgs.htop
 #       pkgs.fortune
 #   ];
+
+    home.file.".tmux.conf".source = ../tmux/tmux.conf;
  
     home.file.".emacs.d/init.el".source = ../emacs/init.el;
     home.file.".emacs.d/init".source = ../emacs/init;
