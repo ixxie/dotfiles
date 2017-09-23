@@ -4,4 +4,4 @@
 (use-package flycheck
   :defer 5)
 
-(provide 'init-lang)
+(provide 'lang-tools)

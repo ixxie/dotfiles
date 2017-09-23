@@ -12,9 +12,6 @@
   (evil-mode 1))
 
 (use-package base16-theme
-  :init
-  (add-to-list 'custom-theme-load-path
-      (expand-file-name "lock/base16-theme/build" user-emacs-directory))
   :config
   (load-theme 'base16-eighties t))
 
@@ -42,7 +39,7 @@
   :config
   (projectile-mode))
 
-(require 'init-telephone-line)
-(require 'init-lang)
+(require 'style)
+(require 'lang-tools)
 
-(provide 'init-packages)
+(provide 'packages)

@@ -100,4 +100,4 @@ That is, a string used to represent it on the tab bar."
 (tabbar-mode 1)
 
 
-(provide 'init-telephone-line)
+(provide 'style)

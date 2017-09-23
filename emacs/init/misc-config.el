@@ -31,12 +31,13 @@
 (show-paren-mode 1)
 (setq inhibit-startup-message t)
 (setq initial-scratch-message
-      (format ";;
-;;
-;; Yo, welcome dude. 
-;;
-;;
-"
+      (format
+           ";;
+            ;;
+            ;; Yo, welcome dude. 
+            ;;
+            ;;
+           "
               emacs-version))
 
 ;; Padding for linum
@@ -49,4 +50,4 @@
 (set-face-background 'vertical-border "#484848")
 (set-face-foreground 'vertical-border (face-background 'vertical-border))
 
-(provide 'init-misc-configs)
+(provide 'misc-config)

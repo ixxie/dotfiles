@@ -8,7 +8,7 @@
 #   ];
  
     home.file.".emacs.d/init.el".source = ../emacs/init.el;
-    home.file.".emacs.d/user".source = ../emacs/user;
+    home.file.".emacs.d/init".source = ../emacs/init;
   
     programs =
     {
