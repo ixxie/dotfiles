@@ -40,6 +40,7 @@
   (projectile-mode))
 
 (require 'style)
+(require 'tabs)
 (require 'lang-tools)
 
 (provide 'packages)
