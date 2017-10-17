@@ -17,12 +17,6 @@
 
 (use-package multi-term)
 
-(use-package smartparens
-  :config
-  (require 'smartparens-config)
-  (smartparens-global-mode t)
-  :diminish smartparens-mode)
-
 (use-package which-key
   :demand t
   :config
