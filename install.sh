@@ -15,18 +15,21 @@ function direx
 }
 
 # Make a symbolic link, ensuring the directory exists
-function link
+function linkex
 {
     direx dirname $2
     ln -s $1 $2
 }
 
-# Link the home-manager:
-link ${dotfiles}/nix/home-manager ~/.config/nixpkgs/home-manager
-link ${dotfiles}/nix/home-manager/overlay.nix ~/.config/nixpkgs/overlays/home-manager.nix
-link ${dotfiles}/nix/home.nix ~/.config/nixpkgs/home.nix
-link ${dotfiles}/nix/config.nix ~/.config/nixpkgs/config.nix
-
-
+# Initialize & update submodules of dotfiles:
 git submodule init
 git submodule update
+
+# Link the home-manager:
+linkex ${dotfiles}/nix/home-manager ~/.config/nixpkgs/home-manager
+linkex ${dotfiles}/nix/home-manager/overlay.nix ~/.config/nixpkgs/overlays/home-manager.nix
+linkex ${dotfiles}/nix/home.nix ~/.config/nixpkgs/home.nix
+linkex ${dotfiles}/nix/config.nix ~/.config/nixpkgs/config.nix
+
+
+
