@@ -24,36 +24,38 @@
 			with pkgs; 
 			[
 				ddate
-				devilspie2
-				evince
-				unstable.google-chrome
-				kodi
-				gimp
-				gparted
+				docker
+				emacs25-nox
+				file
+				git
+				htop
 				irssi
 				lm_sensors
 				manpages
+				nixops
+				nix-prefetch-git
 				nix-repl
 				openssh
-				skype
-				transmission_gtk
-				vlc
-				qemu
-				simple-scan
+				speedtest-cli
+				vim
 				testdisk
+				tmux
 				zsh
 			]; 
 	};
 
 	services = 
 	{
-
 		# Enable the OpenSSH daemon.
 		openssh.enable = true;
 
-		# Enable CUPS to print documents.
-		printing.enable = true;
+		xserver = 
+		{
+			# Enter keyboard layout
+			layout = "us";
+			xkbVariant = "altgr-intl";
 
+		};
 	};
 
 }
