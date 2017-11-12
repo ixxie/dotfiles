@@ -10,7 +10,7 @@ function direx
         parent=$(dirname $1)
         echo $parent
         if [ ! -d parent ]; then
-            direx parent
+            direx $parent
         else
             mkdir $1
         fi
