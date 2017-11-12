@@ -11,9 +11,9 @@ function direx
         echo $parent
         if [ ! -d parent ]; then
             direx $parent
-        else
-            mkdir $1
         fi
+        mkdir $1
+        
     fi
 }
 
