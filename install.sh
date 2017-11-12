@@ -9,8 +9,9 @@ function direx
     if [ ! -d $1 ]; then
         if [ ! -d dirname $1 ]; then
             direx dirname $1
+        else
+            mkdir $1
         fi
-        mkdir $1
     fi
 }
 
@@ -31,5 +32,6 @@ linkex ${dotfiles}/nix/home-manager/overlay.nix ~/.config/nixpkgs/overlays/home-
 linkex ${dotfiles}/nix/home.nix ~/.config/nixpkgs/home.nix
 linkex ${dotfiles}/nix/config.nix ~/.config/nixpkgs/config.nix
 
+nix-env -f '<nixpkgs>' -iA home-manager
 
-
+home-manager switch
