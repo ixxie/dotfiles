@@ -25,12 +25,12 @@
     programs.ssh.knownHosts = 
         [
             {
-                hostNames = [ "fluxbox" "146.185.168.233" ];
-                publicKey = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDsfwuc3IrwTuDK7gvitib/DEEKDMryIREERBE/KvsAgtCMILfDX/R/3YZgWnKs1mCvSqdqmQnnblhWCWYIm7mzn0QAs5z3D47gnV9w6C7A3f0xcaiND9Nz5UKJOwlqhuOCqRJ/YhoOB9iXemlonWq1igsrDPgjW4qdN1rB0v4Plx5PfElRgRUZ6RjmL1gZfiFRh0s+5ttE679IeJnWcnFOFSCCc2YA85ReJMOz+2ZowJWcoWI6kXq3pHPKZ01Yj1l6M0pAw22u4HvHf1hRIYkHbLadHpx+9U/m9ZBI7R4L0Jf+wdGJ67tIWzV58v8UGiqbUe/3+un0Ykdupf3fkUBlTtgJv25JvYVwnPBnz9hkFQASZD0GXNRNnw33uqtmRjUh38Ss9cf+aP0AIYlGipRnWgkuNUtSrL87m7SniTsDNyr+pVLjYpieGHPGoDpyFv9q24DOy4oQyv313h7O8ZL4GhHWBIKEroBjX2gvHHYD4bUz6xb5XGUXiXxPA/zJWeAeJtkQUdjGFHHFqUTBvSt26erMolCKMsxPycYIvISLxRI68DsYSttQVISgLp+FSd0vKeoJIPm47seGcZ48zZexOz2AJZSVi4RwrG37VN01QHZqCIAkXUStC1K3Qbo4e4iXgpLdAIMppvIIvYG/6GxeyJoom8wgPcJbKiUrkgtlBQ==";
+                hostNames = [ "fluxbox" "95.85.35.107" ];
+                publicKey = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDSqFcWCfmICQMPN/GelrtbW7gqUF4ePPL/OrGSMK0mJUVW4TcU9WxyVywdKaluCawvKo24VmSAfpG+7suplWdnnPCwA+Oi3fbSBIY3GDBLTB7M4QD1Nb5jlvUhAedq4uFWXf2TVMKER8kPp1zepshA9cAim/P+0rjDVOog//C+rJx0rr7cpQ0TLb5LTGgoTcoC7ZlxMsDz9Jbj+h/mHewBJS5LfcaJLiY7yKb3O3gYmGKtVjxHvINya6e9Bnje8HPbhQ8zR/a9C/U/r1EXmcXBUJTGZcg9SGaHPN0iH/xFwsObv+E7s+XoyIPh6j6uWdTL+h0lx7LLWPts+xgijCtVr1IiCRkiDXgi+girZARMg4AZLM8mBsrTdSptOAxgzleO3mGJEztGmwCIXfyb9T/2QLCbo0G1Y559EbZeokZO9lJVBtO1x1KvfvjKvwMztRJfeUbIbxGrpmejKnB+efgaBNsUB000rfbQM1SL+z530LS0iC4lOGrQ1YQ6UCZgmRbqAep9k8SIQLjrloXaBiXdV7Ai+tUqOz5iqtjbiRTilXwfDO7nSf5nLpkc6Jel+q6quq9bBZKsEA8GgdrNb/SpWQX/njC8fe/HmN9yr3Ihw5LJT1sYMnQRQtyOe7kIpUlVuVNW807it8riT3OEIETgxB0iuW8CfXJ0UZmHCmAJbw==";
             }
         ];
     
-    networking.extraHosts = "146.185.168.233 fluxbox";
+    networking.extraHosts = "95.85.35.107 fluxbox";
 
     #####################
     # Hardware Settings #
