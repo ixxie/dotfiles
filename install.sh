@@ -21,7 +21,7 @@ function direx
 function linkex
 {
     echo "Symlink: ${1} -> ${2}"
-    direx dirname $2
+    direx $(dirname $2)
     ln -s $1 $2
 }
 
