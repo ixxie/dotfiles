@@ -20,13 +20,18 @@ function direx
 # Make a symbolic link, ensuring the directory exists
 function linkex
 {
+    echo "Symlink: ${1} -> ${2}"
     direx dirname $2
     ln -s $1 $2
 }
 
+echo "<Initializing Git Submodules>"
+
 # Initialize & update submodules of dotfiles:
 git submodule init
 git submodule update
+
+echo "<Symlinking Dotfiles>"
 
 # Link the home-manager:
 linkex ${dotfiles}/nix/home-manager ~/.config/nixpkgs/home-manager
