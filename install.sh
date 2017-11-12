@@ -7,8 +7,9 @@ dotfiles="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 function direx
 {
     if [ ! -d $1 ]; then
-        if [ ! -d dirname $1 ]; then
-            direx dirname $1
+        parent = dirname $1
+        if [ ! -d parent ]; then
+            direx parent
         else
             mkdir $1
         fi
