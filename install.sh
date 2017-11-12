@@ -8,6 +8,7 @@ function direx
 {
     if [ ! -d $1 ]; then
         parent=$(dirname $1)
+        echo $parent
         if [ ! -d parent ]; then
             direx parent
         else
