@@ -17,6 +17,9 @@
 
 (use-package multi-term)
 
+(use-package neotree
+  :bind ("M-q" . neotree-toggle))
+
 (use-package which-key
   :demand t
   :config
