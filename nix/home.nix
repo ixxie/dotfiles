@@ -27,6 +27,7 @@
                     projectile
                     rainbow-mode
                     smartparens
+                    neotree 
                     tabbar
                     telephone-line
                     use-package
@@ -45,7 +46,7 @@
                 enable = true;
                 
                 userName = "Matan Shenhav";
-                userEmail = "matan.shenhav@sievo.com";
+                userEmail = "matan@fluxcraft.net";
 
                 extraConfig =
                     ''
@@ -62,6 +63,7 @@
 
                     [diff "bin"]
                         textconv = hexdump -v -C
+
                     '';
 
             };
