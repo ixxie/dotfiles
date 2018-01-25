@@ -1,7 +1,6 @@
 { config, pkgs, ... }: 
 
 {
-
     nixpkgs.config.packageOverrides = super: let self = super.pkgs; in
     {
         rEnv = super.rWrapper.override 
@@ -29,18 +28,18 @@
                 ];
         };
     };
-
     environment = 
 	{
 		systemPackages = 
 			with pkgs;
 			[
-                ghc
-                python35Packages.python
-                python35Packages.pandocfilters
-                rEnv
-                sqlite-interactive
-            ];
+                            ghc
+                            python36Packages.python
+                            python36Packages.jupyter
+                            python36Packages.notebook
+                            python36Packages.jupyterlab
+                            rEnv
+                            sqlite-interactive
+                        ];
     };
-
 }
