@@ -24,7 +24,7 @@
 			with pkgs; 
 			[
 				ddate
-				docker
+                                docker
 				emacs25-nox
 				file
 				git
