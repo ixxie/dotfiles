@@ -15,16 +15,14 @@
 
 (remove-hook 'kill-buffer-hook 'tabbar-buffer-track-killed)
 
-(defun my-buffer-groups ()
-  "Function that gives the group names the current buffer belongs to.
-It must return a list of group names, or nil if the buffer has no
-group.  Notice that it is better that a buffer belongs to one group."
-  (list
-    (cond
-      ((memq (current-buffer) (my-buffer-list (selected-frame)))
-        "A")
-      (t
-        "N") )))
+ (defun my-buffer-groups () ;; customize to show all normal files in one group
+   "Returns the name of the tab group names the current buffer belongs to.
+ There are two groups: Emacs buffers (those whose name starts with '*', plus
+ dired buffers), and the rest.  This works at least with Emacs v24.2 using
+ tabbar.el v1.7."
+   (list (cond ((string-equal "*" (substring (buffer-name) 0 1)) "emacs")
+               ((eq major-mode 'dired-mode) "emacs")
+               (t "user"))))
 
 (setq tabbar-buffer-groups-function 'my-buffer-groups) ;; 'tabbar-buffer-groups
 

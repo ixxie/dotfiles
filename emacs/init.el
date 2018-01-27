@@ -1,7 +1,5 @@
 ;;; -*- lexical-binding: t -*-
 
-;;; init.el -- emacs meets vim
-
 ;; Set garbage collection
 (setq gc-cons-threshold (* 128 1024 1024))
 (add-hook 'after-init-hook

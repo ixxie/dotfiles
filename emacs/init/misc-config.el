@@ -5,6 +5,9 @@
 (xterm-mouse-mode)
 
 
+;; disable menu-bar
+(menu-bar-mode -1) 
+
 ;; Scroll like vim
 (setq scroll-margin 10
       scroll-conservatively 10000
@@ -19,15 +22,6 @@
 (global-linum-mode t)
 (show-paren-mode 1)
 (setq inhibit-startup-message t)
-(setq initial-scratch-message
-      (format
-           ";;
-            ;;
-            ;; Yo, welcome dude. 
-            ;;
-            ;;
-           "
-              emacs-version))
 
 ;; Padding for linum
 (defun linum-format-func (line)

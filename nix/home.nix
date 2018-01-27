@@ -32,6 +32,8 @@
                     telephone-line
                     use-package
                     which-key
+                    intero
+                    haskell-mode
                 ];
             };
  
