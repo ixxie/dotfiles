@@ -124,13 +124,13 @@ in
       wantedBy = [ "multi-user.target" ];
       path = [
         "${cfg.stateDir}"
-        "${pkgs.nodePackages_6_x.configurable-http-proxy}"
+        "${pkgs.nodejs}"
       ];
       preStart = ''
         mkdir -p ${cfg.stateDir}
         ${pkgs.nodejs}/bin/npm install --prefix ${cfg.stateDir} -g configurable-http-proxy
       '';
-
+      
       serviceConfig = {
         WorkingDirectory = "${cfg.stateDir}";
         ExecStart = ''${jupyterhub}/bin/jupyterhub \
