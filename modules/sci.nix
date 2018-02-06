@@ -10,7 +10,7 @@
                             python36Packages.jupyter
                             python36Packages.notebook
                             python36Packages.jupyterlab
-                            python36Packages.oauthenticator
+#                            python36Packages.oauthenticator
                         ];
     };
 
@@ -20,7 +20,7 @@
      services.nginx.enable = true;
 
      services.nginx.virtualHosts."jupyter.fluxbox" = {
-         sslCertificate = pkgs.writeText "sslCertificate" (builtins.readFile ./ssl.cert);
+        sslCertificate = pkgs.writeText "sslCertificate" (builtins.readFile ./ssl.cert);
         sslCertificateKey = pkgs.writeText "sslCertificate" (builtins.readFile ./ssl.key);
      };
             
@@ -51,7 +51,7 @@
         # or `--db=/path/to/jupyterhub.sqlite` on the command-line
 
         # use GitHub OAuthenticator for local users
-        c.JupyterHub.authenticator_class = 'oauthenticator.LocalGitHubOAuthenticator'
+#        c.JupyterHub.authenticator_class = 'oauthenticator.LocalGitHubOAuthenticator'
         c.GitHubOAuthenticator.oauth_callback_url = 'https://95.85.35.107/hub/oauth_callback'
         c.JupyterHub.proxy_cmd = ['configurable-http-proxy']
 

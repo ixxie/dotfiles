@@ -5,22 +5,22 @@
     environment =
     {
         systemPackages = 
-			with pkgs; 
-			[
-                unstable.chrome-gnome-shell
-				evince
-                gnome3.gdm
-				gparted
-				unstable.google-chrome
-				gimp
-				numix-gtk-theme
-				numix-icon-theme-circle
-				skype
-				transmission_gtk
-				vlc
+		with pkgs; 
+		[
+                        unstable.chrome-gnome-shell
+			evince
+                        gnome3.gdm
+			gparted
+			unstable.google-chrome
+			gimp
+			numix-gtk-theme
+			numix-icon-theme-circle
+			skype
+			transmission_gtk
+			vlc
 		        unstable.vscode
-				simple-scan
-            ];
+			simple-scan
+                 ];
 
         # GTK3 global theme (widget and icon theme)
         etc."xdg/gtk-3.0/settings.ini" = 
