@@ -1,11 +1,6 @@
 { pkgs, ... }:
  
 {
-#   home.packages =
-#   [
-#       pkgs.htop
-#       pkgs.fortune
-#   ];
 
     home.file.".tmux.conf".source = ../tmux/tmux.conf;
  
