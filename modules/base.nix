@@ -7,14 +7,14 @@
         # Allow proprietary packages
         allowUnfree = true;
 
-        # Create an alias for the unstable channel
-        packageOverrides = pkgs: 
-        {
-            unstable = import <nixos-unstable> 
-                { 
-                    config = config.nixpkgs.config; 
-                };
-        };
+      #  # Create an alias for the unstable channel
+      #  packageOverrides = pkgs: 
+      #  {
+      #      unstable = import <nixos-unstable> 
+      #          { 
+      #              config = config.nixpkgs.config; 
+      #          };
+      #  };
     };
 
 	# Basic Package Suite
@@ -24,7 +24,6 @@
 			with pkgs; 
 			[
 				ddate
-                                docker
 				emacs25-nox
 				file
 				git
@@ -32,6 +31,7 @@
 				irssi
 				lm_sensors
 				manpages
+				nixUnstable
 				nixops
 				nix-prefetch-git
 				nix-repl
