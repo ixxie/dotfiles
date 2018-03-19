@@ -38,7 +38,7 @@
     
     imports =
         [
-            ./meso-hardware-config.nix
+            ./hardware-config.nix
             ./efiboot.nix
         ];
 
