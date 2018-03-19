@@ -45,7 +45,7 @@
     };
 
     programs.ssh.extraConfig = ''
-         ServerAliveInterval 120
+         ServerAliveInterval 60
     '';
     services = 
     {
