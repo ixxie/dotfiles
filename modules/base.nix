@@ -2,7 +2,7 @@
 
 { 
 
-	nixpkgs.config = 
+    nixpkgs.config = 
     {
         # Allow proprietary packages
         allowUnfree = true;
@@ -17,45 +17,55 @@
       #  };
     };
 
-	# Basic Package Suite
-	environment = 
-	{
-		systemPackages = 
-			with pkgs; 
-			[
-				ddate
-				emacs25-nox
-				file
-				git
-				htop
-				irssi
-				lm_sensors
-				manpages
-				nixUnstable
-				nixops
-				nix-prefetch-git
-				nix-repl
-				openssh
-				speedtest-cli
-				vim
-				testdisk
-				tmux
-				zsh
-			]; 
-	};
+    # Basic Package Suite
+    environment = 
+    {
+            systemPackages = 
+                    with pkgs; 
+                    [
+                            ddate
+                            emacs25-nox
+                            file
+                            git
+                            htop
+                            irssi
+                            lm_sensors
+                            manpages
+                            nixUnstable
+                            nixops
+                            nix-prefetch-git
+                            nix-repl
+                            openssh
+                            speedtest-cli
+                            vim
+                            testdisk
+                            tmux
+                            zsh
+                    ]; 
+    };
 
-	services = 
-	{
-		# Enable the OpenSSH daemon.
-		openssh.enable = true;
+    programs.ssh.extraConfig = ''
+         ServerAliveInterval 120
+    '';
+    services = 
+    {
+            # Enable the OpenSSH daemon.
+            openssh =
+            {
+                    enable = true;
+                    extraConfig = ''
+                        ClientAliveInterval 120
+                        ClientAliveCountMax 720
+                    '';
+                };
 
-		xserver = 
-		{
-			# Enter keyboard layout
-			layout = "us";
-			xkbVariant = "altgr-intl";
+            xserver = 
+            {
+                    # Enter keyboard layout
+                    layout = "us";
+                    xkbVariant = "altgr-intl";
 
-		};
-	};
+            };
+    };
 
 }
