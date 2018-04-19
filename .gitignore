@@ -1,3 +1,2 @@
-configuration.nix
-modules/ssl.key
-modules/ssl.cert
+systems/*
+users/*
