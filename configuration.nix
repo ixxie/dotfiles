@@ -4,15 +4,9 @@
   # Include the following configuration modules:
   imports =
   [
+    ./system
     ./modules
   ]
-  ++ (if
-        (builtins.pathExists(./systems/default.nix))
-      then
-        [./systems ]
-      else
-        []
-      )
   ++ (if
         (builtins.pathExists(./users/default.nix))
       then
