@@ -11,6 +11,5 @@
   };
 
  # services.ejabberd.enable = true;
-  
 
 }
