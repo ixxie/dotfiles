@@ -67,18 +67,18 @@ with lib;
           desktopManager.gnome3.enable = true;
   
       };
-  
+
       # Enable CUPS to print documents.
-  		printing.enable = true;
+      printing.enable = true;
     };
   
-  	fonts = 
-  	{
-  		fonts = 
-    	with pkgs; 
-  		[ 
-  			source-code-pro
-  		];
-  	};
+    fonts = 
+    {
+      fonts = 
+      with pkgs; 
+      [ 
+        source-code-pro
+      ];
+    };
   };
 }
