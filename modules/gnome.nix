@@ -20,19 +20,17 @@ with lib;
       systemPackages = 
   		with pkgs; 
   		[
-        chrome-gnome-shell
         evince
         firefox
         gnome3.gdm
         gparted
-        google-chrome
         gimp
+        inkscape
         numix-gtk-theme
         numix-icon-theme-circle
         skype
         transmission_gtk
         vlc
-        vscode
         simple-scan
       ];
   
