@@ -1,11 +1,12 @@
 { pkgs, ... }:
  
 {
-#   home.packages =
-#   [
-#       pkgs.htop
-#       pkgs.fortune
-#   ];
+   home.packages = with pkgs;
+   [
+       emacs25-nox
+       emacs-all-the-icons-fonts
+       python36Packages.flake8
+   ];
 
     home.file.".tmux.conf".source = ../tmux/tmux.conf;
  
@@ -31,6 +32,8 @@
                     telephone-line
                     use-package
                     which-key
+                    flycheck
+                    flycheck-pycheckers
                 ];
             };
  
