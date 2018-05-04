@@ -19,11 +19,13 @@
       nixops
       nix-prefetch-git
       nix-repl
+      nix-index
       openssh
       speedtest-cli
       vim
       testdisk
       tmux
+      tree
       zsh
     ]; 
   };
