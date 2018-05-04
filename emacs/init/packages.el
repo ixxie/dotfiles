@@ -4,7 +4,6 @@
 (eval-when-compile
   (require 'use-package))
 (require 'bind-key)
-(require 'diminish)
 
 ;; Packages
 (use-package evil
