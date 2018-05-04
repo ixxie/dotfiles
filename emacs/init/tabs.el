@@ -1,8 +1,3 @@
-
-
-
-;; tabbar-tweak.el by github user 3demax
-
 ;; Tabbar
 (require 'tabbar)
 
@@ -15,16 +10,15 @@
 
 (remove-hook 'kill-buffer-hook 'tabbar-buffer-track-killed)
 
-(defun my-buffer-groups ()
-  "Function that gives the group names the current buffer belongs to.
-It must return a list of group names, or nil if the buffer has no
-group.  Notice that it is better that a buffer belongs to one group."
-  (list
-    (cond
-      ((memq (current-buffer) (my-buffer-list (selected-frame)))
-        "A")
-      (t
-        "N") )))
+;; customize to show all normal files in one group
+ (defun my-buffer-groups () 
+   "Returns the name of the tab group names the current buffer belongs to.
+ There are two groups: Emacs buffers (those whose name starts with '*', plus
+ dired buffers), and the rest.  This works at least with Emacs v24.2 using
+ tabbar.el v1.7."
+   (list (cond ((string-equal "*" (substring (buffer-name) 0 1)) "emacs")
+               ((eq major-mode 'dired-mode) "emacs")
+               (t "user"))))
 
 (setq tabbar-buffer-groups-function 'my-buffer-groups) ;; 'tabbar-buffer-groups
 
@@ -64,15 +58,17 @@ group.  Notice that it is better that a buffer belongs to one group."
       (frame (if frame frame (selected-frame))))
     (set-frame-parameter frame 'frame-bufs-buffer-list
       (delq buf (frame-parameter frame 'frame-bufs-buffer-list)))
-    (when tabbar-mode (tabbar-display-update))))
+   (when tabbar-mode (tabbar-display-update))))
 
 ;; AUTHOR:  Alp Aker -- https://github.com/alpaker/Frame-Bufs
 ;; @lawlist extracted/revised the function(ality) from said library.
 (defun my-buffer-list-reset ()
     "Wipe the entire slate clean for the selected frame."
   (interactive)
-    (modify-frame-parameters (selected-frame) (list (cons 'frame-bufs-buffer-list nil)))
-    (when tabbar-mode (tabbar-display-update)))
+  (modify-frame-parameters
+    (selected-frame)
+    (list (cons 'frame-bufs-buffer-list nil)))
+  (when tabbar-mode (tabbar-display-update)))
 
 (defun my-switch-tab-group ()
 "Switch between tab group `A` and `N`."
@@ -184,8 +180,8 @@ Call `tabbar-tab-label-function' to obtain a label for TAB."
   "Return a label for TAB.
 That is, a string used to represent it on the tab bar."
   (let ((label  (if tabbar--buffer-show-groups
-                    (format "[%s]  " (tabbar-tab-tabset tab))
-                  (format "%s  " (tabbar-tab-value tab)))))
+                    (format " [%s] " (tabbar-tab-tabset tab))
+                  (format " %s " (tabbar-tab-value tab)))))
     ;; Unless the tab bar auto scrolls to keep the selected tab
     ;; visible, shorten the tab label to keep as many tabs as possible
     ;; in the visible area of the tab bar.

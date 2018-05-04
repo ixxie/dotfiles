@@ -1,8 +1,10 @@
 ;;; -*- lexical-binding: t -*-
 
-
 (eval-when-compile
   (require 'use-package))
+
+(package-initialize)
+
 (require 'bind-key)
 
 ;; Packages
@@ -15,6 +17,9 @@
   (load-theme 'base16-eighties t))
 
 (use-package multi-term)
+
+(use-package neotree
+  :bind ("M-q" . neotree-toggle))
 
 (use-package which-key
   :demand t
@@ -32,8 +37,8 @@
   :config
   (projectile-mode))
 
+(require 'lang-tools)
 (require 'style)
 (require 'tabs)
-(require 'lang-tools)
 
 (provide 'packages)

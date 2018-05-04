@@ -28,12 +28,15 @@
                     projectile
                     rainbow-mode
                     smartparens
+                    neotree 
                     tabbar
                     telephone-line
                     use-package
                     which-key
                     flycheck
                     flycheck-pycheckers
+                    intero
+                    haskell-mode
                 ];
             };
  
@@ -65,10 +68,8 @@
 
                     [diff "bin"]
                         textconv = hexdump -v -C
+
                     '';
-
             };
- 
     };
-
 }
