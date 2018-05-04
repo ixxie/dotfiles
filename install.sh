@@ -39,6 +39,10 @@ linkex ${dotfiles}/nix/home-manager/overlay.nix ~/.config/nixpkgs/overlays/home-
 linkex ${dotfiles}/nix/home.nix ~/.config/nixpkgs/home.nix
 linkex ${dotfiles}/nix/config.nix ~/.config/nixpkgs/config.nix
 
+echo "<Installing Home-Manager>"
+
 nix-env -f '<nixpkgs>' -iA home-manager
+
+echo "<Running Home-Manager>"
 
 home-manager switch
