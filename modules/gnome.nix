@@ -1,10 +1,16 @@
 { config, pkgs, lib, ... }: 
 
+# this `with lib` includes the basic library
+# into the scope of the body, allowing us to
+# use `mkIf` for example, instead of having
+# to write `lib.mkIf`
+
 with lib;
 { 
 
   options =
   {
+    # make an option to enable or desable the desktop environment
     desktop = mkOption
     {
       type = types.string;
@@ -17,6 +23,7 @@ with lib;
   {
     environment =
     {
+      # add some desktop applications
       systemPackages = 
   		with pkgs; 
   		[
@@ -49,29 +56,30 @@ with lib;
   
     services = 
     {
-       # Enable the X11 windowing system
+       # enable the X11 windowing system
        xserver = 
        {
           enable = true;
           xkbOptions = "eurosign:e";
   
-          # Enable the Gnome Display Manager
+          # enable the Gnome Display Manager
           displayManager.gdm =
           {
             enable = true;
           };
   
-          # Enable the Gnome Desktop Environment
+          # enable the Gnome Desktop Environment
           desktopManager.gnome3.enable = true;
   
       };
 
-      # Enable CUPS to print documents.
+      # enable CUPS to print documents.
       printing.enable = true;
     };
   
     fonts = 
     {
+      # add some fonts
       fonts = 
       with pkgs; 
       [ 

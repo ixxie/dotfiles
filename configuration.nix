@@ -1,7 +1,5 @@
 { config, pkgs, ... }: 
 
-with builtins;
-
 {
   # Include the following configuration modules:
   imports =
@@ -9,5 +7,6 @@ with builtins;
     ./modules
     ./users
     ./system
+#    ./modules/test.nix
   ];
 }

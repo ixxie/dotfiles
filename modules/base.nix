@@ -29,7 +29,8 @@
       zsh
     ]; 
   };
-  
+
+  # some ssh configuration
   programs.ssh.extraConfig = ''
     ServerAliveInterval 120
     ServerAliveCountMax 720
