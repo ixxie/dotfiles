@@ -4,14 +4,18 @@
   environment = 
 	{
 		systemPackages = 
-			with pkgs;
+			with pkgs.python36Packages;
 			[
-            python36Packages.python
-            python36Packages.jupyter
-            python36Packages.notebook
-            python36Packages.jupyterhub
-            python36Packages.jupyterlab
-            python36Packages.scikitlearn
+            python
+            jupyter_core
+            jupyter
+            ipykernel
+            notebook
+            jupyterhub
+            jupyterlab
+            scikitlearn
+            scrapy
+            nltk
       ];
   };
 }
