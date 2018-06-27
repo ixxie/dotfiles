@@ -15,6 +15,7 @@
                 extraPackages = epkgs: with epkgs;
                 [
                     base16-theme
+                    #elpy
                     evil
                     magit
                     multi-term

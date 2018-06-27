@@ -2,8 +2,10 @@
 
 ;; General
 (use-package flycheck
+  :config
   :defer 5)
 
+(add-hook 'after-init-hook #'global-flycheck-mode)
 ;; Haskell
 ;;(use-package intero
 ;;  :ensure t)
