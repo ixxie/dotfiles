@@ -28,23 +28,4 @@
       zsh
     ]; 
   };
-
-  # some ssh configuration
-  programs.ssh.extraConfig = ''
-    ServerAliveInterval 120
-    ServerAliveCountMax 720
-  '';
-  services = 
-  {
-    # Enable the OpenSSH daemon.
-    openssh =
-    {
-      enable = true;
-      extraConfig = ''
-        ClientAliveInterval 120
-        ClientAliveCountMax 720
-      '';
-    };
-  };
-
 }
