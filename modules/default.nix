@@ -4,8 +4,7 @@
     imports =
     [
       ./base.nix
-    #  ./fed.nix
-      ./sci.nix
+      ./tech.nix
       ./gnome.nix
     ];
 }

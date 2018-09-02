@@ -7,6 +7,5 @@
     ./modules
     ./users
     ./system
-#    ./modules/test.nix
   ];
 }
