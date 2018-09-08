@@ -1,6 +1,6 @@
 { config, pkgs, ... }: 
 
-{ 
+{
   # Basic Package Suite
   environment = 
   {
@@ -28,4 +28,7 @@
       zsh
     ]; 
   };
+
+  # admin settings
+  security.sudo.wheelNeedsPassword = false;
 }
