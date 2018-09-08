@@ -25,6 +25,9 @@
 
       desktop = "gnome";
 
+      # Set your time zone.
+      time.timeZone = "Europe/Helsinki";
+  
       # broadcom drivers
       nixpkgs.config.allowUnfree = true;
 
