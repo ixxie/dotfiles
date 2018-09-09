@@ -1,3 +1,0 @@
-[submodule "home-manager"]
-	path = nix/home-manager
-	url = https://github.com/rycee/home-manager.git
