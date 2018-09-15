@@ -52,7 +52,12 @@
           
           let g:ctrlp_map = '<c-p>'
           let g:ctrlp_cmd = 'CtrlP'
-
+          
+          nnoremap <M-Left>  <C-w>h
+          nnoremap <M-Down>  <C-w>j
+          nnoremap <M-Up>    <C-w>k
+          nnoremap <M-Right> <C-w>l
+          
           " Appearance "
           """"""""""""""
 
