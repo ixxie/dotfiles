@@ -71,7 +71,7 @@
           set number
           let g:gitgutter_enabled = 1
           set signcolumn="yes"                                 " keep gutter even when empty  
-          execute "set colorcolumn=".join(range(101,350),",")  " color columns beyond 100
+          execute "set colorcolumn=".join(range(101,350),",")  
 
           " Nerd Tree "
           """""""""""""
