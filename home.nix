@@ -49,38 +49,30 @@
           set clipboard=unnamedplus
           set mouse+=a
           let g:SuperTabDefaultCompletionType = "<c-n>"
-
+          
+          let g:ctrlp_map = '<c-p>'
+          let g:ctrlp_cmd = 'CtrlP'
 
           " Appearance "
           """"""""""""""
 
           set t_Co=256
           colorscheme Benokai
-          let g:airline_theme='powerlinesh'
+          let g:airline_theme='powerlineish'
           let g:airline_powerline_fonts=1
+          set fillchars+=vert:\                                " pretty vertical splits
           
           syntax on
           set number
           let g:gitgutter_enabled = 1
-          set fillchars+=vert:\ 
+          set signcolumn="yes"                                 " keep gutter even when empty  
+          execute "set colorcolumn=".join(range(101,350),",")  " color columns beyond 100
 
           " Nerd Tree "
           """""""""""""
 
-          " start always
-          autocmd vimenter * NERDTree
-
-          " close when last
-          let isLastBuffer = winnr("$") == 1 
-           \ && exists("b:NERDTreeType") 
-           \ && b:NERDTree.isTabTree() 
-            
-          autocmd bufenter * if isLastBuffer | q | endif
-
           " keybinding
-          nnoremap <silent> <Leader>t :NERDTreeFind<CR>
-          nnoremap <silent> <Leader>a :tabp<CR>
-          nnoremap <silent> <Leader>d :tabn<CR>
+          map <c-x> :NERDTreeToggle<CR>
 
           " minima UI
           let NERDTreeMinimalUI = 2
