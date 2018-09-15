@@ -79,6 +79,8 @@
           " keybinding
           map <c-x> :NERDTreeToggle<CR>
 
+          let NERDTreeAutoDeleteBuffer = 1
+
           " minima UI
           let NERDTreeMinimalUI = 2
           let NERDTreeDirArrows = 1
