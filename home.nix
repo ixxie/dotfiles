@@ -1,5 +1,19 @@
 { pkgs, ... }:
+
+let
  
+  rainglow = pkgs.vimUtils.buildVimPlugin {
+    name = "vim-better-whitespace";
+    src = pkgs.fetchFromGitHub {
+      owner = "rainglow";
+      repo = "vim";
+      rev = "837fd7292274e0ee2f3b5aee4519c3f74d7dc3d1";
+      sha256 = "0crwwq5fbw2vsr16l626c15xff03i326gvbj6rab85x2h6q7hvyy";
+    };
+  };
+
+in
+
 {
     
   home.file.".tmux.conf".source = ./tmux/tmux.conf;
@@ -24,12 +38,12 @@
 	    airline
             vim-airline-themes
             vim-colorschemes
+            rainglow
             sensible
             supertab
             # Language Specific
             syntastic
             vim-nix
-            python-mode
             # Utilities
             ctrlp
             neocomplete
@@ -68,8 +82,13 @@
           " Appearance "
           """"""""""""""
 
-          set t_Co=256
-          colorscheme Benokai
+          set termguicolors
+          colorscheme freshcut
+
+          " cool themes:
+          " Benokai / Tonic / Freshcut / Goldfish / Bold
+          " Coffee / Hive / Zacks / Jingle / Boxuk 
+
           let g:airline_theme='powerlineish'
           let g:airline_powerline_fonts=1
           set fillchars+=vert:\                                " pretty vertical splits
