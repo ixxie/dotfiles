@@ -6,7 +6,8 @@
   [
     ./modules/base.nix
     ./modules/gnome.nix
-    ./modules/fluxcraft.nix
+    ./modules/xmonad.nix
+    ./modules/remotes.nix
     ./modules/xps
     ./users
   ];
