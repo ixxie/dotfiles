@@ -4,17 +4,15 @@
   # Basic Package Suite
   environment = 
   {
-    systemPackages = 
-    with pkgs; 
-    [
+    systemPackages = with pkgs; [
       ddate
-      emacs25-nox
       file
       git
       htop
       irssi
       lm_sensors
       manpages
+      neovim
       nixUnstable
       nixops
       nix-prefetch-git
