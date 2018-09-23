@@ -18,9 +18,12 @@
       nix-prefetch-git
       nix-index
       openssh
+      powerline-go
       speedtest-cli
       vim
+      weechat
       testdisk
+      terminator
       tmux
       tree
       zsh
