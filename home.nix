@@ -26,16 +26,16 @@ in
     };
 
     zsh.enable = true;
-
+    
     neovim = {
       enable = true;
       configure = {
         packages.myNeovimPackage = with pkgs.vimPlugins; {
           start = [
             # Interface
-	    The_NERD_tree
+            The_NERD_tree
             gitgutter
-	    airline
+            airline
             vim-airline-themes
             vim-colorschemes
             rainglow
