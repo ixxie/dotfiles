@@ -22,20 +22,20 @@ in
 
     home-manager = {
       enable = true;
-      path = "/home/ixxie/nixdev/home-manager";
+      path = "https://github.com/rycee/home-manager/archive/release-18.03.tar.gz";
     };
 
     zsh.enable = true;
-
+    
     neovim = {
       enable = true;
       configure = {
         packages.myNeovimPackage = with pkgs.vimPlugins; {
           start = [
             # Interface
-	    The_NERD_tree
+            The_NERD_tree
             gitgutter
-	    airline
+            airline
             vim-airline-themes
             vim-colorschemes
             rainglow
@@ -81,12 +81,16 @@ in
 
           " Appearance "
           """"""""""""""
-
+          
+          let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+          let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
           set termguicolors
-          colorscheme goldfish
+
+          
+          colorscheme freshcut
 
           " cool themes:
-          " Benokai / Tonic / Freshcut / Goldfish 
+          " Benokai / Tonic / Freshcut / Goldfish / Bold
           " Coffee / Hive / Zacks / Jingle / Boxuk 
 
           let g:airline_theme='powerlineish'
