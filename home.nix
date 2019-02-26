@@ -170,7 +170,13 @@ in
 	  old = red
 
 	[diff "bin"]
-	  textconv = hexdump -v -C
+          textconv = hexdump -v -C
+
+        [alias]
+          squash = !git add $1 && git commit --amend -C HEAD && :
+          sq = !git squash . && :
+          toss = !git push origin HEAD && :
+          shove = !git push -f origin HEAD && :
       '';
     };
   };
