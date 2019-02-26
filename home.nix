@@ -16,7 +16,13 @@ in
 
 {
     
-  home.file.".tmux.conf".source = ./tmux/tmux.conf;
+  home = {
+    file.".tmux.conf".source = ./tmux/tmux.conf;
+    sessionVariables = {
+      EDITOR = "nvim";
+      PS1 = "> ";
+    };
+  };
  
   programs = {
 
