@@ -136,6 +136,16 @@ in
           let g:syntastic_python_checkers=['python3', 'flake8']
           let g:syntastic_python_flake8_exec = 'flake8'
 
+          " Text Editing
+
+          function! AutoWrapToggle()
+            if &formatoptions =~ 't'
+              set fo-=t
+            else
+              set fo+=t
+            endif
+          endfunction
+
         '';
       };
     };
