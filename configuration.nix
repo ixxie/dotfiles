@@ -2,21 +2,19 @@
 
 {
   # Include the following configuration modules:
-  imports =
-  [
-    ./modules/base.nix
-    ./modules/gnome.nix
-    ./modules/xmonad.nix
-    ./modules/remotes.nix
-    ./modules/xps
-    ./users
+  imports = [
+    ./cfg/gear/meso
+    ./cfg/user
+    ./core
+    ./desk
+    ./sci
   ];
 
   # Enter hostname (network name for the machine configuration).
   networking.hostName = "meso"; 
 
   # Gnome desktop environment
-  desktop = "gnome";
+  desk = "gnome";
   
   # Set your time zone.
   time.timeZone = "Europe/Helsinki";
