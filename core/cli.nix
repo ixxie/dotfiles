@@ -40,7 +40,6 @@
       tmux
       tree
       toilet
-      zsh
     ]; 
   };
   
