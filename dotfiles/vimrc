@@ -62,7 +62,6 @@
   " minima UI
   let NERDTreeMinimalUI = 2
   let NERDTreeDirArrows = 1
-  let NERDTreeShowHidden = 1
 
 " Language Specific "
 """""""""""""""""""""
