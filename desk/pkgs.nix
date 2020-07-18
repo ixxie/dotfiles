@@ -14,7 +14,8 @@ with lib;
         gparted
         gimp
         inkscape
-        skype
+        riot-web
+        signal-desktop
         transmission_gtk
         vlc
         simple-scan
