@@ -20,6 +20,7 @@ with lib;
         transmission_gtk
         vlc
         simple-scan
+        xclip
       ];
     };
     
