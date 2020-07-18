@@ -1,11 +1,13 @@
 { config, pkgs, ... }:
 
 {
-  services.xserver.windowManager = {
-    default = "xmonad";
-    xmonad = {
-      enable = true;
-      enableContribAndExtras = true;
+  services.xserver = {
+    displayManager.defaultSession = "none+xmonad";
+    windowManager = {
+      xmonad = {
+        enable = true;
+        enableContribAndExtras = true;
+      };
     };
   };
 }

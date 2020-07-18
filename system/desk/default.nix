@@ -6,6 +6,6 @@
     ./gnome.nix
     ./gaming.nix
     ./xserver.nix
-    #./xmonad.nix
+    ./xmonad.nix
   ];
 }
