@@ -16,6 +16,7 @@ with lib;
         inkscape
         riot-web
         signal-desktop
+        spotify
         transmission_gtk
         vlc
         simple-scan
