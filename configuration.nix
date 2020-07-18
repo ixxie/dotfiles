@@ -7,7 +7,6 @@
     ./cfg/user
     ./core
     ./desk
-    ./sci
   ];
 
   # Enter hostname (network name for the machine configuration).
