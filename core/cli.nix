@@ -32,6 +32,7 @@
       pass
       powerline-go
       ponysay
+      python38
       speedtest-cli
       vim
       weechat
