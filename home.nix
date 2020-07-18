@@ -21,8 +21,10 @@ in
     sessionVariables = {
       EDITOR = "nvim";
     };
+
     packages = with pkgs; [
-      travis
+      nodePackages.npm
+      nodePackages.node2nix
     ];
   };
  
