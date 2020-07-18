@@ -9,6 +9,7 @@ with lib;
     environment = {
       # add some desktop applications
       systemPackages = with pkgs; [
+        discord-canary
         minecraft-override
         steam
       ];
