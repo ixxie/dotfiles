@@ -5,5 +5,6 @@
     ./efiboot.nix
     ./hardware.nix
     ./tweaks.nix
+    ./gpu.nix
   ];
 }
