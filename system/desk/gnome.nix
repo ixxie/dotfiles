@@ -6,13 +6,7 @@ with lib;
   config = mkIf (config.desk == "gnome") {
 
     services = {
-      xserver = {
-        displayManager.gdm = {
-          enable = true;
-          wayland = false;
-        };
-        desktopManager.gnome3.enable = true;  
-      };
+      xserver.desktopManager.gnome3.enable = true;  
       illum.enable = true;
       redshift.brightness.night = 0.4;
     };
