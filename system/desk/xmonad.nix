@@ -2,7 +2,6 @@
 
 {
   services.xserver = {
-    displayManager.defaultSession = "none+xmonad";
     windowManager = {
       xmonad = {
         enable = true;
