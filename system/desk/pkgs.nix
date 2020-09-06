@@ -11,6 +11,7 @@ with lib;
       systemPackages = with pkgs; [
         evince
         firefox
+        krita
         gparted
         gimp
         inkscape
