@@ -8,23 +8,17 @@
   };
 
   # enable the swap device
-  swapDevices = [
-    {label="swap";}
-  ];
+  swapDevices = [{ label = "swap"; }];
 
   # firmware support
-  nixpkgs.config.allowUnfree = true; 
+  nixpkgs.config.allowUnfree = true;
 
   hardware = {
     enableAllFirmware = true;
     cpu.intel.updateMicrocode = true;
     bluetooth = {
       enable = true;
-      config = {
-        General = {
-         Enable = "Source,Sink,Media,Socket";
-        };
-      };
+      config = { General = { Enable = "Source,Sink,Media,Socket"; }; };
     };
     pulseaudio = {
       enable = true;

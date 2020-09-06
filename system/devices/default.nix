@@ -1,8 +1,5 @@
-{ config, pkgs, ... }: 
+{ config, pkgs, ... }:
 
 {
-  imports = [
-    ./canon.nix
-    ./wacom.nix
-  ];
+  imports = [ ./canon.nix ./wacom.nix ];
 }

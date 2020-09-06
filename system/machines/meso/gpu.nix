@@ -2,8 +2,7 @@
 let
   vaapiIntel = pkgs.vaapiIntel.override { enableHybridCodec = true; };
   openglPackages = with pkgs; [ vaapiIntel vaapiVdpau libvdpau-va-gl ];
-in
-{
+in {
   environment.systemPackages = with pkgs; [
     xorg.xbacklight
     xorg.xf86videointel

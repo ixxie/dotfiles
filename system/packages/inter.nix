@@ -3,7 +3,7 @@
 fetchzip {
   name = "interUI-3.2";
 
-  url = https://github.com/rsms/inter/releases/download/v3.2/Inter-UI-3.2.zip;
+  url = "https://github.com/rsms/inter/releases/download/v3.2/Inter-UI-3.2.zip";
   sha256 = "0yrxnis60b9cdc8inv8y4d3jwb1nb5vq132g9l8w78879jpk31fq";
 
   postFetch = ''
@@ -13,7 +13,7 @@ fetchzip {
   '';
   meta = {
     description = "A Unicode font";
-    maintainers = [stdenv.lib.maintainers.raskin];
+    maintainers = [ stdenv.lib.maintainers.raskin ];
     platforms = stdenv.lib.platforms.unix;
   };
 }

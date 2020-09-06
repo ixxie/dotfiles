@@ -1,4 +1,4 @@
-{ config, ... }: 
+{ config, ... }:
 
 {
   nix.gc.automatic = true;

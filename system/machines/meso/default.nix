@@ -1,10 +1,5 @@
-{ config, pkgs, ... }: 
+{ config, pkgs, ... }:
 
 {
-  imports = [
-    ./efiboot.nix
-    ./hardware.nix
-    ./tweaks.nix
-    ./gpu.nix
-  ];
+  imports = [ ./efiboot.nix ./hardware.nix ./tweaks.nix ./gpu.nix ];
 }

@@ -1,7 +1,6 @@
-{ config, pkgs, lib, ... }: 
+{ config, pkgs, lib, ... }:
 
-with lib;
-{
+with lib; {
   options = {
     # make an option to enable or desable the desktop environment
     desk = mkOption {

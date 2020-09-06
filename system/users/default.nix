@@ -1,7 +1,5 @@
-{ config, pkgs, ... }: 
+{ config, pkgs, ... }:
 
 {
-  imports = [
-    ./ixxie.nix
-  ];
+  imports = [ ./ixxie.nix ];
 }

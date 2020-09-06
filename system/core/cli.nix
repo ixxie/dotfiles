@@ -1,9 +1,8 @@
-{ config, pkgs, ... }: 
+{ config, pkgs, ... }:
 
 {
   # Basic Package Suite
-  environment = 
-  {
+  environment = {
     systemPackages = with pkgs; [
       asciiquarium
       cowsay
@@ -27,6 +26,7 @@
       nixops
       nix-prefetch-git
       nix-index
+      nixfmt
       nms
       openssh
       pass
@@ -41,11 +41,11 @@
       tmux
       tree
       toilet
-    ]; 
+    ];
   };
-  
+
   programs.adb.enable = true;
-  
+
   # admin settings
   security.sudo.wheelNeedsPassword = false;
 

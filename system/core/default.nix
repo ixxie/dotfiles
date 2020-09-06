@@ -1,9 +1,5 @@
-{ config, pkgs, ... }: 
+{ config, pkgs, ... }:
 
 {
-  imports = [
-    ./settings.nix
-    ./options.nix
-    ./cli.nix
-  ];
+  imports = [ ./settings.nix ./options.nix ./cli.nix ];
 }

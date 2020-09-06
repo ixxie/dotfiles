@@ -1,7 +1,7 @@
 { config, pkgs, ... }:
 
 {
-  services =  {
+  services = {
     xserver = {
       windowManager = {
         xmonad = {
@@ -9,7 +9,7 @@
           enableContribAndExtras = true;
           config = ''
             import XMonad
-            
+
             main = do
               xmonad $ defaultConfig
                 { modMask = mod4Mask     -- Rebind Mod to the Windows key

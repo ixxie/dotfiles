@@ -1,16 +1,14 @@
-{ config, pkgs, lib, ... }: 
+{ config, pkgs, lib, ... }:
 
-  
-with lib;
-{ 
+with lib; {
   config = mkIf (config.desk == "gnome") {
 
     services = {
-      xserver.desktopManager.gnome3.enable = true;  
+      xserver.desktopManager.gnome3.enable = true;
       illum.enable = true;
       redshift.brightness.night = 0.4;
     };
-    
+
     environment = {
       # add some desktop applications
       systemPackages = with pkgs; [
@@ -21,7 +19,7 @@ with lib;
         gnomeExtensions.dash-to-dock
         gnome3.gnome-tweaks
       ];
-  
+
       # GTK3 global theme (widget and icon theme)
       etc."xdg/gtk-3.0/settings.ini" = {
         text = ''

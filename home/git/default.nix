@@ -19,9 +19,7 @@
           old = "red";
         };
       };
-      diff.bin = {
-        textconv = "hexdump -v -C";
-      };
+      diff.bin = { textconv = "hexdump -v -C"; };
       alias = {
         squash = "!git add $1 && git commit --amend -C HEAD && :";
         sq = "!git squash . && :";

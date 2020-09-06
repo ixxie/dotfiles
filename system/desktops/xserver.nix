@@ -1,7 +1,6 @@
-{ config, pkgs, lib, ... }: 
+{ config, pkgs, lib, ... }:
 
-with lib;
-{ 
+with lib; {
   config = mkIf (config.desk != "none") {
     services = {
       # enable the X11 windowing system

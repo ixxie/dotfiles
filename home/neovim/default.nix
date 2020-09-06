@@ -10,10 +10,9 @@ let
       sha256 = "0crwwq5fbw2vsr16l626c15xff03i326gvbj6rab85x2h6q7hvyy";
     };
   };
-in
-{
+in {
 
-  home.sessionVariables. EDITOR = "nvim";
+  home.sessionVariables.EDITOR = "nvim";
 
   programs.neovim = {
     enable = true;
@@ -36,8 +35,8 @@ in
           # Utilities
           ctrlp
           neocomplete
-  	    ];
-        opt = [];
+        ];
+        opt = [ ];
       };
       customRC = builtins.readFile ./vimrc;
     };
