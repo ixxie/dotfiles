@@ -7,5 +7,7 @@
     ./gaming.nix
     ./xserver.nix
     ./xmonad.nix
-  ];
+    ./wacom.nix
+  ] + ;
+
 }
