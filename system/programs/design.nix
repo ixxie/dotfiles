@@ -1,7 +1,7 @@
 { config, pkgs, lib, ... }: 
 
 let
-  inter = pkgs.callPackage ../pkg/inter.nix {};
+  inter = pkgs.callPackage ../packages/inter.nix {};
 in
 with lib;
 { 
@@ -9,19 +9,10 @@ with lib;
     environment = {
       # add some desktop applications
       systemPackages = with pkgs; [
-        evince
-        firefox
         krita
-        gparted
         gimp
         inkscape
-        riot-web
-        signal-desktop
-        spotify
-        transmission_gtk
-        vlc
         simple-scan
-        xclip
       ];
     };
     

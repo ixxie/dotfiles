@@ -3,10 +3,12 @@
 {
   # Include the following configuration modules:
   imports = [
-    ./cfg/gear/meso
-    ./cfg/user
+    ./machines/meso
+    ./users
     ./core
-    ./desk
+    ./desktops
+    ./devices
+    ./programs
   ];
 
   # Enter hostname (network name for the machine configuration).
@@ -17,5 +19,4 @@
   
   # Set your time zone.
   time.timeZone = "Europe/Helsinki";
-
 }

@@ -1,6 +1,5 @@
 { config, pkgs, lib, ... }: 
 
-  
 with lib;
 { 
     # enable CUPS to print documents.
