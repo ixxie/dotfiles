@@ -1,5 +1,5 @@
 { config, pkgs, ... }:
 
 {
-  imports = [ ./gnome.nix ./plasma.nix ./xserver.nix ./xmonad.nix ];
+  imports = [ ./xserver.nix ./gnome.nix ./xmonad.nix ];
 }
