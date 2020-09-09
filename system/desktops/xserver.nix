@@ -9,7 +9,7 @@ with lib; {
         xkbOptions = "eurosign:e";
         desktopManager.xterm.enable = false;
         displayManager = {
-          defaultSession = "gnome";
+          defaultSession = "gnome-xorg";
           gdm.enable = true;
         };
       };
