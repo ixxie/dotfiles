@@ -2,5 +2,5 @@
 
 {
   imports =
-    [ ./design.nix ./gaming.nix ./media.nix ./telecom.nix ./utilities.nix ];
+    [ ./design.nix ./media.nix ./telecom.nix ./utilities.nix ];
 }

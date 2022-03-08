@@ -4,4 +4,5 @@
   environment.systemPackages = with pkgs; [
     intel-media-driver
   ];
+
 }

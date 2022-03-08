@@ -46,8 +46,8 @@
   
   syntax on
   set number
-  let g:gitgutter_enabled = 1
-  set signcolumn="yes"                                 " keep gutter even when empty  
+  let g:gitgutter_enabled=1
+  set signcolumn=auto                                 " keep gutter even when empty  
   execute "set colorcolumn=".join(range(101,350),",")  
 
 " Nerd Tree "
@@ -86,4 +86,3 @@
       set fo+=t
     endif
   endfunction
-

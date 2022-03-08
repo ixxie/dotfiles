@@ -4,9 +4,8 @@ with lib; {
   config = mkIf (config.desk == "gnome") {
 
     services = {
-      xserver.desktopManager.gnome3.enable = true;
+      xserver.desktopManager.gnome.enable = true;
       illum.enable = true;
-      redshift.brightness.night = 0.4;
     };
 
     environment = {
@@ -16,6 +15,7 @@ with lib; {
         numix-icon-theme-circle
         arc-icon-theme
         arc-theme
+        gnomeExtensions.workspace-matrix
         gnomeExtensions.dash-to-dock
         gnome3.gnome-tweaks
       ];

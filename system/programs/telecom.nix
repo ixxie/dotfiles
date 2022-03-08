@@ -6,9 +6,8 @@ with lib; {
       # add some desktop applications
       systemPackages = with pkgs; [
         firefox
-        riot-web
         signal-desktop
-        discord-canary
+        mailspring
       ];
     };
   };

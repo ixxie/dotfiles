@@ -16,29 +16,24 @@ in {
 
   programs.neovim = {
     enable = true;
-    configure = {
-      packages.myNeovimPackage = with pkgs.vimPlugins; {
-        start = [
-          # Interface
-          The_NERD_tree
-          gitgutter
-          airline
-          vim-airline-themes
-          vim-colorschemes
-          rainglow
-          sensible
-          supertab
-          # Language Specific
-          syntastic
-          vim-nix
-          vimproc
-          # Utilities
-          ctrlp
-          neocomplete
-        ];
-        opt = [ ];
-      };
-      customRC = builtins.readFile ./vimrc;
-    };
+    plugins = with pkgs.vimPlugins; [
+      # Interface
+      The_NERD_tree
+      gitgutter
+      airline
+      vim-airline-themes
+      vim-colorschemes
+      rainglow
+      sensible
+      supertab
+      # Language Specific
+      syntastic
+      vim-nix
+      vimproc
+      # Utilities
+      ctrlp
+      neocomplete
+    ];
+    extraConfig = builtins.readFile ./vimrc;
   };
 }

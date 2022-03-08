@@ -18,24 +18,28 @@
     cpu.intel.updateMicrocode = true;
     bluetooth = {
       enable = true;
-      config = { General = { Enable = "Source,Sink,Media,Socket"; }; };
+      settings = { General = { Enable = "Source,Sink,Media,Socket"; }; };
     };
     pulseaudio = {
       enable = true;
       package = pkgs.pulseaudioFull;
+      support32Bit = true;
     };
   };
 
   # fix various kinks
   services.xserver = {
     # Make right click
-    desktopManager.gnome3.extraGSettingsOverrides = ''
+    desktopManager.gnome.extraGSettingsOverrides = ''
       [org.gnome.desktop.peripherals.touchpad]
       click-method = 'default'
     '';
   };
-  boot.blacklistedKernelModules = [
+  boot = {
+    blacklistedKernelModules = [
     "psmouse" # for psmouse error
     "mei_wdt" # for udev wait for device
-  ];
+    ];
+    supportedFilesystems = [ "ntfs-3g" ];
+  };
 }
