@@ -20,11 +20,7 @@
       enable = true;
       settings = { General = { Enable = "Source,Sink,Media,Socket"; }; };
     };
-    pulseaudio = {
-      enable = true;
-      package = pkgs.pulseaudioFull;
-      support32Bit = true;
-    };
+    
   };
 
   # fix various kinks
