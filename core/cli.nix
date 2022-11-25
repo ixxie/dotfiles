@@ -28,4 +28,6 @@
   # admin settings
   security.sudo.wheelNeedsPassword = false;
 
+  networking.enableIPv6 = false;
+
 }

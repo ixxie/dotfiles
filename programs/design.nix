@@ -11,7 +11,7 @@ with lib; {
       source-code-pro
       powerline-fonts
       font-awesome_5
-      inter-ui
+      inter
       google-fonts
     ];
   };

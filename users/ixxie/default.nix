@@ -10,4 +10,18 @@
     ];
     shell = pkgs.fish;
   };
+  home-manager.users.ixxie = { pkgs, ... }: {
+    imports = [ ./neovim ./tmux ./git ./vscodium ./fish ];
+
+    programs.home-manager = {
+      enable = true;
+      path = "https://github.com/rycee/home-manager/archive/master.tar.gz";
+    };
+
+    home = {
+      sessionPath = [ "/home/ixxie/repos/global-node-modules/bin" ];
+      stateVersion = "22.05";
+      username = "ixxie";
+    };
+  };
 }

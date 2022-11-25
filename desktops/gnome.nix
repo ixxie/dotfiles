@@ -17,7 +17,8 @@ with lib; {
         arc-theme
         gnomeExtensions.workspace-matrix
         gnomeExtensions.dash-to-dock
-        gnome3.gnome-tweaks
+        gnomeExtensions.sound-output-device-chooser
+        gnome.gnome-tweaks
       ];
 
       # GTK3 global theme (widget and icon theme)
