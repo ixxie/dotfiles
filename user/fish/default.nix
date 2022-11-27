@@ -5,7 +5,8 @@
     enable = true;
     shellAliases = {
       shift = "make --directory=/home/ixxie/repos/shiftspace/";
-      supabase = "(cd /home/ixxie/repose/supabase-cli; go run . $@)";
+      supabase = "cd /home/ixxie/repos/supabase-cli; go run . $argv;";
+      nixos = "sudo nixos-rebuild switch";
     };
   };
 }

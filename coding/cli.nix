@@ -7,15 +7,15 @@
       aumix
       file
       git
+      gnumake
       htop
       irssi
       lm_sensors
       man-pages
       neovim
+      ngrok
       openssh
       powerline-go
-      python38
-      speedtest-cli
       testdisk
       tmux
       tree
@@ -29,5 +29,4 @@
   security.sudo.wheelNeedsPassword = false;
 
   networking.enableIPv6 = false;
-
 }
