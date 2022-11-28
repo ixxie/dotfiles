@@ -4,6 +4,10 @@
   programs.vscode = {
     enable = true;
     userSettings = {
+      # theme
+      "workbench.colorTheme" = "Atom Material Theme";
+      "workbench.iconTheme" = "vs-minimal";
+      # editor
       "update.mode" = "none";
       "explorer.confirmDragAndDrop" = false;
       "explorer.sortOrder" = "type";
@@ -40,6 +44,8 @@
       vscodevim.vim
       esbenp.prettier-vscode
       golang.go
+      tobiasalthoff.atom-material-theme
+      jdinhlife.gruvbox
     ];
   };
 }

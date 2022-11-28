@@ -3,15 +3,7 @@
 {
   # Basic Package Suite
   environment = {
-    systemPackages = with pkgs; [
-      direnv
-      home-manager
-      morph
-      nixUnstable
-      nix-prefetch-git
-      nix-index
-      nixfmt
-    ];
+    systemPackages = with pkgs; [ nixUnstable nix-prefetch-git nixfmt ];
   };
 
   nix = {

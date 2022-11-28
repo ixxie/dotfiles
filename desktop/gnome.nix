@@ -16,7 +16,6 @@ with lib; {
       arc-theme
       gnomeExtensions.workspace-matrix
       gnomeExtensions.dash-to-dock
-      gnomeExtensions.sound-output-device-chooser
       gnome.gnome-tweaks
     ];
 
