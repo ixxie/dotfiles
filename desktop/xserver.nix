@@ -14,7 +14,7 @@ let
   '';
 in with lib; {
   services = {
-    # enable the X11 windowing system
+    # enable the X11 windowing syste
     xserver = {
       enable = true;
       xkbOptions = "eurosign:e";

@@ -4,6 +4,7 @@ with lib; {
 
   services = {
     xserver.desktopManager.gnome.enable = true;
+    gnome.core-utilities.enable = false;
     illum.enable = true;
   };
 
@@ -16,7 +17,12 @@ with lib; {
       arc-theme
       gnomeExtensions.workspace-matrix
       gnomeExtensions.dash-to-dock
+      gnomeExtensions.unite
+      gnomeExtensions.appindicator
       gnome.gnome-tweaks
+      gnome.nautilus
+      ulauncher
+      variety
     ];
 
     # GTK3 global theme (widget and icon theme)

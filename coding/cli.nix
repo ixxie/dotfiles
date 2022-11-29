@@ -4,7 +4,6 @@
   # Basic Package Suite
   environment = {
     systemPackages = with pkgs; [
-      aumix
       file
       git
       gnumake

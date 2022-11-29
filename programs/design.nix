@@ -3,7 +3,7 @@
 with lib; {
   environment = {
     # add some desktop applications
-    systemPackages = with pkgs; [ krita gimp inkscape simple-scan ffmpeg ];
+    systemPackages = with pkgs; [ krita inkscape ffmpeg pdftk ];
   };
 
   fonts.fonts = with pkgs; [
