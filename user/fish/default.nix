@@ -5,8 +5,8 @@
     enable = true;
     shellAliases = {
       shift = "make --directory=/home/ixxie/repos/shiftspace/";
-      supabase = "cd /home/ixxie/repos/.utilities/supabase-cli && go run .";
-      nixos = "sudo nixos-rebuild switch";
+      supabase = "/home/ixxie/repos/.utilities/supabase-cli/cli";
+      gen = "sudo nixos-rebuild switch";
       gc = ''
         sudo nix-collect-garbage --delete-older-than 7d &&
         nix-store --optimise &&

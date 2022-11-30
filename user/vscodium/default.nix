@@ -41,7 +41,11 @@
       "scss.validate" = false;
       "less.validate" = false;
       # svelte
-      "[svelte]" = { "editor.defaultFormatter" = "svelte.svelte-vscode"; };
+      "[svelte]" = {
+        "editor.formatOnSave" = true;
+        "editor.defaultFormatter" = "svelte.svelte-vscode";
+        "editor.codeActionsOnSave" = { "source.organizeImports" = false; };
+      };
       "svelte.enable-ts-plugin" = true;
       # BACKEND
       # python
