@@ -20,21 +20,24 @@
       enable = true;
       settings = { General = { Enable = "Source,Sink,Media,Socket"; }; };
     };
-    
+
   };
 
   # fix various kinks
   services.xserver = {
     # Make right click
-    desktopManager.gnome.extraGSettingsOverrides = ''
-      [org.gnome.desktop.peripherals.touchpad]
-      click-method = 'default'
-    '';
+    libinput = {
+      enable = true;
+      mouse.buttonMapping = "1 2 3 4 5 6";
+      touchpad = {
+        middleEmulation = false;
+        tappingButtonMap = "lrm";
+      };
+    };
   };
   boot = {
     blacklistedKernelModules = [
-    "psmouse" # for psmouse error
-    "mei_wdt" # for udev wait for device
+      "mei_wdt" # for udev wait for device
     ];
     supportedFilesystems = [ "ntfs-3g" ];
   };

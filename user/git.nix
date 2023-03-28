@@ -6,6 +6,7 @@
     userName = "Matan Bendix Shenhav";
     userEmail = "matan@shenhav.fyi";
     extraConfig = {
+      init = { defaultBranch = "main"; };
       color = {
         branch = {
           current = "green bold";

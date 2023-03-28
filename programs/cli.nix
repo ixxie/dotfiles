@@ -14,10 +14,11 @@
       neovim
       ngrok
       openssh
-      powerline-go
       testdisk
       tmux
       tree
+      lshw
+      starship
     ];
   };
 

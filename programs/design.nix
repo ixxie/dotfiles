@@ -1,16 +1,26 @@
 { config, pkgs, lib, ... }:
 
-with lib; {
+{
   environment = {
     # add some desktop applications
-    systemPackages = with pkgs; [ krita inkscape ffmpeg pdftk ];
+    systemPackages = with pkgs; [
+      blender
+      krita
+      inkscape
+      ffmpeg
+      pdftk
+      gnome-photos
+      darktable
+      imagemagick
+      scribus
+    ];
   };
 
   fonts.fonts = with pkgs; [
     source-code-pro
     powerline-fonts
-    font-awesome_5
     inter
     google-fonts
+    nerdfonts
   ];
 }
