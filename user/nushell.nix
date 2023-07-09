@@ -11,7 +11,7 @@
             starship prompt --cmd-duration $env.CMD_DURATION_MS $'--status=($env.LAST_EXIT_CODE)'
         }
 
-        let-env PROMPT_COMMAND = { create_left_prompt }
+        let-env PROMPT_COMMAND = { || create_left_prompt }
         let-env PROMPT_COMMAND_RIGHT = ""
 
         let-env PROMPT_INDICATOR = ""
@@ -33,8 +33,14 @@
           /run/current-system/sw/bin
         ]
         alias supabase = /home/ixxie/repos/.utilities/supabase-cli/cli
+        alias vultr = vultr-cli
+        alias gr = cd (git rev-parse --show-toplevel)
         def gen [] {
-          (cd ~/repos/dotfiles; git add .;);
+          echo "<< updating dotfiles nix flake >>
+          "
+          (cd ~/repos/dotfiles; sudo nix flake update)
+          echo "<< rebuilding nixos system >>
+          "
           sudo nixos-rebuild switch
         }
         def gc [] {

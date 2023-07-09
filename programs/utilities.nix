@@ -13,6 +13,7 @@ with lib; {
       simple-scan
       xclip
       lsof
+      screenkey
     ];
   };
   networking.enableIPv6 = false;

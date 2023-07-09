@@ -3,8 +3,11 @@
 {
   programs.helix = {
     enable = true;
-    settings = { theme = "catppuccin_frappe"; };
-    languages = [
+    settings = {
+      theme = "catppuccin_frappe";
+      editor = { shell = [ "nu" "--stdin" "-c" ]; };
+    };
+    languages.languages = [
       {
         name = "nix";
         auto-format = true;
@@ -16,11 +19,19 @@
         auto-format = true;
       }
       {
-        name = "typescript";
+        name = "html";
+        auto-format = true;
+      }
+      {
+        name = "css";
         auto-format = true;
       }
       {
         name = "javascript";
+        auto-format = true;
+      }
+      {
+        name = "typescript";
         auto-format = true;
       }
     ];

@@ -19,7 +19,7 @@ in {
       enable = true;
       xkbOptions = "eurosign:e";
       displayManager = {
-        lightdm = { enable = true; };
+        gdm.enable = true;
         sessionCommands = "${pkgs.xorg.xmodmap}/bin/xmodmap ${customKeymap}";
       };
       desktopManager.gnome = { enable = true; };
@@ -34,7 +34,6 @@ in {
       numix-icon-theme-circle
       arc-icon-theme
       arc-theme
-      gnomeExtensions.paperwm
       gnomeExtensions.dash-to-panel
       gnomeExtensions.switcher
       gnome.gnome-tweaks

@@ -7,6 +7,7 @@
     userEmail = "matan@shenhav.fyi";
     extraConfig = {
       init = { defaultBranch = "main"; };
+      core.editor = "hx";
       color = {
         branch = {
           current = "green bold";

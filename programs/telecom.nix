@@ -8,6 +8,8 @@ with lib; {
       chromium
       signal-desktop
       element-desktop
+      protonvpn-gui
+      protonvpn-cli
     ];
   };
 }

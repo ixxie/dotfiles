@@ -13,6 +13,7 @@
       darktable
       imagemagick
       scribus
+      libreoffice
     ];
   };
 
@@ -21,6 +22,5 @@
     powerline-fonts
     inter
     google-fonts
-    nerdfonts
   ];
 }

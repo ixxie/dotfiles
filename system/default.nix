@@ -13,4 +13,5 @@
   networking.hostName = "meso";
   time.timeZone = "Europe/Paris";
   i18n.defaultLocale = "en_IE.utf8";
+  environment.variables.EDITOR = "hx";
 }

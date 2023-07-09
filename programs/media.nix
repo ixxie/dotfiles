@@ -3,6 +3,6 @@
 with lib; {
   environment = {
     # add some desktop applications
-    systemPackages = with pkgs; [ spotify transmission-gtk vlc evince ];
+    systemPackages = with pkgs; [ spotify vlc evince ];
   };
 }
