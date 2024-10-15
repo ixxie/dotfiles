@@ -3,7 +3,6 @@
 {
   imports = [
     ./cli.nix
-    ./cloud.nix
     ./db.nix
     ./design.nix
     ./media.nix

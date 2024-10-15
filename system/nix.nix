@@ -4,9 +4,9 @@
   # Basic Package Suite
   environment = {
     systemPackages = with pkgs; [
-      nixUnstable
+      nixVersions.git
       nix-prefetch-git
-      nixfmt
+      nixfmt-rfc-style
       glibcLocales # nix locale bug
     ];
   };

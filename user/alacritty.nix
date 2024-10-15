@@ -3,7 +3,6 @@
     enable = true;
     settings = {
       window = {
-        decorations = "None";
         padding = {
           x = 10;
           y = 10;
@@ -32,10 +31,6 @@
           focused_match = {
             foreground = "#303446";
             background = "#A6D189";
-          };
-          footer_bar = {
-            foreground = "#303446";
-            background = "#A5ADCE";
           };
         };
         hints = {

@@ -2,6 +2,6 @@
 
 {
   environment = {
-    systemPackages = with pkgs; [ nodejs-18_x nodePackages_latest.pnpm ];
+    systemPackages = with pkgs; [ nodejs_22 ];
   };
 }

@@ -5,43 +5,41 @@
     enable = true;
     envFile = {
       text = ''
-        let-env STARSHIP_SHELL = "nu"
+        $env.STARSHIP_SHELL = "nu"
 
         def create_left_prompt [] {
             starship prompt --cmd-duration $env.CMD_DURATION_MS $'--status=($env.LAST_EXIT_CODE)'
         }
 
-        let-env PROMPT_COMMAND = { || create_left_prompt }
-        let-env PROMPT_COMMAND_RIGHT = ""
+        $env.PROMPT_COMMAND = { || create_left_prompt }
+        $env.PROMPT_COMMAND_RIGHT = ""
 
-        let-env PROMPT_INDICATOR = ""
-        let-env PROMPT_INDICATOR_VI_INSERT = ": "
-        let-env PROMPT_INDICATOR_VI_NORMAL = "〉"
-        let-env PROMPT_MULTILINE_INDICATOR = "::: "
+        $env.PROMPT_INDICATOR = ""
+        $env.PROMPT_INDICATOR_VI_INSERT = ": "
+        $env.PROMPT_INDICATOR_VI_NORMAL = "〉"
+        $env.PROMPT_MULTILINE_INDICATOR = "::: "
       '';
     };
     configFile = {
       text = ''
-        let-env config = {
+        $env.config = {
           show_banner: false
         }
-        let-env PATH = [
+        $env.PATH = [
           /run/wrappers/bin
           /home/ixxie/.nix-profile/bin
           /etc/profiles/per-user/ixxie/bin
           /nix/var/nix/profiles/default/bin
           /run/current-system/sw/bin
         ]
-        alias supabase = /home/ixxie/repos/.utilities/supabase-cli/cli
-        alias vultr = vultr-cli
         alias gr = cd (git rev-parse --show-toplevel)
-        def gen [] {
+        def regen [] {
           echo "<< updating dotfiles nix flake >>
           "
           (cd ~/repos/dotfiles; sudo nix flake update)
           echo "<< rebuilding nixos system >>
           "
-          sudo nixos-rebuild switch
+          sudo nixos-rebuild switch --flake .#contingent
         }
         def gc [] {
           sudo nix-collect-garbage --delete-older-than 7d

@@ -17,12 +17,9 @@ in {
   services = {
     xserver = {
       enable = true;
-      xkbOptions = "eurosign:e";
-      displayManager = {
-        gdm.enable = true;
-        sessionCommands = "${pkgs.xorg.xmodmap}/bin/xmodmap ${customKeymap}";
-      };
-      desktopManager.gnome = { enable = true; };
+      xkb.options = "eurosign:e";
+      desktopManager.gnome.enable = true;
+      displayManager.gdm.enable = true;
     };
     gnome.core-utilities.enable = false;
     illum.enable = true;
@@ -34,10 +31,10 @@ in {
       numix-icon-theme-circle
       arc-icon-theme
       arc-theme
-      gnomeExtensions.dash-to-panel
-      gnomeExtensions.switcher
-      gnome.gnome-tweaks
-      gnome.nautilus
+      gnome-tweaks
+      nautilus
+      gnomeExtensions.dash-to-dock
+      gnomeExtensions.paperwm
     ];
 
     # GTK3 global theme (widget and icon theme)
