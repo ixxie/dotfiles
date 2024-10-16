@@ -1,6 +1,12 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
-with lib; {
+with lib;
+{
   environment = {
     systemPackages = with pkgs; [
       firefox

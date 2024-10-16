@@ -2,5 +2,7 @@
 
 {
   # Basic Package Suite
-  environment = { systemPackages = with pkgs; [ duckdb ]; };
+  environment = {
+    systemPackages = with pkgs; [ duckdb ];
+  };
 }

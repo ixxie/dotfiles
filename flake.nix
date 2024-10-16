@@ -6,16 +6,23 @@
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
   };
-  outputs = inputs@{ self, nixpkgs, nixos-hardware, home-manager }: {
-    nixosConfigurations.contingent = nixpkgs.lib.nixosSystem {
-      system = "x86_64-linux";
-      modules = [
-        home-manager.nixosModules.home-manager
-        nixos-hardware.nixosModules.framework-13-7040-amd
-        ./system
-        ./programs
-        ./user
-      ];
+  outputs =
+    inputs@{
+      self,
+      nixpkgs,
+      nixos-hardware,
+      home-manager,
+    }:
+    {
+      nixosConfigurations.contingent = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        modules = [
+          home-manager.nixosModules.home-manager
+          nixos-hardware.nixosModules.framework-13-7040-amd
+          ./system
+          ./programs
+          ./user
+        ];
+      };
     };
-  };
 }

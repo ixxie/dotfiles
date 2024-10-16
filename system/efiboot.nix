@@ -1,4 +1,5 @@
-{ pkgs, ... }: {
+{ pkgs, ... }:
+{
 
   # Use the gummiboot efi boot loader.
   boot.loader = {

@@ -16,18 +16,16 @@
       "editor.minimap.enabled" = false;
       "editor.renderWhitespace" = "none"; # removes whitespace chars
       "editor.renderIndentGuides" = false; # removes indent guides
-      "editor.hideCursorInOverviewRuler" =
-        true; # hides cursor mark in the overview ruler
+      "editor.hideCursorInOverviewRuler" = true; # hides cursor mark in the overview ruler
       "editor.folding" = false; # removes the folding feature
-      "editor.occurrencesHighlight" =
-        false; # removes highlights occurrences (still works when you select a word)
-      "explorer.openEditors.visible" =
-        0; # removes the open editors section at the top of the sidebar, you can see the opened files with ⌘ + ⌥ + Tab
-      "workbench.editor.showIcons" =
-        false; # removes icon from opened files in tabs
+      "editor.occurrencesHighlight" = false; # removes highlights occurrences (still works when you select a word)
+      "explorer.openEditors.visible" = 0; # removes the open editors section at the top of the sidebar, you can see the opened files with ⌘ + ⌥ + Tab
+      "workbench.editor.showIcons" = false; # removes icon from opened files in tabs
       # formatting
       "editor.formatOnSave" = true;
-      "editor.codeActionsOnSave" = { "source.fixAll" = true; };
+      "editor.codeActionsOnSave" = {
+        "source.fixAll" = true;
+      };
       # FRONTEND
       "prettier.requireConfig" = true;
       "[css][html][yaml][javascript][typescript]" = {
@@ -42,7 +40,9 @@
       "[svelte]" = {
         "editor.formatOnSave" = true;
         "editor.defaultFormatter" = "svelte.svelte-vscode";
-        "editor.codeActionsOnSave" = { "source.organizeImports" = false; };
+        "editor.codeActionsOnSave" = {
+          "source.organizeImports" = false;
+        };
       };
       "svelte.enable-ts-plugin" = true;
       # BACKEND

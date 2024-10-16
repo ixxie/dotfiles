@@ -6,7 +6,9 @@
     userName = "Matan Bendix Shenhav";
     userEmail = "matan@shenhav.fyi";
     extraConfig = {
-      init = { defaultBranch = "main"; };
+      init = {
+        defaultBranch = "main";
+      };
       core.editor = "hx";
       color = {
         branch = {
@@ -21,7 +23,9 @@
           old = "red";
         };
       };
-      diff.bin = { textconv = "hexdump -v -C"; };
+      diff.bin = {
+        textconv = "hexdump -v -C";
+      };
       alias = {
         sq = "!git add $1 && git commit --amend -C HEAD && :";
         pf = "!git push -f origin HEAD && :";

@@ -1,6 +1,12 @@
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
-with lib; {
+with lib;
+{
   environment = {
     # add some desktop applications
     systemPackages = with pkgs; [
@@ -14,6 +20,7 @@ with lib; {
       xclip
       lsof
       screenkey
+      isoimagewriter
     ];
   };
   networking.enableIPv6 = false;

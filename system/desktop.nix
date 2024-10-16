@@ -13,7 +13,8 @@ let
     keysym s = s S ssharp
     keysym Super_L = keycode 133
   '';
-in {
+in
+{
   services = {
     xserver = {
       enable = true;

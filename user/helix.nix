@@ -5,14 +5,24 @@
     enable = true;
     settings = {
       theme = "catppuccin_frappe";
-      editor = { shell = [ "nu" "--stdin" "-c" ]; };
+      editor = {
+        shell = [
+          "nu"
+          "--stdin"
+          "-c"
+        ];
+      };
     };
     languages.languages = [
       {
         name = "nix";
         auto-format = true;
-        language-server = { command = "rnix-lsp"; };
-        formatter = { command = "nixfmt"; };
+        language-server = {
+          command = "rnix-lsp";
+        };
+        formatter = {
+          command = "nixfmt";
+        };
       }
       {
         name = "svelte";
