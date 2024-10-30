@@ -1,7 +1,5 @@
 {
-  config,
   pkgs,
-  lib,
   ...
 }:
 
@@ -14,8 +12,7 @@
       inkscape
       ffmpeg
       pdftk
-      gnome-photos
-      darktable
+      gthumb
       imagemagick
       scribus
       libreoffice

@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 
 {
   imports = [
@@ -6,6 +6,8 @@
     ./efiboot.nix
     ./audio.nix
     ./desktop.nix
+    ./fonts.nix
+    ./framework.nix
     ./nix.nix
   ];
   # host
@@ -24,14 +26,10 @@
   swapDevices = [
     {
       device = "/var/lib/swapfile";
-      size = 16*1024;
+      size = 64 * 1024;
     }
   ];
 
   # firmware support
   nixpkgs.config.allowUnfree = true;
-
-  # framework firmware
-  services.fwupd.enable = true;
-  services.power-profiles-daemon.enable = true;
 }

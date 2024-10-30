@@ -1,11 +1,8 @@
 {
-  config,
   pkgs,
-  lib,
   ...
 }:
 
-with lib;
 {
   environment = {
     # add some desktop applications
@@ -13,6 +10,7 @@ with lib;
       spotify
       vlc
       evince
+      transmission_4-gtk
     ];
   };
 }

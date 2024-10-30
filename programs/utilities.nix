@@ -1,19 +1,17 @@
 {
-  config,
   pkgs,
-  lib,
   ...
 }:
 
-with lib;
 {
   environment = {
     # add some desktop applications
     systemPackages = with pkgs; [
+      ddate
       wget
       unzip
       dig
-      p7zip
+      p7zip-rar
       rar
       gparted
       simple-scan

@@ -1,4 +1,4 @@
-{ pkgs, config, ... }:
+{ pkgs, ... }:
 
 {
   programs.nushell = {
@@ -18,6 +18,8 @@
         $env.PROMPT_INDICATOR_VI_INSERT = ": "
         $env.PROMPT_INDICATOR_VI_NORMAL = "〉"
         $env.PROMPT_MULTILINE_INDICATOR = "::: "
+
+        $env.MASCOPE_PATH = "/home/ixxie/repos/mascope"
       '';
     };
     configFile = {
@@ -25,13 +27,6 @@
         $env.config = {
           show_banner: false
         }
-        $env.PATH = [
-          /run/wrappers/bin
-          /home/ixxie/.nix-profile/bin
-          /etc/profiles/per-user/ixxie/bin
-          /nix/var/nix/profiles/default/bin
-          /run/current-system/sw/bin
-        ]
         alias gr = cd (git rev-parse --show-toplevel)
         def regen [] {
           echo "<< updating dotfiles nix flake >>
@@ -46,6 +41,10 @@
           nix-store --optimise
           sudo nixos-rebuild switch
         }
+
+        # plugins
+
+        plugin add ${pkgs.nushellPlugins.query}/bin/nu_plugin_query
       '';
     };
   };

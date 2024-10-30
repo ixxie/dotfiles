@@ -1,53 +1,83 @@
-{ pkgs, ... }:
+{ ... }:
 
 {
   programs.helix = {
     enable = true;
     settings = {
-      theme = "catppuccin_frappe";
+      theme = "everforest_dark";
       editor = {
         shell = [
           "nu"
           "--stdin"
           "-c"
         ];
+        true-color = true;
+        file-picker.hidden = false;
+        #lsp.display-inlay-hints = true;
       };
     };
-    languages.languages = [
-      {
-        name = "nix";
-        auto-format = true;
-        language-server = {
-          command = "rnix-lsp";
+    languages = {
+      language-server = {
+        nixd = {
+          command = "nixd";
         };
-        formatter = {
-          command = "nixfmt";
+        ruff = {
+          command = "ruff";
+          args = [ "server" ];
         };
-      }
-      {
-        name = "svelte";
-        auto-format = true;
-      }
-      {
-        name = "html";
-        auto-format = true;
-      }
-      {
-        name = "css";
-        auto-format = true;
-      }
-      {
-        name = "javascript";
-        auto-format = true;
-      }
-      {
-        name = "typescript";
-        auto-format = true;
-      }
-      {
-        name = "python";
-        auto-format = true;
-      }
-    ];
+        eslint = {
+          command = "vscode-eslint-language-server";
+          args = [ "--stdio" ];
+          config = {
+            validate = "on";
+          };
+        };
+      };
+      language = [
+        {
+          name = "nix";
+          auto-format = true;
+          formatter.command = "nixfmt";
+          language-servers = [ "nixd" ];
+          file-types = [ "nix" ];
+        }
+        {
+          name = "svelte";
+          auto-format = true;
+          file-types = [
+            "svelte"
+            "svelte.js"
+            "svelte.ts"
+          ];
+        }
+        {
+          name = "vue";
+          file-types = [ "vue" ];
+          language-servers = [ "eslint" ];
+          formatter = {
+            command = "prettierd";
+            args = [
+              "--stdin-filepath"
+              "x.vue"
+            ];
+          };
+          auto-format = true;
+        }
+        {
+          name = "javascript";
+          auto-format = true;
+        }
+        {
+          name = "markdown";
+          auto-format = true;
+        }
+        {
+          name = "python";
+          auto-format = true;
+          language-servers = [ "ruff" ];
+          file-types = [ "py" ];
+        }
+      ];
+    };
   };
 }

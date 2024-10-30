@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ pkgs, ... }:
 
 {
   # Basic Package Suite
@@ -15,10 +15,12 @@
       ngrok
       openssh
       testdisk
-      tmux
       tree
       lshw
       starship
+      ripgrep
+      alacritty-theme
+      nushellPlugins.query
     ];
   };
 

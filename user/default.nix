@@ -3,19 +3,19 @@
 {
   home-manager = {
     useGlobalPkgs = true;
+    backupFileExtension = "backup";
     users.ixxie =
-      { pkgs, ... }:
+      { ... }:
       {
         imports = [
           ./alacritty.nix
           ./git.nix
-          ./vscodium.nix
           ./nushell.nix
           ./helix.nix
+          ./gnome.nix
         ];
 
         home = {
-          sessionPath = [ "/home/ixxie/repos/.utilities/node-modules/bin" ];
           stateVersion = "24.05";
           username = "ixxie";
         };
@@ -28,13 +28,9 @@
       "networkmanager"
       "adbusers"
       "audio"
+      "docker"
     ];
     isNormalUser = true;
-    openssh = {
-      authorizedKeys.keys =
-        [
-        ];
-    };
     shell = pkgs.nushell;
     useDefaultShell = false;
   };

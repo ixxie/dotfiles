@@ -1,11 +1,8 @@
 {
-  config,
   pkgs,
-  lib,
   ...
 }:
 
-with lib;
 {
   environment = {
     systemPackages = with pkgs; [
@@ -13,7 +10,6 @@ with lib;
       chromium
       signal-desktop
       element-desktop
-      discord
     ];
   };
 }
