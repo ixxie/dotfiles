@@ -18,4 +18,6 @@
       "flakes"
     ];
   };
+
+  nixpkgs.config.allowBroken = true;
 }

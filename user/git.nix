@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ ... }:
 
 {
   programs.git = {
@@ -27,13 +27,13 @@
         textconv = "hexdump -v -C";
       };
       alias = {
-        sq = "!git add $1 && git commit --amend -C HEAD && :";
-        pf = "!git push -f origin HEAD && :";
-        ds = "!git diff --ignore-all-space --stat $1 && :";
-        bm = "!git rebase -i $(git merge-base $1 $2) && :";
-        ac = "!git add . && git commit && :";
-        cm = "!git commit -m $1 && :";
-        poh = "!git push origin HEAD && :";
+        squash = "!git add $1 && git commit --amend --no-edit && :";
+        up = "!git push origin HEAD && :";
+        shove = "!git push -f origin HEAD && :";
+        graph = "!git log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)' $1 && :";
+        stats = "!git diff --ignore-all-space --stat $1 && :";
+        base = "!git rebase -i $(git merge-base $1 $2) && :";
+        comm = "!git add . && git commit -m $1 && :";
         wat = "!git config --get-regexp ^alias && :";
       };
     };

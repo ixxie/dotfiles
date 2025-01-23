@@ -10,6 +10,7 @@
     ./framework.nix
     ./nix.nix
   ];
+
   # host
   system.stateVersion = "24.05";
   networking.hostName = "contingent";

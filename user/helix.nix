@@ -13,7 +13,11 @@
         ];
         true-color = true;
         file-picker.hidden = false;
-        #lsp.display-inlay-hints = true;
+        inline-diagnostics = {
+          cursor-line = "hint";
+          other-lines = "disable";
+        };
+        lsp.auto-signature-help = false;
       };
     };
     languages = {
@@ -46,8 +50,6 @@
           auto-format = true;
           file-types = [
             "svelte"
-            "svelte.js"
-            "svelte.ts"
           ];
         }
         {
@@ -65,11 +67,33 @@
         }
         {
           name = "javascript";
+          file-types = [ "js" ];
+          formatter = {
+            command = "prettierd";
+            args = [
+              "--stdin-filepath"
+              "x.js"
+            ];
+          };
           auto-format = true;
         }
         {
-          name = "markdown";
+          name = "typescript";
+          file-types = [ "ts" ];
           auto-format = true;
+          formatter = {
+            command = "prettierd";
+            args = [
+              "--stdin-filepath"
+              "x.ts"
+            ];
+          };
+        }
+        {
+          name = "markdown";
+          file-types = [ "md" ];
+          auto-format = true;
+          soft-wrap.enable = true;
         }
         {
           name = "python";

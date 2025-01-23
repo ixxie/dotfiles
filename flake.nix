@@ -12,10 +12,12 @@
       nixpkgs,
       nixos-hardware,
       home-manager,
+      ...
     }:
     {
       nixosConfigurations.contingent = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
+        specialArgs = inputs;
         modules = [
           home-manager.nixosModules.home-manager
           nixos-hardware.nixosModules.framework-13-7040-amd

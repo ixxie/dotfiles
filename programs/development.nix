@@ -14,10 +14,13 @@
     vscode-langservers-extracted # html/css/json
     nodePackages.typescript-language-server
     nodePackages.svelte-language-server
-    nodePackages_latest."@vue/language-server"
+    nodePackages."@vue/language-server"
+    nodePackages.prettier
     prettierd
     eslint_d
     postman
+    markdown-oxide
+    bun
     # data
     duckdb
     sqlitebrowser

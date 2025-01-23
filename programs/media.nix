@@ -11,6 +11,8 @@
       vlc
       evince
       transmission_4-gtk
+      prismlauncher
+      minecraft
     ];
   };
 }

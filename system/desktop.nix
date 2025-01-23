@@ -19,8 +19,12 @@
       gnomeExtensions.dash-to-dock
       gnomeExtensions.paperwm
       gnomeExtensions.vertical-workspaces
+      gnomeExtensions.screen-rotate
       dconf
       dconf-editor
+      canon-cups-ufr2
     ];
   };
+
+  services.printing.enable = true;
 }

@@ -7,7 +7,6 @@
   environment = {
     # add some desktop applications
     systemPackages = with pkgs; [
-      blender
       krita
       inkscape
       ffmpeg
