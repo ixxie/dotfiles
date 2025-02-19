@@ -28,18 +28,25 @@
           show_banner: false
         }
         alias gr = cd (git rev-parse --show-toplevel)
-        def regen [] {
-          echo "<< updating dotfiles nix flake >>
-          "
-          (cd ~/repos/dotfiles; sudo nix flake update)
-          echo "<< rebuilding nixos system >>
-          "
-          sudo nixos-rebuild switch --flake .#contingent
+
+        # NixOS helper commands        
+        def nixos [] {
         }
-        def gc [] {
+        # Clean up the Nix store
+        def "nixos gc" [] {
           sudo nix-collect-garbage --delete-older-than 7d
           nix-store --optimise
-          sudo nixos-rebuild switch
+        }
+        # Update the NixOS config's flake
+        def "nixos update" [] {
+          (cd ~/repos/dotfiles; sudo nix flake update)
+        }
+        # Rebuild the NixOS profile and switch to it
+        def "nixos switch" [--update] {
+          if $update {
+            nixos update
+          }
+          sudo nixos-rebuild switch --flake .#contingent
         }
 
         # plugins

@@ -67,7 +67,10 @@
         }
         {
           name = "javascript";
-          file-types = [ "js" ];
+          file-types = [
+            "js"
+            "mjs"
+          ];
           formatter = {
             command = "prettierd";
             args = [
@@ -91,7 +94,10 @@
         }
         {
           name = "markdown";
-          file-types = [ "md" ];
+          file-types = [
+            "md"
+            "mdx"
+          ];
           auto-format = true;
           soft-wrap.enable = true;
         }

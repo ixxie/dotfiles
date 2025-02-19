@@ -22,9 +22,14 @@
       gnomeExtensions.screen-rotate
       dconf
       dconf-editor
-      canon-cups-ufr2
+      epson-escpr
     ];
   };
 
   services.printing.enable = true;
+  services.avahi = {
+    enable = true;
+    nssmdns4 = true;
+    openFirewall = true;
+  };
 }

@@ -8,5 +8,5 @@
     alsa.enable = true;
     wireplumber.enable = true;
   };
-  hardware.pulseaudio.enable = false;
+  services.pulseaudio.enable = false;
 }

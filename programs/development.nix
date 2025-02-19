@@ -4,6 +4,8 @@
   virtualisation.docker.enable = true;
 
   environment.systemPackages = with pkgs; [
+    # general
+    renovate
     # python
     python312
     python312Packages.python-lsp-server

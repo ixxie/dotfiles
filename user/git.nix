@@ -9,6 +9,9 @@
       init = {
         defaultBranch = "main";
       };
+      push = {
+        autoSetupRemote = true;
+      };
       core.editor = "hx";
       color = {
         branch = {
@@ -35,6 +38,8 @@
         base = "!git rebase -i $(git merge-base $1 $2) && :";
         comm = "!git add . && git commit -m $1 && :";
         wat = "!git config --get-regexp ^alias && :";
+        rm = "!git branch -D $1 :";
+        ls = "!git branch -v ;";
       };
     };
   };
