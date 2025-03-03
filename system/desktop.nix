@@ -15,6 +15,7 @@
     systemPackages = with pkgs; [
       gnome-tweaks
       nautilus
+      nemo
       gtk-engine-murrine
       gnomeExtensions.dash-to-dock
       gnomeExtensions.paperwm
@@ -27,9 +28,5 @@
   };
 
   services.printing.enable = true;
-  services.avahi = {
-    enable = true;
-    nssmdns4 = true;
-    openFirewall = true;
-  };
+
 }

@@ -5,10 +5,10 @@
 
 {
   environment = {
-    # add some desktop applications
     systemPackages = with pkgs; [
       krita
       inkscape
+      gimp-with-plugins
       ffmpeg
       pdftk
       gthumb

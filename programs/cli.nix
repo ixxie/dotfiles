@@ -8,19 +8,22 @@
       git
       gnumake
       htop
-      irssi
       lm_sensors
       man-pages
-      neovim
       ngrok
       openssh
       testdisk
       tree
       lshw
-      starship
       ripgrep
       alacritty-theme
+      # shell
+      starship
       nushellPlugins.query
+      # completers
+      carapace
+      zoxide
+      fish
     ];
   };
 
