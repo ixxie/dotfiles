@@ -21,9 +21,19 @@
         modules = [
           home-manager.nixosModules.home-manager
           nixos-hardware.nixosModules.framework-13-7040-amd
-          ./system
-          ./programs
-          ./user
+          ./system.nix
+          ./user.nix
+          # modules
+          ./modules/cli.nix
+          ./modules/design.nix
+          ./modules/desktop.nix
+          ./modules/development.nix
+          ./modules/editor.nix
+          ./modules/framework.nix
+          ./modules/hardware.nix
+          ./modules/media.nix
+          ./modules/nix.nix
+          ./modules/shell.nix
         ];
       };
     };

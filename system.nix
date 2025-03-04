@@ -1,22 +1,21 @@
 { pkgs, ... }:
 
 {
-  imports = [
-    ./hardware.nix
-    ./efiboot.nix
-    ./audio.nix
-    ./desktop.nix
-    ./fonts.nix
-    ./framework.nix
-    ./nix.nix
-  ];
-
   # host
   system.stateVersion = "24.05";
   networking.hostName = "contingent";
+  security.sudo.wheelNeedsPassword = false;
+  networking.enableIPv6 = false;
 
-  # kernel
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  boot = {
+    # Use latest kernel
+    kernelPackages = pkgs.linuxPackages_latest;
+    # Use the gummiboot efi boot loader.
+    loader = {
+      systemd-boot.enable = true;
+      efi.canTouchEfiVariables = true;
+    };
+  };
 
   # environment
   time.timeZone = "Europe/Paris";
