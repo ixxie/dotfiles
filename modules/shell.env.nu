@@ -13,3 +13,5 @@ $env.PROMPT_INDICATOR_VI_NORMAL = "〉"
 $env.PROMPT_MULTILINE_INDICATOR = "::: "
 
 $env.MASCOPE_PATH = "/home/ixxie/repos/mascope"
+
+$env.HANDLER = "codeium"

@@ -1,11 +1,14 @@
-{ ... }:
+{ pkgs, ... }:
 
 {
+  environment.systemPackages = with pkgs; [
+    helix-gpt
+  ];
   home-manager.users.ixxie = {
     programs.helix = {
       enable = true;
       settings = {
-        theme = "everforest_dark";
+        #theme = "everforest_dark";
         editor = {
           shell = [
             "nu"
@@ -23,9 +26,6 @@
       };
       languages = {
         language-server = {
-          nixd = {
-            command = "nixd";
-          };
           ruff = {
             command = "ruff";
             args = [ "server" ];
@@ -37,13 +37,22 @@
               validate = "on";
             };
           };
+          vls = {
+            command = "vue-language-server";
+            args = [ "--stdio" ];
+          };
+          llm = {
+            command = "helix-gpt";
+          };
         };
         language = [
           {
             name = "nix";
             auto-format = true;
-            formatter.command = "nixfmt";
-            language-servers = [ "nixd" ];
+            language-servers = [
+              "nixd"
+              "llm"
+            ];
             file-types = [ "nix" ];
           }
           {
@@ -51,12 +60,19 @@
             auto-format = true;
             file-types = [
               "svelte"
+              "llm"
             ];
           }
           {
             name = "vue";
             file-types = [ "vue" ];
-            language-servers = [ "eslint" ];
+            language-servers = [
+              "eslint"
+              "vls"
+              "llm"
+            ];
+            injection-regex = "vue";
+            scope = "text.html.vue";
             formatter = {
               command = "prettierd";
               args = [
@@ -79,11 +95,17 @@
                 "x.js"
               ];
             };
+            language-servers = [
+              "typescript-language-server"
+              "llm"
+            ];
             auto-format = true;
           }
           {
             name = "typescript";
-            file-types = [ "ts" ];
+            file-types = [
+              "ts"
+            ];
             auto-format = true;
             formatter = {
               command = "prettierd";
@@ -98,6 +120,7 @@
             file-types = [
               "md"
               "mdx"
+              "llm"
             ];
             auto-format = true;
             soft-wrap.enable = true;
@@ -105,8 +128,20 @@
           {
             name = "python";
             auto-format = true;
-            language-servers = [ "ruff" ];
+
+            language-servers = [
+              "ruff"
+              "llm"
+            ];
             file-types = [ "py" ];
+          }
+          {
+            name = "bash";
+            language-servers = [
+              "bash-language-server"
+              "llm"
+            ];
+            file-types = [ "sh" ];
           }
         ];
       };

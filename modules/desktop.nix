@@ -21,6 +21,7 @@
     dconf
     dconf-editor
     # file browser
+    xfce.tumbler
     xarchiver
   ];
 

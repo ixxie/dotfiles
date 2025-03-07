@@ -2,7 +2,6 @@
 
 {
   home-manager = {
-    useGlobalPkgs = true;
     backupFileExtension = "backup";
     users.ixxie.home = {
       stateVersion = "24.05";

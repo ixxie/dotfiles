@@ -5,6 +5,7 @@
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
+    stylix.url = "github:danth/stylix";
   };
   outputs =
     inputs@{
@@ -12,6 +13,7 @@
       nixpkgs,
       nixos-hardware,
       home-manager,
+      stylix,
       ...
     }:
     {
@@ -19,10 +21,12 @@
         system = "x86_64-linux";
         specialArgs = inputs;
         modules = [
+          stylix.nixosModules.stylix
           home-manager.nixosModules.home-manager
           nixos-hardware.nixosModules.framework-13-7040-amd
           ./system.nix
           ./user.nix
+          ./theme.nix
           # modules
           ./modules/cli.nix
           ./modules/design.nix
