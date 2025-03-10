@@ -17,7 +17,8 @@
     gnomeExtensions.dash-to-dock
     gnomeExtensions.paperwm
     gnomeExtensions.vertical-workspaces
-    gnomeExtensions.screen-rotate
+    gnomeExtensions.clipboard-indicator
+    gnomeExtensions.dash-to-panel
     dconf
     dconf-editor
     # file browser

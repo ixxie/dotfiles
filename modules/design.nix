@@ -1,4 +1,4 @@
-{ pkgs, lib, ... }:
+{ pkgs, ... }:
 
 with pkgs;
 {
@@ -20,9 +20,4 @@ with pkgs;
     inter
     google-fonts
   ];
-
-  fonts.fontconfig = {
-    enable = true;
-    useEmbeddedBitmaps = true;
-  };
 }

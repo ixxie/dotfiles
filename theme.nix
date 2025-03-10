@@ -7,6 +7,8 @@
 
     opacity.terminal = 0.8;
 
+    cursor.size = 16;
+
     fonts = {
       serif = {
         package = pkgs.nerd-fonts.monaspace;

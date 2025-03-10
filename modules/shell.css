@@ -1,0 +1,14 @@
+headerbar {
+  margin: -5px;
+  padding: 0;
+  background: none;
+  height: 10px;
+}
+
+tabbox,
+tab,
+button {
+  min-height: 10px;
+  height: 10px;
+  margin: 0px;
+}
