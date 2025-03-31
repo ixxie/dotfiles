@@ -13,11 +13,9 @@ with pkgs;
     scribus
     libreoffice
   ];
-
-  fonts.packages = [
+  fonts.packages = with pkgs; [
     source-code-pro
-    powerline-fonts
-    inter
     google-fonts
   ];
+
 }

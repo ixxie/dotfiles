@@ -6,6 +6,7 @@
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     stylix.url = "github:danth/stylix";
+    hl.url = "github:pamburus/hl";
   };
   outputs =
     inputs@{
@@ -16,9 +17,12 @@
       stylix,
       ...
     }:
+    let
+      system = "x86_64-linux";
+    in
     {
       nixosConfigurations.contingent = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
+        inherit system;
         specialArgs = inputs;
         modules = [
           stylix.nixosModules.stylix

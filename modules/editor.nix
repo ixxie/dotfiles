@@ -8,7 +8,6 @@
     programs.helix = {
       enable = true;
       settings = {
-        #theme = "everforest_dark";
         editor = {
           shell = [
             "nu"

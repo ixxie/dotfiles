@@ -3,28 +3,29 @@
 {
   # Basic Package Suite
   environment.systemPackages = with pkgs; [
+    ddate
+    dig
     file
     gnumake
+    gparted
     htop
+    isoimagewriter
+    ledger
     lm_sensors
+    lshw
+    lsof
     man-pages
     ngrok
     openssh
-    testdisk
-    tree
-    lshw
-    ripgrep
-    ddate
-    wget
-    unzip
-    dig
     p7zip-rar
     rar
-    gparted
-    simple-scan
-    xclip
-    lsof
+    ripgrep
     screenkey
-    isoimagewriter
+    simple-scan
+    testdisk
+    tree
+    unzip
+    wget
+    xclip
   ];
 }

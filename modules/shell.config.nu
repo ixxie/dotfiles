@@ -23,6 +23,21 @@ def "nixos switch" [--update] {
   sudo nixos-rebuild switch --flake '/home/ixxie/repos/dotfiles#contingent'
 }
 
+def rip [
+  pattern: string
+  replacement: string
+  --dry
+] {
+  let expr = $"s/($pattern)/($replacement)/g"
+  if $dry {
+    rg --pretty $pattern | sed $expr
+  } else {
+    rg -l $pattern | lines | each {|$file|
+      sed -i $expr $file;
+    }
+  }
+}
+
 # ALIASES
 
 # go to git root

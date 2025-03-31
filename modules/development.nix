@@ -3,9 +3,10 @@
 {
   environment.systemPackages = with pkgs; [
     # general
-    renovate
+    gh
+    # ai
+    aider-chat
     # python
-    python312
     python312Packages.python-lsp-server
     ruff
     uv
@@ -70,8 +71,8 @@
           wat = "config --get-regexp ^alias";
           rm = "branch -D";
           ls = "branch -v";
-          cd = "checkout";
-          new = "checkout -b";
+          cd = "switch $1";
+          new = "switch -c";
           root = "!gr && :";
         };
       };

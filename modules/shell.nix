@@ -25,6 +25,16 @@
           plugin add ${pkgs.nushellPlugins.query}/bin/nu_plugin_query
         '';
     };
+    ghostty = {
+      enable = true;
+      settings = {
+        window-padding-x = 10;
+        window-padding-y = 10;
+        gtk-wide-tabs = false;
+        gtk-custom-css = "/home/ixxie/repos/dotfiles/modules/shell.css";
+      };
+    };
+    # redundency
     alacritty = {
       enable = true;
       settings = {
@@ -36,15 +46,6 @@
           blur = true;
           decorations = "None";
         };
-      };
-    };
-    ghostty = {
-      enable = true;
-      settings = {
-        window-padding-x = 10;
-        window-padding-y = 10;
-        gtk-wide-tabs = false;
-        gtk-custom-css = "/home/ixxie/repos/dotfiles/modules/shell.css";
       };
     };
   };

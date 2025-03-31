@@ -3,7 +3,7 @@
 {
   # Basic Package Suite
   environment.systemPackages = with pkgs; [
-    nixVersions.git
+    nixVersions.latest
     nix-prefetch-git
     nixfmt-rfc-style
     glibcLocales # nix locale bug
@@ -18,4 +18,13 @@
   };
 
   nixpkgs.config.allowBroken = true;
+
+  # home-manager.users.ixxie.programs = {
+  #   direnv = {
+  #     enable = true;
+  #     enableNushellIntegration = true;
+  #     enableBashIntegration = true;
+  #     nix-direnv.enable = true;
+  #   };
+  # };
 }

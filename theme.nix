@@ -4,11 +4,7 @@
   stylix = {
     enable = true;
     base16Scheme = "${pkgs.base16-schemes}/share/themes/unikitty-dark.yaml";
-
     opacity.terminal = 0.8;
-
-    cursor.size = 16;
-
     fonts = {
       serif = {
         package = pkgs.nerd-fonts.monaspace;
@@ -23,10 +19,9 @@
         name = "MonaspiceKr Nerd Font";
       };
       emoji = {
-        package = pkgs.noto-fonts-emoji;
-        name = "Noto Color Emoji";
+        package = pkgs.twemoji-color-font;
+        name = "Twemoji Color";
       };
-
       sizes = {
         applications = 11;
         terminal = 11;
