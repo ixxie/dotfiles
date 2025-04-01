@@ -23,11 +23,17 @@
         name = "Twemoji Color";
       };
       sizes = {
-        applications = 11;
+        applications = 10;
         terminal = 11;
         popups = 11;
         desktop = 11;
       };
     };
+  };
+  home-manager.users.ixxie.stylix.iconTheme = {
+    enable = true;
+    package = pkgs.numix-icon-theme-circle;
+    dark = "Numix-Circle";
+    light = "Numix-Circle-Light";
   };
 }

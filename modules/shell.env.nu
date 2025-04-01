@@ -15,3 +15,5 @@ $env.PROMPT_MULTILINE_INDICATOR = "::: "
 $env.MASCOPE_PATH = "/home/ixxie/repos/mascope"
 
 $env.HANDLER = "codeium"
+
+$env.QT_QPA_PLATFORM = "wayland"

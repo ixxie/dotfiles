@@ -10,6 +10,7 @@
       # messaging
       signal-desktop
       element-desktop
+      discord
       # media
       spotify
       vlc
