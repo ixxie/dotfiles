@@ -11,6 +11,27 @@
     illum.enable = true;
   };
 
+  programs.hyprland = {
+    # Install the packages from nixpkgs
+    enable = true;
+    # Whether to enable XWayland
+    xwayland.enable = true;
+  };
+  home-manager.users.ixxie = {
+    wayland.windowManager.hyprland = {
+      # Whether to enable Hyprland wayland compositor
+      enable = true;
+      # The hyprland package to use
+      package = pkgs.hyprland;
+      # Whether to enable XWayland
+      xwayland.enable = true;
+
+      # Optional
+      # Whether to enable hyprland-session.target on hyprland startup
+      systemd.enable = true;
+    };
+  };
+
   environment.systemPackages = with pkgs; [
     gnome-tweaks
     gtk-engine-murrine
@@ -39,4 +60,17 @@
   };
 
   services.printing.enable = true;
+
+  xdg.portal.config = {
+    gnome = {
+      default = [
+        "gnome"
+        "gtk"
+      ];
+      "org.freedesktop.impl.portal.Secret" = [
+        "gnome-keyring"
+      ];
+      "org.freedesktop.impl.portal.FileChooser" = [ "gtk" ];
+    };
+  };
 }
