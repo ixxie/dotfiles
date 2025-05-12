@@ -1,5 +1,8 @@
-{ pkgs, ... }:
+{ pkgs, inputs, ... }:
 
+let
+  colmena = inputs.colmena.packages.x86_64-linux.colmena;
+in
 {
   # Basic Package Suite
   environment.systemPackages = with pkgs; [
@@ -7,6 +10,8 @@
     nix-prefetch-git
     nixfmt-rfc-style
     glibcLocales # nix locale bug
+    nixos-anywhere
+    colmena
   ];
 
   nix = {

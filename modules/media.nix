@@ -8,9 +8,10 @@
       chromium
       tor-browser
       # messaging
-      signal-desktop
+      signal-desktop-bin
       element-desktop
       discord
+      vesktop
       # media
       spotify
       vlc

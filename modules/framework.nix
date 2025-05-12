@@ -1,6 +1,9 @@
-{ ... }:
+{ inputs, ... }:
 
 {
+  imports = [
+    inputs.nixos-hardware.nixosModules.framework-13-7040-amd
+  ];
   services.fwupd.enable = true; # firmware
   services.power-profiles-daemon.enable = true; # battery
   boot.initrd.kernelModules = [ "amdgpu" ]; # graphics

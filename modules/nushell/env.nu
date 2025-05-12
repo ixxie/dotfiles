@@ -15,5 +15,11 @@ $env.PROMPT_MULTILINE_INDICATOR = "::: "
 $env.MASCOPE_PATH = "/home/ixxie/repos/mascope"
 
 $env.HANDLER = "codeium"
+$env.TERMINAL = "ghostty"
 
 $env.QT_QPA_PLATFORM = "wayland"
+
+$env.DOTFILES = "/home/ixxie/repos/dotfiles"
+
+cat $"($env.DOTFILES)/secrets/anthropic_key.txt" | $env.ANTHROPIC_API_KEY = $in
+cat $"($env.DOTFILES)/secrets/github_token.txt" | $env.CR_PAT = $in

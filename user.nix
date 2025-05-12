@@ -1,11 +1,20 @@
-{ pkgs, ... }:
+{ pkgs, inputs, ... }:
 
 {
+  imports = [
+    inputs.home-manager.nixosModules.home-manager
+  ];
   home-manager = {
     backupFileExtension = "backup";
     users.ixxie.home = {
       stateVersion = "24.05";
       username = "ixxie";
+      sessionVariables = {
+        EDITOR = "helix";
+        BROWSER = "firefox";
+        TERMINAL = "ghostty";
+        NIXOS_OZONE_WL = "1";
+      };
     };
   };
   users.users.ixxie = {

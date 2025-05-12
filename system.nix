@@ -5,7 +5,7 @@
   system.stateVersion = "24.05";
   networking.hostName = "contingent";
   security.sudo.wheelNeedsPassword = false;
-  networking.enableIPv6 = false;
+  networking.enableIPv6 = true;
 
   boot = {
     # Use latest kernel
