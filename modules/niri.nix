@@ -66,7 +66,8 @@
                 #repeat-rate = 60;
                 xkb = {
                   layout = "us";
-                  variant = "intl";
+                  variant = "altgr-intl";
+                  options = "compose:altgr";
                 };
               };
               touchpad = {
