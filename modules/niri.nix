@@ -225,6 +225,14 @@
                 "s"
                 "+5%"
               ];
+              # docs
+              "Mod+H".action.spawn = [
+                "firefox"
+                "https://github.com/YaLTeR/niri/wiki/Getting-Started"
+                "https://github.com/sodiboo/niri-flake"
+                "https://github.com/sodiboo/niri-flake/blob/main/docs.md"
+                "https://github.com/Alexays/Waybar/wiki"
+              ];
             };
             hotkey-overlay.skip-at-startup = true;
           };
