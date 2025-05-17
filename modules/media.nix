@@ -14,7 +14,7 @@
       vesktop
       # media
       spotify
-      vlc
+      celluloid
       # p2p
       transmission_4-gtk
     ];

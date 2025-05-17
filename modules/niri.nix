@@ -11,9 +11,11 @@
   environment.systemPackages = with pkgs; [
     xwayland-satellite
     swaybg
-    mako
+    pamixer
+    brightnessctl
   ];
   programs.niri.enable = true;
+
   home-manager.users.ixxie =
     { config, ... }:
     {
@@ -22,9 +24,10 @@
         inputs.niri.homeModules.stylix
       ];
       services.mako = {
-        backgroundColor = "#222";
+        enable = true;
         borderRadius = 5;
         defaultTimeout = 5;
+        borderSize = 2;
       };
       programs = {
         niri = {
@@ -34,16 +37,17 @@
             environment = {
               "NIXOS_OZONE_WL" = "1";
               QT_QPA_PLATFORM = "wayland";
+              "DISPLAY" = ":0";
             };
             spawn-at-startup = [
               { command = [ "xwayland-satellite" ]; }
               { command = [ "mako" ]; }
               {
                 command = [
-                  "pkill"
-                  "waybar"
-                  "&&"
-                  "waybar"
+                  "systemctl"
+                  "--user"
+                  "reset-failed"
+                  "waybar.service"
                 ];
               }
               {
@@ -99,7 +103,7 @@
                 enable = false;
                 active.gradient = {
                   from = "#e03961";
-                  to = "#c94bb9";
+                  to = "#057ff7";
                   angle = 45;
                 };
                 width = 3;
@@ -195,6 +199,31 @@
               # screenshots
               "Print".action.screenshot = { };
               "Shift+Print".action.screenshot-screen = { };
+              # fn
+              "XF86AudioRaiseVolume".action.spawn = [
+                "pamixer"
+                "--increase"
+                "5"
+              ];
+              "XF86AudioLowerVolume".action.spawn = [
+                "pamixer"
+                "--decrease"
+                "5"
+              ];
+              "XF86AudioMute".action.spawn = [
+                "pamixer"
+                "--toggle-mute"
+              ];
+              "XF86MonBrightnessDown".action.spawn = [
+                "brightnessctl"
+                "s"
+                "5%-"
+              ];
+              "XF86MonBrightnessUp".action.spawn = [
+                "brightnessctl"
+                "s"
+                "+5%"
+              ];
             };
             hotkey-overlay.skip-at-startup = true;
           };

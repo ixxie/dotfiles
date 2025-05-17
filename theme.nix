@@ -9,7 +9,7 @@
     enable = true;
     base16Scheme = "${pkgs.base16-schemes}/share/themes/unikitty-dark.yaml";
     opacity.terminal = 0.8;
-    image = ./static/markos-mant-Ln9wvXBDqr0-unsplash.jpg;
+    image = ./static/jr-korpa-O-p6tKWPPig-unsplash.jpg;
     fonts = {
       serif = {
         package = pkgs.nerd-fonts.monaspace;
