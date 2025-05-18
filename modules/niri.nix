@@ -16,6 +16,7 @@ in
     swaybg
     pamixer
     brightnessctl
+    wl-clipboard-rs
   ];
 
   programs.niri = {
