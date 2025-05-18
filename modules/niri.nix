@@ -4,6 +4,9 @@
   ...
 }:
 
+let
+  niri = pkgs.niri-unstable;
+in
 {
   nixpkgs.overlays = [
     inputs.niri.overlays.niri
@@ -14,30 +17,35 @@
     pamixer
     brightnessctl
   ];
-  programs.niri.enable = true;
+
+  programs.niri = {
+    enable = true;
+    package = niri;
+  };
 
   home-manager.users.ixxie =
     { config, ... }:
     {
       imports = [
-        inputs.niri.homeModules.niri
+        inputs.niri.homeModules.config
         inputs.niri.homeModules.stylix
       ];
       services.mako = {
         enable = true;
-        borderRadius = 5;
-        defaultTimeout = 5;
-        borderSize = 2;
+        settings = {
+          border-radius = 5;
+          default-timeout = 5;
+          border-size = 2;
+        };
       };
       programs = {
         niri = {
-          enable = true;
-          package = pkgs.niri-unstable;
+          package = niri;
           settings = {
             environment = {
-              "NIXOS_OZONE_WL" = "1";
+              NIXOS_OZONE_WL = "1";
               QT_QPA_PLATFORM = "wayland";
-              "DISPLAY" = ":0";
+              DISPLAY = ":0";
             };
             spawn-at-startup = [
               { command = [ "xwayland-satellite" ]; }
@@ -46,7 +54,7 @@
                 command = [
                   "systemctl"
                   "--user"
-                  "reset-failed"
+                  "start"
                   "waybar.service"
                 ];
               }
@@ -125,13 +133,14 @@
             binds = with config.lib.niri.actions; {
               # apps
               "Mod+Return".action.spawn = "ghostty";
-              "Mod+Space".action.spawn = "firefox";
+              "Mod+B".action.spawn = "firefox";
               "Mod+L".action.spawn = "fuzzel";
               # session
               "Mod+Alt+P".action.spawn = "poweroff";
               "Mod+Alt+R".action.spawn = "reboot";
               "Mod+Alt+Q".action = quit;
               # workspaces
+              "Mod+Space".action = toggle-overview;
               "Mod+1".action.focus-workspace = 1;
               "Mod+2".action.focus-workspace = 2;
               "Mod+3".action.focus-workspace = 3;
@@ -163,16 +172,16 @@
               "Mod+Shift+Minus".action.set-window-height = "-10%";
               "Mod+Shift+Equal".action.set-window-height = "+10%";
               # focus
-              "Mod+Left".action = focus-column-left;
+              "Mod+Left".action = focus-column-left-or-last;
+              "Mod+Right".action = focus-column-right-or-first;
               "Mod+Down".action = focus-window-or-workspace-down;
               "Mod+Up".action = focus-window-or-workspace-up;
-              "Mod+Right".action = focus-column-right;
               "Mod+Alt+Left".action = focus-monitor-left;
               "Mod+Alt+Down".action = focus-monitor-down;
               "Mod+Alt+Up".action = focus-monitor-up;
               "Mod+Alt+Right".action = focus-monitor-right;
-              "Mod+WheelScrollUp".action = focus-column-left;
-              "Mod+WheelScrollDown".action = focus-column-right;
+              "Mod+WheelScrollUp".action = focus-column-left-or-last;
+              "Mod+WheelScrollDown".action = focus-column-right-or-first;
               "Mod+Shift+WheelScrollUp".action = focus-window-or-workspace-up;
               "Mod+Shift+WheelScrollDown".action = focus-window-or-workspace-down;
               "Mod+U".action = focus-workspace-down;

@@ -1,5 +1,3 @@
-{ lib, ... }:
-
 {
   home-manager.users.ixxie = {
     programs.waybar = {
@@ -9,8 +7,8 @@
       };
       settings = [
         {
-          "layer" = "top";
-          "position" = "top";
+          layer = "top";
+          position = "top";
           modules-left = [
             "custom/launcher"
             "niri/workspaces"
@@ -28,6 +26,30 @@
             "custom/powermenu"
             #"tray"
           ];
+          battery = {
+            interval = 1;
+            format = "{icon}";
+            format-icons = [
+              "󰂎"
+              "󰁺"
+              "󰁻"
+              "󰁼"
+              "󰁽"
+              "󰁾"
+              "󰁿"
+              "󰂀"
+              "󰂁"
+              "󰂂"
+              "󰁹"
+            ];
+            format-charging = "󰂄";
+            format-plugged = "󰂄";
+            states = {
+              warning = 30;
+              critical = 15;
+            };
+            tooltip-format = "{capacity}%";
+          };
           "niri/workspaces" = {
             disable-markup = true;
             format = "{icon}";
@@ -38,86 +60,97 @@
             };
           };
           "custom/launcher" = {
-            "format" = " ";
-            "on-click" = "fuzzel";
-            "on-click-middle" = "exec default_wall";
-            "on-click-right" = "exec wallpaper_random";
-            "tooltip" = false;
+            format = " ";
+            on-click = "fuzzel";
+            on-click-middle = "exec default_wall";
+            on-click-right = "exec wallpaper_random";
+            tooltip = false;
           };
-          "pulseaudio" = {
-            "scroll-step" = 1;
-            "format" = "{icon} {volume}%";
-            "format-muted" = "󰖁 Muted";
-            "format-icons" = {
+          pulseaudio = {
+            scroll-step = 1;
+            format = "{icon}";
+            format-muted = "󰖁";
+            format-icons = {
               "default" = [
                 ""
                 ""
                 ""
               ];
             };
-            "on-click" = "pamixer -t";
-            "tooltip" = false;
+            on-click = "pamixer -t";
+            tooltip = false;
           };
-          "clock" = {
-            "interval" = 1;
-            "format" = "{:%H:%M}";
-            "format-alt" = "{:%H:%M:%S}";
-            "timezone" = "Europe/Paris";
-            "tooltip" = true;
-            "tooltip-format" = ''
+          clock = {
+            interval = 1;
+            format = "{:%H:%M}";
+            format-alt = "{:%H:%M:%S}";
+            timezone = "Europe/Paris";
+            tooltip = true;
+            tooltip-format = ''
               <tt>
                 <b>{:%a %d %b %H:%M:%S}</b>
                 {calendar}
               </tt>
             '';
-            "calendar" = {
-              "mode" = "month";
-              "mode-mon-col" = 3;
-              "weeks-pos" = "right";
-              "on-scroll" = 1;
-              "format" = {
-                "months" = "<span><b>{}</b></span>";
-                "days" = "<span><b>{}</b></span>";
-                "weeks" = "<span><b>W{}</b></span>";
-                "weekdays" = "<span><b>{}</b></span>";
-                "today" = "<span><b><u>{}</u></b></span>";
+            calendar = {
+              mode = "month";
+              mode-mon-col = 3;
+              weeks-pos = "right";
+              on-scroll = 1;
+              format = {
+                months = "<span><b>{}</b></span>";
+                days = "<span><b>{}</b></span>";
+                weeks = "<span><b>W{}</b></span>";
+                weekdays = "<span><b>{}</b></span>";
+                today = "<span><b><u>{}</u></b></span>";
               };
             };
-            "actions" = {
-              "on-click-right" = "mode";
-              "on-click-forward" = "tz_up";
-              "on-click-backward" = "tz_down";
-              "on-scroll-up" = "shift_up";
-              "on-scroll-down" = "shift_down";
+            actions = {
+              on-click-right = "mode";
+              on-click-forward = "tz_up";
+              on-click-backward = "tz_down";
+              on-scroll-up = "shift_up";
+              on-scroll-down = "shift_down";
             };
           };
-          "memory" = {
-            "interval" = 1;
-            "format" = "󰻠 {percentage}%";
-            "states" = {
-              "warning" = 85;
+          memory = {
+            format = "󰻠 {percentage}%";
+            states = {
+              warning = 85;
             };
+            interval = 1;
           };
-          "cpu" = {
-            "interval" = 1;
-            "format" = "󰍛 {usage}%";
+          cpu = {
+            format = "{icon}";
+            format-icons = [
+              ""
+              ""
+              ""
+              ""
+              ""
+              ""
+              ""
+              ""
+            ];
+            interval = 1;
           };
-          "network" = {
-            "format-disconnected" = "󰯡 Disconnected";
-            "format-ethernet" = "󰒢 Connected!";
-            "format-linked" = "󰖪 {essid} (No IP)";
-            "format-wifi" = "󰖩 {essid}";
-            "interval" = 1;
-            "tooltip" = true;
+          network = {
+            format-disconnected = "󰯡";
+            format-ethernet = "󰒢";
+            format-linked = "󰖪";
+            format-wifi = "󰖩";
+            tooltip = true;
+            tooltip-format = "<tt>{essid}</tt>";
+            interval = 1;
           };
           "custom/powermenu" = {
-            "format" = "";
-            "on-click" = "pkill rofi || ~/.config/rofi/powermenu/type-3/powermenu.sh";
-            "tooltip" = false;
+            format = "";
+            on-click = "shutdown now";
+            tooltip = false;
           };
-          "tray" = {
-            "icon-size" = 15;
-            "spacing" = 5;
+          tray = {
+            icon-size = 15;
+            spacing = 5;
           };
         }
       ];
