@@ -7,8 +7,14 @@
 
   stylix = {
     enable = true;
+    autoEnable = true;
     base16Scheme = "${pkgs.base16-schemes}/share/themes/unikitty-dark.yaml";
     opacity.terminal = 0.8;
+    cursor = {
+      size = 8;
+      name = "graphite-dark";
+      package = pkgs.graphite-cursors;
+    };
     image = ./static/jr-korpa-O-p6tKWPPig-unsplash.jpg;
     fonts = {
       serif = {
@@ -28,7 +34,7 @@
         name = "Twemoji Color";
       };
       sizes = {
-        applications = 10;
+        applications = 11;
         terminal = 11;
         popups = 11;
         desktop = 11;
