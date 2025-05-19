@@ -17,6 +17,8 @@ in
     pamixer
     brightnessctl
     wl-clipboard-rs
+    fyi
+    libinput
   ];
 
   programs.niri = {
@@ -48,9 +50,38 @@ in
               QT_QPA_PLATFORM = "wayland";
               DISPLAY = ":0";
             };
+            switch-events = {
+              lid-close.action.spawn = [
+                "fyi"
+                "-t"
+                "3000"
+                "laptop lid closed"
+              ];
+            };
+            outputs = {
+              eDP-1 = {
+                position = {
+                  x = 0;
+                  y = 0;
+                };
+              };
+              DP-2 = {
+                position = {
+                  x = -2560;
+                  y = 0;
+                };
+              };
+            };
             spawn-at-startup = [
               { command = [ "xwayland-satellite" ]; }
               { command = [ "mako" ]; }
+              # {
+              #   command = [
+              #     "eww"
+              #     "open"
+              #     "bar"
+              #   ];
+              # }
               {
                 command = [
                   "systemctl"
@@ -103,21 +134,13 @@ in
               focus-ring = {
                 enable = true;
                 active.gradient = {
-                  from = "#e03961";
-                  to = "#c94bb9";
-                  angle = 45;
+                  from = "#057ff7";
+                  to = "#e03961";
+                  angle = -45;
                 };
                 width = 3;
               };
-              border = {
-                enable = false;
-                active.gradient = {
-                  from = "#e03961";
-                  to = "#057ff7";
-                  angle = 45;
-                };
-                width = 3;
-              };
+              border.enable = false;
             };
             window-rules = [
               {
@@ -134,14 +157,14 @@ in
             binds = with config.lib.niri.actions; {
               # apps
               "Mod+Return".action.spawn = "ghostty";
-              "Mod+B".action.spawn = "firefox";
+              "Mod+Space".action.spawn = "firefox";
               "Mod+L".action.spawn = "fuzzel";
               # session
-              "Mod+Alt+P".action.spawn = "poweroff";
-              "Mod+Alt+R".action.spawn = "reboot";
+              "Mod+Alt+P".action.spawn = "shutdown now";
+              "Mod+Alt+R".action.spawn = "shutdown -r now";
               "Mod+Alt+Q".action = quit;
               # workspaces
-              "Mod+Space".action = toggle-overview;
+              "Mod+Tab".action = toggle-overview;
               "Mod+1".action.focus-workspace = 1;
               "Mod+2".action.focus-workspace = 2;
               "Mod+3".action.focus-workspace = 3;

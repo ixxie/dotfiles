@@ -4,14 +4,18 @@
   services = {
     xserver = {
       enable = true;
+      displayManager.lightdm = {
+        enable = true;
+      };
     };
-    displayManager.ly.enable = true;
+    #displayManager.ly.enable = true;
   };
 
   environment.systemPackages = with pkgs; [
     xfce.tumbler
     xarchiver
     nautilus
+    where-is-my-sddm-theme
   ];
   environment.sessionVariables = {
     QT_QPA_PLATFORM = "wayland";

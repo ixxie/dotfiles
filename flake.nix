@@ -51,6 +51,7 @@
           ./modules/nix.nix
           ./modules/nushell
           ./modules/waybar
+          #./modules/eww
           ./modules/xserver.nix
         ];
       };
