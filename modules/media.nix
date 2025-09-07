@@ -11,7 +11,6 @@
       signal-desktop-bin
       element-desktop
       discord
-      vesktop
       # media
       spotify
       celluloid
