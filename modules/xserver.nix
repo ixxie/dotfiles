@@ -4,11 +4,8 @@
   services = {
     xserver = {
       enable = true;
-      displayManager.lightdm = {
-        enable = true;
-      };
+      displayManager.gdm.enable = true;
     };
-    #displayManager.ly.enable = true;
   };
 
   environment.systemPackages = with pkgs; [
