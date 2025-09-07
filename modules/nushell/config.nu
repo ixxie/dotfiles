@@ -23,6 +23,33 @@ def "nixos switch" [--update] {
   sudo nixos-rebuild switch --flake '/home/ixxie/repos/dotfiles#contingent'
 }
 
+# project helper commands
+def kit [] {
+}
+
+def "kit init" [
+  path?: path = "."
+] {
+  (
+    bunx sv create --template minimal --types ts --install bun ($path);
+  )
+}
+
+def "kit up" [--clean] {
+  mkdir old
+  mv * old
+  kit init
+  cp -r old/src .
+  cp -r old/static .
+  mv  old/.git .
+  mv old/.gitignore .
+  if $clean {
+    rm -rf old
+  }
+}
+
+# other dev utils
+
 def rip [
   pattern: string
   replacement: string
@@ -38,10 +65,40 @@ def rip [
   }
 }
 
-# ALIASES
 
-# go to git root
-alias gr = cd (git rev-parse --show-toplevel)
+# git utilities
+def repo [] {}
+
+# git diff with untracked files included
+def "repo diff" [...args] {
+    if ($args | is-empty) {
+        # Get staged/unstaged changes
+        let staged_diff = (git diff --color | complete | get stdout)
+        
+        # Get untracked files diff
+        let untracked_files = (git ls-files --others --exclude-standard | lines | where $it != "")
+        let untracked_diff = if ($untracked_files | is-empty) {
+            ""
+        } else {
+            $untracked_files | each { |file| 
+                git diff --color -- /dev/null $file | complete | get stdout
+            } | str join ""
+        }
+        
+        # Combine output
+        let combined = $staged_diff + $untracked_diff
+
+        # Render with pager        
+        if ($combined | str length) > 0 {
+            $combined | less --raw-control-chars
+        }
+    } else {
+        git diff ...$args
+    }
+}
+
+# go to repository root
+alias "repo root" = cd (git rev-parse --show-toplevel)
 
 
 # COMPLETERS
@@ -69,7 +126,7 @@ let zoxide_completer = {|spans|
 let external_completer = {|spans|
     let expanded_alias = scope aliases
     | where name == $spans.0
-    | get -i 0.expansion
+    | get --optional 0.expansion
 
     let spans = if $expanded_alias != null {
         $spans
