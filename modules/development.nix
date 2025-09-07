@@ -5,8 +5,6 @@
     # general
     gh
     hcloud
-    # ai
-    claude-code
     # python
     python312Packages.python-lsp-server
     ruff
@@ -33,16 +31,6 @@
 
   # version control
   home-manager.users.ixxie = {
-    home.file.".aider.conf.yml".text = ''
-      dark-mode: false
-      code-theme: monokai
-      map-tokens: 1024
-      # git
-      auto-commits: false
-      attribute-committer: false
-      gitignore: false
-
-    '';
     programs.git = {
       enable = true;
       userName = "Matan Bendix Shenhav";

@@ -38,6 +38,7 @@
           ./user.nix
           ./theme.nix
           # modules
+          ./modules/claude.nix
           ./modules/cli.nix
           ./modules/design.nix
           ./modules/development.nix
