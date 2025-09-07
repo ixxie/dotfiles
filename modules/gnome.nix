@@ -4,7 +4,6 @@
   services = {
     xserver.desktopManager.gnome.enable = true;
     gnome.core-utilities.enable = false;
-    illum.enable = true;
   };
 
   environment.systemPackages = with pkgs; [
