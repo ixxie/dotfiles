@@ -2,10 +2,8 @@
 
 {
   services = {
-    xserver = {
-      enable = true;
-      displayManager.gdm.enable = true;
-    };
+    xserver.enable = true;
+    displayManager.gdm.enable = true;
   };
 
   environment.systemPackages = with pkgs; [

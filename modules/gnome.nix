@@ -2,8 +2,8 @@
 
 {
   services = {
-    xserver.desktopManager.gnome.enable = true;
-    gnome.core-utilities.enable = false;
+    desktopManager.gnome.enable = true;
+    gnome.core-apps.enable = false;
   };
 
   environment.systemPackages = with pkgs; [
