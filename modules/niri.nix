@@ -225,7 +225,7 @@ in
               "Mod+V".action = toggle-window-floating;
               "Mod+Shift+V".action = switch-focus-between-floating-and-tiling;
               # tabs
-              "Mod+W".action = toggle-column-tabbed-display;
+              "Mod+T".action = toggle-column-tabbed-display;
               "Mod+BracketLeft".action = consume-or-expel-window-left;
               "Mod+BracketRight".action = consume-or-expel-window-right;
               "Mod+Comma".action = consume-window-into-column;
@@ -251,12 +251,12 @@ in
               "XF86MonBrightnessDown".action.spawn = [
                 "brightnessctl"
                 "s"
-                "5%-"
+                "2%-"
               ];
               "XF86MonBrightnessUp".action.spawn = [
                 "brightnessctl"
                 "s"
-                "+5%"
+                "+2%"
               ];
               # docs
               "Mod+H".action.spawn = [
