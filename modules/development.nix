@@ -4,6 +4,7 @@
   environment.systemPackages = with pkgs; [
     # general
     gh
+    hcloud
     # ai
     aider-chat
     # python
