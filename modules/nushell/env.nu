@@ -12,7 +12,7 @@ $env.PROMPT_INDICATOR_VI_INSERT = ": "
 $env.PROMPT_INDICATOR_VI_NORMAL = "〉"
 $env.PROMPT_MULTILINE_INDICATOR = "::: "
 
-$env.MASCOPE_PATH = "/home/ixxie/repos/mascope"
+$env.MASCOPE_PATH = "/home/ixxie/repos/apps/mascope"
 
 $env.HANDLER = "codeium"
 $env.TERMINAL = "ghostty"
