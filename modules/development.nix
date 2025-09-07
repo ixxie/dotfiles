@@ -6,7 +6,7 @@
     gh
     hcloud
     # ai
-    aider-chat
+    claude-code
     # python
     python312Packages.python-lsp-server
     ruff
