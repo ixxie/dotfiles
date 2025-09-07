@@ -47,7 +47,7 @@
           ./modules/hardware.nix
           ./modules/helix.nix
           ./modules/media.nix
-          ./modules/niri.nix
+          #./modules/niri.nix
           ./modules/nix.nix
           ./modules/nushell
           ./modules/waybar
