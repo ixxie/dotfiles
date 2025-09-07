@@ -29,7 +29,4 @@
       size = 64 * 1024;
     }
   ];
-
-  # firmware support
-  nixpkgs.config.allowUnfree = true;
 }

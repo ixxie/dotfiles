@@ -22,7 +22,10 @@ in
     ];
   };
 
-  nixpkgs.config.allowBroken = true;
+  nixpkgs.config = {
+    allowUnfree = true;
+    allowBroken = true;
+  };
 
   # home-manager.users.ixxie.programs = {
   #   direnv = {
