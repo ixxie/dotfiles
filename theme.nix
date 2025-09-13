@@ -15,7 +15,7 @@
       name = "graphite-dark";
       package = pkgs.graphite-cursors;
     };
-    image = ./static/jr-korpa-O-p6tKWPPig-unsplash.jpg;
+    image = ./static/casey-horner-wKjIeK4QSnk-unsplash.jpg;
     fonts = {
       serif = {
         package = pkgs.nerd-fonts.monaspace;
