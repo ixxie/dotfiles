@@ -16,9 +16,18 @@ in
     swaybg
     pamixer
     brightnessctl
+    playerctl
     wl-clipboard-rs
     fyi
     libinput
+    jq
+    socat
+    swaynotificationcenter
+    wlogout
+    blueberry
+    networkmanagerapplet
+    pavucontrol
+    gnome-power-manager
   ];
 
   programs.niri = {
@@ -33,14 +42,6 @@ in
         inputs.niri.homeModules.config
         inputs.niri.homeModules.stylix
       ];
-      services.mako = {
-        enable = true;
-        settings = {
-          border-radius = 5;
-          default-timeout = 5;
-          border-size = 2;
-        };
-      };
       programs = {
         niri = {
           package = niri;
@@ -48,7 +49,6 @@ in
             environment = {
               NIXOS_OZONE_WL = "1";
               QT_QPA_PLATFORM = "wayland";
-              DISPLAY = ":0";
             };
             switch-events = {
               lid-close.action.spawn = [
@@ -74,22 +74,7 @@ in
             };
             spawn-at-startup = [
               { command = [ "xwayland-satellite" ]; }
-              { command = [ "mako" ]; }
-              # {
-              #   command = [
-              #     "eww"
-              #     "open"
-              #     "bar"
-              #   ];
-              # }
-              {
-                command = [
-                  "systemctl"
-                  "--user"
-                  "start"
-                  "waybar.service"
-                ];
-              }
+              { command = [ "swaync" ]; }
               {
                 command = [
                   "swaybg"
@@ -134,11 +119,11 @@ in
               focus-ring = {
                 enable = true;
                 active.gradient = {
-                  from = "#057ff7";
-                  to = "#e03961";
+                  from = "#197145";
+                  to = "#195f71";
                   angle = -45;
                 };
-                width = 3;
+                width = 1;
               };
               border.enable = false;
             };
@@ -258,6 +243,18 @@ in
                 "s"
                 "+2%"
               ];
+              "XF86AudioPlay".action.spawn = [
+                "playerctl"
+                "play-pause"
+              ];
+              "XF86AudioNext".action.spawn = [
+                "playerctl"
+                "next"
+              ];
+              "XF86AudioPrev".action.spawn = [
+                "playerctl"
+                "previous"
+              ];
               # docs
               "Mod+H".action.spawn = [
                 "firefox"
@@ -273,6 +270,43 @@ in
         fuzzel = {
           enable = true;
         };
+      };
+      services.swaync = {
+        enable = true;
+        settings = {
+          positionX = "center";
+          positionY = "top";
+          layer = "overlay";
+          control-center-layer = "top";
+          notification-icon-size = 64;
+          notification-body-image-height = 100;
+          notification-body-image-width = 200;
+          timeout = 10;
+          timeout-low = 5;
+          timeout-critical = 0;
+          fit-to-screen = true;
+          control-center-width = 400;
+          control-center-height = 600;
+          notification-window-width = 500;
+          keyboard-shortcuts = true;
+          image-visibility = "when-available";
+          transition-time = 200;
+          hide-on-clear = false;
+          hide-on-action = true;
+          script-fail-notify = true;
+        };
+        style = ''
+          * {
+            outline: none;
+            border: none;
+            font-size: 11px;
+            border-radius: 5px;
+          }
+
+          .notification {
+            padding: 10px;
+          }
+        '';
       };
     };
 }
