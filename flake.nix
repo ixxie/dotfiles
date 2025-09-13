@@ -19,6 +19,15 @@
       url = "github:zhaofengli/colmena";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    quickshell = {
+      url = "github:outfoxxed/quickshell";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    noctalia = {
+      url = "github:noctalia-dev/noctalia-shell";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.quickshell.follows = "quickshell";
+    };
   };
   outputs =
     inputs@{
@@ -50,8 +59,8 @@
           ./modules/media.nix
           ./modules/niri.nix
           ./modules/nix.nix
+          ./modules/noctalia
           ./modules/nushell
-          ./modules/waybar
           ./modules/xserver.nix
         ];
       };

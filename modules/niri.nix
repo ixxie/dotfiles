@@ -6,6 +6,16 @@
 
 let
   niri = pkgs.niri-unstable;
+
+  # Utility to convert command string to noctalia-shell IPC format
+  noctalia =
+    cmd:
+    [
+      "noctalia-shell"
+      "ipc"
+      "call"
+    ]
+    ++ (pkgs.lib.splitString " " cmd);
 in
 {
   nixpkgs.overlays = [
@@ -13,21 +23,8 @@ in
   ];
   environment.systemPackages = with pkgs; [
     xwayland-satellite
-    swaybg
-    pamixer
-    brightnessctl
     playerctl
-    wl-clipboard-rs
-    fyi
     libinput
-    jq
-    socat
-    swaynotificationcenter
-    wlogout
-    blueberry
-    networkmanagerapplet
-    pavucontrol
-    gnome-power-manager
   ];
 
   programs.niri = {
@@ -50,14 +47,7 @@ in
               NIXOS_OZONE_WL = "1";
               QT_QPA_PLATFORM = "wayland";
             };
-            switch-events = {
-              lid-close.action.spawn = [
-                "fyi"
-                "-t"
-                "3000"
-                "laptop lid closed"
-              ];
-            };
+            xwayland-satellite.enable = true;
             outputs = {
               eDP-1 = {
                 position = {
@@ -73,15 +63,9 @@ in
               };
             };
             spawn-at-startup = [
-              { command = [ "xwayland-satellite" ]; }
-              { command = [ "swaync" ]; }
               {
                 command = [
-                  "swaybg"
-                  "-m"
-                  "fill"
-                  "-i"
-                  "${config.stylix.image}"
+                  "noctalia-shell"
                 ];
               }
             ];
@@ -142,12 +126,13 @@ in
             binds = with config.lib.niri.actions; {
               # apps
               "Mod+Return".action.spawn = "ghostty";
-              "Mod+Space".action.spawn = "firefox";
-              "Mod+L".action.spawn = "fuzzel";
+              "Mod+Space".action.spawn = noctalia "launcher toggle";
               # session
               "Mod+Alt+P".action.spawn = "shutdown now";
               "Mod+Alt+R".action.spawn = "shutdown -r now";
               "Mod+Alt+Q".action = quit;
+              "Mod+P".action.spawn = noctalia "powerPanel toggle";
+              "Mod+L".action.spawn = noctalia "lockScreen toggle";
               # workspaces
               "Mod+Tab".action = toggle-overview;
               "Mod+1".action.focus-workspace = 1;
@@ -219,30 +204,11 @@ in
               "Print".action.screenshot = { };
               "Shift+Print".action.screenshot-screen = { };
               # fn
-              "XF86AudioRaiseVolume".action.spawn = [
-                "pamixer"
-                "--increase"
-                "5"
-              ];
-              "XF86AudioLowerVolume".action.spawn = [
-                "pamixer"
-                "--decrease"
-                "5"
-              ];
-              "XF86AudioMute".action.spawn = [
-                "pamixer"
-                "--toggle-mute"
-              ];
-              "XF86MonBrightnessDown".action.spawn = [
-                "brightnessctl"
-                "s"
-                "2%-"
-              ];
-              "XF86MonBrightnessUp".action.spawn = [
-                "brightnessctl"
-                "s"
-                "+2%"
-              ];
+              "XF86AudioLowerVolume".action.spawn = noctalia "volume decrease";
+              "XF86AudioRaiseVolume".action.spawn = noctalia "volume increase";
+              "XF86AudioMute".action.spawn = noctalia "volume muteOutput";
+              "XF86MonBrightnessDown".action.spawn = noctalia "brightness decrease";
+              "XF86MonBrightnessUp".action.spawn = noctalia "brightness increase";
               "XF86AudioPlay".action.spawn = [
                 "playerctl"
                 "play-pause"
@@ -261,52 +227,12 @@ in
                 "https://github.com/YaLTeR/niri/wiki/Getting-Started"
                 "https://github.com/sodiboo/niri-flake"
                 "https://github.com/sodiboo/niri-flake/blob/main/docs.md"
-                "https://github.com/Alexays/Waybar/wiki"
+                "https://github.com/noctalia-dev/noctalia-shell"
               ];
             };
             hotkey-overlay.skip-at-startup = true;
           };
         };
-        fuzzel = {
-          enable = true;
-        };
-      };
-      services.swaync = {
-        enable = true;
-        settings = {
-          positionX = "center";
-          positionY = "top";
-          layer = "overlay";
-          control-center-layer = "top";
-          notification-icon-size = 64;
-          notification-body-image-height = 100;
-          notification-body-image-width = 200;
-          timeout = 10;
-          timeout-low = 5;
-          timeout-critical = 0;
-          fit-to-screen = true;
-          control-center-width = 400;
-          control-center-height = 600;
-          notification-window-width = 500;
-          keyboard-shortcuts = true;
-          image-visibility = "when-available";
-          transition-time = 200;
-          hide-on-clear = false;
-          hide-on-action = true;
-          script-fail-notify = true;
-        };
-        style = ''
-          * {
-            outline: none;
-            border: none;
-            font-size: 11px;
-            border-radius: 5px;
-          }
-
-          .notification {
-            padding: 10px;
-          }
-        '';
       };
     };
 }
