@@ -32,13 +32,27 @@
         * To explain why something was done, if it is not immediately obvious
         * To group sequences of expression in a long scope and clarify steps (but don't use numbering)
 
+      ## Shell
+
+      I use nushell; for all shell commands, assume this is the shell.
+
       ## JS/TS Projects
 
       Always use bun to manage the project if there is a `bun.lock`.
 
+      Prefer modern ES6 syntax.
+
+      Use ?? rather than || where it makes sense to do so.
+
       ## Python projects
 
       Always use uv to manage the project if there is a `uv.lock`.
+
+      # Security
+
+      - When generating code with some cryptographic keys, *always* provide an authorative link to
+        allow me to verify them.
+        
     '';
   };
 }
