@@ -22,7 +22,7 @@ in
     inputs.niri.overlays.niri
   ];
   environment.systemPackages = with pkgs; [
-    xwayland-satellite
+    xwayland-satellite-unstable
     playerctl
     libinput
   ];
@@ -32,8 +32,19 @@ in
     package = niri;
   };
 
+  # screensharing
+  xdg.portal = {
+    enable = true;
+    xdgOpenUsePortal = true;
+    wlr.enable = true;
+    extraPortals = with pkgs; [
+      xdg-desktop-portal-wlr
+      xdg-desktop-portal-gtk
+    ];
+  };
+
   home-manager.users.ixxie =
-    { config, ... }:
+    { config, lib, ... }:
     {
       imports = [
         inputs.niri.homeModules.config
@@ -47,7 +58,10 @@ in
               NIXOS_OZONE_WL = "1";
               QT_QPA_PLATFORM = "wayland";
             };
-            xwayland-satellite.enable = true;
+            xwayland-satellite = {
+              enable = true;
+              path = lib.getExe pkgs.xwayland-satellite-unstable;
+            };
             outputs = {
               eDP-1 = {
                 position = {
