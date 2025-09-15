@@ -25,6 +25,7 @@ in
     xwayland-satellite-unstable
     playerctl
     libinput
+    wl-clipboard-rs
   ];
 
   programs.niri = {
