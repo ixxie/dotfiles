@@ -5,10 +5,12 @@
     # general
     gh
     hcloud
+    infisical
     # python
     python312Packages.python-lsp-server
     ruff
     uv
+    migrate-to-uv
     # web
     nodejs_22
     vscode-langservers-extracted # html/css/json

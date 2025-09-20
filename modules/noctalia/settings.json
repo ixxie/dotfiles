@@ -4,51 +4,40 @@
     "enableClipboardHistory": false,
     "pinnedExecs": [],
     "position": "center",
+    "sortByMostUsed": true,
     "useApp2Unit": false
   },
   "audio": {
     "cavaFrameRate": 60,
     "mprisBlacklist": [],
     "preferredPlayer": "",
-    "showMiniplayerAlbumArt": false,
-    "showMiniplayerCava": false,
     "visualizerType": "linear",
     "volumeStep": 5
   },
   "bar": {
-    "alwaysShowBatteryPercentage": false,
-    "backgroundOpacity": 0,
+    "backgroundOpacity": 1,
+    "density": "compact",
     "floating": false,
-    "marginBottom": 16,
-    "marginLeft": 16,
-    "marginRight": 16,
-    "marginTop": 16,
+    "marginHorizontal": 0.25,
+    "marginVertical": 0.25,
     "monitors": [],
-    "position": "top",
-    "rounding": 12,
-    "showActiveWindowIcon": true,
-    "showNetworkStats": false,
-    "showWorkspaceLabel": "none",
-    "useDistroLogo": false,
+    "position": "right",
+    "showCapsule": false,
     "widgets": {
       "center": [
-        {
-          "displayFormat": "time",
-          "id": "Clock",
-          "reverseDayMonth": true,
-          "use12HourClock": false
-        }
-      ],
-      "left": [
         {
           "hideUnoccupied": false,
           "id": "Workspace",
           "labelMode": "none"
         }
       ],
-      "right": [
+      "left": [
         {
-          "id": "ScreenRecorderIndicator"
+          "id": "SidePanelToggle",
+          "useDistroLogo": true
+        },
+        {
+          "id": "WiFi"
         },
         {
           "hideWhenZero": false,
@@ -56,18 +45,10 @@
           "showUnreadBadge": false
         },
         {
-          "id": "WiFi"
+          "id": "ScreenRecorderIndicator"
         },
         {
           "id": "Bluetooth"
-        },
-        {
-          "alwaysShowPercentage": false,
-          "id": "Volume"
-        },
-        {
-          "alwaysShowPercentage": false,
-          "id": "Brightness"
         },
         {
           "alwaysShowPercentage": false,
@@ -75,8 +56,20 @@
           "warningThreshold": 30
         },
         {
-          "id": "SidePanelToggle",
-          "useDistroLogo": true
+          "alwaysShowPercentage": false,
+          "id": "Brightness"
+        },
+        {
+          "alwaysShowPercentage": false,
+          "id": "Volume"
+        }
+      ],
+      "right": [
+        {
+          "displayFormat": "time",
+          "id": "Clock",
+          "reverseDayMonth": true,
+          "use12HourClock": false
         }
       ]
     }
@@ -99,8 +92,9 @@
   "general": {
     "animationSpeed": 1,
     "avatarImage": "/home/ixxie/.face",
-    "dimDesktop": false,
-    "radiusRatio": 1,
+    "dimDesktop": true,
+    "forceBlackScreenCorners": false,
+    "radiusRatio": 0.2,
     "screenRadiusRatio": 1,
     "showScreenCorners": false
   },
@@ -110,10 +104,10 @@
     "wallpaperChange": ""
   },
   "location": {
+    "monthBeforeDay": true,
     "name": "Oraison, France",
-    "reverseDayMonth": false,
-    "showDateWithClock": false,
-    "use12HourClock": false,
+    "showWeekNumberInCalendar": false,
+    "use12hourFormat": false,
     "useFahrenheit": false
   },
   "matugen": {
@@ -124,6 +118,7 @@
     "gtk3": false,
     "gtk4": false,
     "kitty": false,
+    "pywalfox": false,
     "qt5": false,
     "qt6": false,
     "vesktop": false
@@ -142,9 +137,12 @@
     "nightTemp": "4000"
   },
   "notifications": {
+    "criticalUrgencyDuration": 15,
     "doNotDisturb": false,
     "lastSeenTs": 1757777327000,
-    "monitors": []
+    "lowUrgencyDuration": 3,
+    "monitors": [],
+    "normalUrgencyDuration": 8
   },
   "screenRecorder": {
     "audioCodec": "opus",

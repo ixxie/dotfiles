@@ -9,6 +9,9 @@
         window-padding-y = 10;
         gtk-wide-tabs = false;
         gtk-custom-css = "/home/ixxie/repos/dotfiles/modules/ghostty/style.css";
+        keybind = [
+          "shift+enter=text:\x1b\r"
+        ];
       };
     };
   };

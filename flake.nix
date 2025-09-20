@@ -24,7 +24,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     noctalia = {
-      url = "github:noctalia-dev/noctalia-shell";
+      url = "path:/home/ixxie/repos/noctalia-shell";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.quickshell.follows = "quickshell";
     };
@@ -55,6 +55,7 @@
           ./modules/ghostty
           ./modules/gnome.nix
           ./modules/hardware.nix
+          ./modules/hyprland.nix
           ./modules/helix.nix
           ./modules/media.nix
           ./modules/niri.nix
