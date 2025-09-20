@@ -24,7 +24,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     noctalia = {
-      url = "path:/home/ixxie/repos/noctalia-shell";
+      #url = "path:/home/ixxie/repos/foss/noctalia-shell";
+      url = "github:noctalia-dev/noctalia-shell";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.quickshell.follows = "quickshell";
     };
@@ -35,12 +36,8 @@
       nixpkgs,
       ...
     }:
-    let
-      system = "x86_64-linux";
-    in
     {
       nixosConfigurations.contingent = nixpkgs.lib.nixosSystem {
-        inherit system;
         specialArgs = { inherit inputs; };
         modules = [
           ./system.nix
@@ -55,12 +52,11 @@
           ./modules/ghostty
           ./modules/gnome.nix
           ./modules/hardware.nix
-          ./modules/hyprland.nix
           ./modules/helix.nix
           ./modules/media.nix
           ./modules/niri.nix
           ./modules/nix.nix
-          ./modules/noctalia
+          ./modules/noctalia.nix
           ./modules/nushell
           ./modules/xserver.nix
         ];

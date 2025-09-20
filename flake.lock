@@ -199,11 +199,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1758296614,
-        "narHash": "sha256-l60D1i0aaSqemy9dL7wP0ePMfcv/oZbeKpvUMY+q0kQ=",
+        "lastModified": 1758375677,
+        "narHash": "sha256-BLtD+6qWz7fQjPk2wpwyXQLGI0E30Ikgf2ppn2nVadI=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "55b1f5b7b191572257545413b98e37abab2fdb00",
+        "rev": "edc7468e12be92e926847cb02418e649b02b59dd",
         "type": "github"
       },
       "original": {
@@ -224,11 +224,11 @@
         "xwayland-satellite-unstable": "xwayland-satellite-unstable"
       },
       "locked": {
-        "lastModified": 1758369432,
-        "narHash": "sha256-d2rd7li5QNzwxB0lQnYkKai4o3jOSlJedgLnvnLRWrs=",
+        "lastModified": 1758375815,
+        "narHash": "sha256-IAr+n58c+nfxGXmX4NRjfVfV8i5baHnB8LCWlB7XYHo=",
         "owner": "sodiboo",
         "repo": "niri-flake",
-        "rev": "51f068cfd42268bd698d83bdc677b0f2d3567e21",
+        "rev": "a6b5a4263b1d6b5d1e07babd59bc66e91f492190",
         "type": "github"
       },
       "original": {
@@ -257,11 +257,11 @@
     "niri-unstable": {
       "flake": false,
       "locked": {
-        "lastModified": 1758364979,
-        "narHash": "sha256-wE8ZjBUXRW+YZdzJhnQ9MEwyVfNOFKIW1YTUY6Sna7s=",
+        "lastModified": 1758370089,
+        "narHash": "sha256-0C7695SLx4hU9m3VW4fCrZdvyIY+3kFQTWELHA4hxRQ=",
         "owner": "YaLTeR",
         "repo": "niri",
-        "rev": "37aea69715a61cb08fa3612a3f2e65d01df161f5",
+        "rev": "a1dccedbb72da372d2a8a84022f37ccaa4d4a6e6",
         "type": "github"
       },
       "original": {
@@ -350,14 +350,17 @@
         "systems": "systems"
       },
       "locked": {
-        "lastModified": 0,
-        "narHash": "sha256-kmLVOppwmo5FzyceTlUl75I+ZmI+ItPdjl+TXdO9y3E=",
-        "path": "/home/ixxie/repos/noctalia-shell",
-        "type": "path"
+        "lastModified": 1758385191,
+        "narHash": "sha256-2prIdGE16A6i2Wzms3/X89rmlXpW3/PH+VC7Bp2S8A4=",
+        "owner": "noctalia-dev",
+        "repo": "noctalia-shell",
+        "rev": "20949a029838377b091ddbcf5472d036887fba51",
+        "type": "github"
       },
       "original": {
-        "path": "/home/ixxie/repos/noctalia-shell",
-        "type": "path"
+        "owner": "noctalia-dev",
+        "repo": "noctalia-shell",
+        "type": "github"
       }
     },
     "nur": {
