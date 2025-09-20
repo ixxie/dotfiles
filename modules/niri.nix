@@ -44,7 +44,7 @@ in
     ];
   };
 
-  hardware.opengl.enable = true;
+  hardware.graphics.enable = true;
 
   home-manager.users.ixxie =
     { config, lib, ... }:

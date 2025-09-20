@@ -40,9 +40,10 @@
       nixosConfigurations.contingent = nixpkgs.lib.nixosSystem {
         specialArgs = { inherit inputs; };
         modules = [
+          ./hardware.nix
           ./system.nix
-          ./user.nix
           ./theme.nix
+          ./user.nix
           # modules
           ./modules/claude.nix
           ./modules/cli.nix
@@ -51,7 +52,6 @@
           ./modules/framework.nix
           ./modules/ghostty
           ./modules/gnome.nix
-          ./modules/hardware.nix
           ./modules/helix.nix
           ./modules/media.nix
           ./modules/niri.nix
