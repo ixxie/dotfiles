@@ -4,6 +4,10 @@
   ...
 }:
 
+let
+  directory = "/home/ixxie/Pictures/Wallpapers";
+  wallpaper = directory + "/" + "kukai-art-xS_lI4mtyzs-unsplash.jpg";
+in
 {
   # pacakge
   environment.systemPackages = with pkgs; [
@@ -208,21 +212,21 @@
           monitorsScaling = [ ];
         };
         wallpaper = {
-          directory = "/home/ixxie/Pictures/Wallpapers";
+          directory = directory;
           enableMultiMonitorDirectories = false;
           enabled = true;
           fillColor = "#000000";
           fillMode = "crop";
           monitors = [
             {
-              directory = "/home/ixxie/Pictures/Wallpapers";
+              directory = directory;
               name = "DP-2";
-              wallpaper = "/home/ixxie/Pictures/Wallpapers/casey-horner-wKjIeK4QSnk-unsplash.jpg";
+              wallpaper = wallpaper;
             }
             {
-              directory = "/home/ixxie/Pictures/Wallpapers";
+              directory = directory;
               name = "eDP-1";
-              wallpaper = "/home/ixxie/Pictures/Wallpapers/casey-horner-wKjIeK4QSnk-unsplash.jpg";
+              wallpaper = wallpaper;
             }
           ];
           randomEnabled = false;
