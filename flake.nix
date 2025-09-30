@@ -24,8 +24,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     noctalia = {
-      #url = "path:/home/ixxie/repos/foss/noctalia-shell";
-      url = "github:noctalia-dev/noctalia-shell";
+      url = "path:/home/ixxie/repos/foss/noctalia-shell";
+      #url = "github:noctalia-dev/noctalia-shell";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.quickshell.follows = "quickshell";
     };

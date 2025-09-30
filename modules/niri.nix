@@ -120,8 +120,8 @@ in
               focus-ring = {
                 enable = true;
                 active.gradient = {
-                  from = "#197145";
-                  to = "#195f71";
+                  from = "#c5beba";
+                  to = "#bac1c5";
                   angle = -45;
                 };
                 width = 1;

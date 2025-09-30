@@ -6,6 +6,7 @@
     gh
     hcloud
     infisical
+    concurrently
     # python
     python312Packages.python-lsp-server
     ruff
