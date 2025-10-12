@@ -12,10 +12,9 @@
         stateVersion = "24.05";
         username = "ixxie";
         sessionVariables = {
-          EDITOR = "helix";
+          EDITOR = "hx";
           BROWSER = "firefox";
           TERMINAL = "ghostty";
-          NIXOS_OZONE_WL = "1";
         };
       };
     };
@@ -31,6 +30,5 @@
     ];
     isNormalUser = true;
     shell = pkgs.nushell;
-    useDefaultShell = false;
   };
 }

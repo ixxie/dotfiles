@@ -20,7 +20,6 @@
   # environment
   time.timeZone = "Europe/Paris";
   i18n.defaultLocale = "en_IE.UTF-8";
-  environment.variables.EDITOR = "hx";
 
   # enable swap file
   swapDevices = [

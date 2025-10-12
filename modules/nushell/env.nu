@@ -14,8 +14,9 @@ $env.PROMPT_MULTILINE_INDICATOR = "::: "
 
 $env.MASCOPE_PATH = "/home/ixxie/repos/apps/mascope"
 
-$env.HANDLER = "codeium"
+$env.EDITOR = "hx"
 $env.TERMINAL = "ghostty"
+$env.BROWSER = "firefox"
 
 $env.QT_QPA_PLATFORM = "wayland"
 

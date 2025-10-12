@@ -32,7 +32,6 @@
   };
   outputs =
     inputs@{
-      self,
       nixpkgs,
       ...
     }:

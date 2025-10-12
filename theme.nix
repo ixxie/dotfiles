@@ -11,7 +11,7 @@
 
   stylix = {
     enable = true;
-    autoEnable = true;
+    autoEnable = false;
     base16Scheme = "${pkgs.base16-schemes}/share/themes/everforest-dark-hard.yaml";
     # base16Scheme = {
     #   base00 = "#2d353b"; # bg0,       palette1 dark
@@ -62,16 +62,23 @@
       };
     };
   };
-  home-manager.users.ixxie.stylix = {
-    targets = {
-      swaync.enable = false;
-      waybar.enable = false;
-    };
-    iconTheme = {
-      enable = true;
-      package = pkgs.numix-icon-theme-circle;
-      dark = "Numix-Circle";
-      light = "Numix-Circle-Light";
+  home-manager.users.ixxie = {
+    stylix = {
+      autoEnable = true;
+      targets = {
+        helix.enable = true;
+        nushell.enable = true;
+        firefox.enable = true;
+        ghostty.enable = true;
+        starship.enable = true;
+        nixos-icons.enable = true;
+      };
+      iconTheme = {
+        enable = true;
+        package = pkgs.numix-icon-theme-circle;
+        dark = "Numix-Circle";
+        light = "Numix-Circle-Light";
+      };
     };
   };
 }

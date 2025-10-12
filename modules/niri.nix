@@ -148,10 +148,12 @@ in
               "Mod+Alt+P".action.spawn = "shutdown now";
               "Mod+Alt+R".action.spawn = "shutdown -r now";
               "Mod+Alt+Q".action = quit;
-              "Mod+P".action.spawn = noctalia "powerPanel toggle";
+              "Mod+P".action.spawn = noctalia "sessionMenu toggle";
               "Mod+L".action.spawn = noctalia "lockScreen toggle";
               # workspaces
               "Mod+Tab".action = toggle-overview;
+              "Mod+Shift+Up".action = move-workspace-up;
+              "Mod+Shift+Down".action = move-workspace-down;
               "Mod+1".action.focus-workspace = 1;
               "Mod+2".action.focus-workspace = 2;
               "Mod+3".action.focus-workspace = 3;

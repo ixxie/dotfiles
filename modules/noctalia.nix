@@ -1,11 +1,13 @@
 {
   pkgs,
   inputs,
+  config,
   ...
 }:
 
 let
-  directory = "/home/ixxie/Pictures/Wallpapers";
+  homeDir = config.home-manager.users.ixxie.home.homeDirectory;
+  directory = "${homeDir}/Pictures/Wallpapers";
   wallpaper = directory + "/" + "kukai-art-xS_lI4mtyzs-unsplash.jpg";
 in
 {
@@ -46,7 +48,10 @@ in
         mTertiary = "#cccccc";
       };
       settings = {
-        settingsVersion = 2;
+        osd = {
+          alwaysOnTop = false;
+          location = "right";
+        };
         bar = {
           density = "compact";
           position = "right";
@@ -54,8 +59,10 @@ in
           widgets = {
             left = [
               {
-                id = "SidePanelToggle";
-                useDistroLogo = true;
+                id = "ControlCenter";
+                useDistroLogo = false;
+                icon = "skull";
+                customIconPath = "";
               }
               {
                 id = "WiFi";
@@ -64,49 +71,50 @@ in
                 id = "Bluetooth";
               }
               {
-                alwaysShowPercentage = false;
                 id = "Brightness";
+                displayMode = "alwaysHide";
               }
               {
-                alwaysShowPercentage = false;
                 id = "Volume";
+                displayMode = "alwaysHide";
               }
             ];
             center = [
               {
-                hideUnoccupied = false;
                 id = "Workspace";
                 labelMode = "none";
+                hideUnoccupied = false;
               }
             ];
             right = [
               {
-                alwaysShowPercentage = false;
                 id = "Battery";
+                displayMode = "alwaysHide";
                 warningThreshold = 30;
               }
               {
-                hideWhenZero = false;
                 id = "NotificationHistory";
+                hideWhenZero = false;
                 showUnreadBadge = false;
               }
               {
-                id = "ScreenRecorderIndicator";
+                id = "ScreenRecorder";
               }
               {
+                id = "Clock";
                 formatHorizontal = "HH:mm";
                 formatVertical = "HH mm";
-                id = "Clock";
                 useMonospacedFont = true;
                 usePrimaryColor = true;
               }
             ];
           };
         };
+        appLauncher.useApp2Unit = true;
         colorSchemes.predefinedScheme = "Monochrome";
         general = {
-          avatarImage = "/home/ixxie/.face";
-          radiusRatio = 0.2;
+          avatarImage = "${homeDir}/.face";
+          #radiusRatio = 0.2;
         };
         location = {
           monthBeforeDay = true;
