@@ -24,41 +24,44 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     noctalia = {
-      url = "path:/home/ixxie/repos/foss/noctalia-shell";
-      #url = "github:noctalia-dev/noctalia-shell";
+      #url = "path:/home/ixxie/repos/foss/noctalia-shell";
+      url = "github:noctalia-dev/noctalia-shell";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.quickshell.follows = "quickshell";
     };
-  };
-  outputs =
-    inputs@{
-      nixpkgs,
-      ...
-    }:
-    {
-      nixosConfigurations.contingent = nixpkgs.lib.nixosSystem {
-        specialArgs = { inherit inputs; };
-        modules = [
-          ./hardware.nix
-          ./system.nix
-          ./theme.nix
-          ./user.nix
-          # modules
-          ./modules/claude.nix
-          ./modules/cli.nix
-          ./modules/design.nix
-          ./modules/development.nix
-          ./modules/framework.nix
-          ./modules/ghostty
-          ./modules/gnome.nix
-          ./modules/helix.nix
-          ./modules/media.nix
-          ./modules/niri.nix
-          ./modules/nix.nix
-          ./modules/noctalia.nix
-          ./modules/nushell
-          ./modules/xserver.nix
-        ];
-      };
+    zen-browser = {
+      url = "github:0xc000022070/zen-browser-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
+  };
+  outputs = inputs @ {
+    nixpkgs,
+    ...
+  }: {
+    nixosConfigurations.contingent = nixpkgs.lib.nixosSystem {
+      specialArgs = {inherit inputs;};
+      modules = [
+        ./hardware.nix
+        ./system.nix
+        ./theme.nix
+        ./user.nix
+        # modules
+        ./modules/claude.nix
+        ./modules/cli.nix
+        ./modules/design.nix
+        ./modules/development.nix
+        ./modules/framework.nix
+        ./modules/ghostty
+        ./modules/gnome.nix
+        ./modules/helix.nix
+        ./modules/media.nix
+        ./modules/niri.nix
+        ./modules/nix.nix
+        ./modules/noctalia.nix
+        ./modules/nushell
+        ./modules/xserver.nix
+      ];
+    };
+    formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.alejandra;
+  };
 }

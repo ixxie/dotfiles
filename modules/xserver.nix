@@ -1,6 +1,4 @@
-{ pkgs, ... }:
-
-{
+{pkgs, ...}: {
   services = {
     xserver.enable = true;
     displayManager.gdm.enable = true;
@@ -16,14 +14,6 @@
     QT_QPA_PLATFORM = "wayland";
   };
 
-  programs.thunar = {
-    enable = true;
-    plugins = with pkgs.xfce; [
-      thunar-archive-plugin
-      thunar-media-tags-plugin
-    ];
-  };
-
   services.printing.enable = true;
 
   xdg.portal.config = {
@@ -35,9 +25,9 @@
         "wlr"
         "gtk"
       ];
-      "org.freedesktop.impl.portal.ScreenCast" = [ "wlr" ];
-      "org.freedesktop.impl.portal.Screenshot" = [ "wlr" ];
-      "org.freedesktop.impl.portal.FileChooser" = [ "gtk" ];
+      "org.freedesktop.impl.portal.ScreenCast" = ["wlr"];
+      "org.freedesktop.impl.portal.Screenshot" = ["wlr"];
+      "org.freedesktop.impl.portal.FileChooser" = ["gtk"];
     };
     gnome = {
       default = [
@@ -47,7 +37,7 @@
       "org.freedesktop.impl.portal.Secret" = [
         "gnome-keyring"
       ];
-      "org.freedesktop.impl.portal.FileChooser" = [ "gtk" ];
+      "org.freedesktop.impl.portal.FileChooser" = ["gtk"];
     };
   };
 }

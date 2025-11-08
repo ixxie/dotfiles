@@ -3,14 +3,11 @@
   inputs,
   config,
   ...
-}:
-
-let
+}: let
   homeDir = config.home-manager.users.ixxie.home.homeDirectory;
   directory = "${homeDir}/Pictures/Wallpapers";
   wallpaper = directory + "/" + "kukai-art-xS_lI4mtyzs-unsplash.jpg";
-in
-{
+in {
   # pacakge
   environment.systemPackages = with pkgs; [
     inputs.noctalia.packages.${system}.default
@@ -31,6 +28,7 @@ in
 
     programs.noctalia-shell = {
       enable = true;
+      #systemd.enable = true;
       colors = {
         mError = "#dddddd";
         mOnError = "#111111";
@@ -104,17 +102,45 @@ in
                 id = "Clock";
                 formatHorizontal = "HH:mm";
                 formatVertical = "HH mm";
-                useMonospacedFont = true;
                 usePrimaryColor = true;
               }
             ];
           };
         };
-        appLauncher.useApp2Unit = true;
+        controlCenter = {
+          cards = [
+            {
+              enabled = true;
+              id = "profile-card";
+            }
+            {
+              enabled = true;
+              id = "shortcuts-card";
+            }
+            {
+              enabled = false;
+              id = "audio-card";
+            }
+            {
+              enabled = false;
+              id = "weather-card";
+            }
+            {
+              enabled = false;
+              id = "media-sysmon-card";
+            }
+          ];
+        };
+        dock.enabled = false;
+        appLauncher = {
+          useApp2Unit = true;
+          position = "center";
+        };
         colorSchemes.predefinedScheme = "Monochrome";
         general = {
           avatarImage = "${homeDir}/.face";
-          #radiusRatio = 0.2;
+          compactLockScreen = true;
+          radiusRatio = 0.2;
         };
         location = {
           monthBeforeDay = true;
@@ -127,8 +153,7 @@ in
         ui = {
           fontBillboard = "MonaspiceNe Nerd Font";
           fontDefault = "MonaspiceNe Nerd Font";
-          fontFixed = "MonaspiceNe Nerd Font";
-          monitorsScaling = [ ];
+          fontFixed = "MonaspiceKr Nerd Font Mono";
         };
         wallpaper = {
           directory = directory;

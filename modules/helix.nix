@@ -1,6 +1,4 @@
-{ pkgs, ... }:
-
-{
+{pkgs, ...}: {
   environment.systemPackages = with pkgs; [
     helix-gpt
   ];
@@ -27,18 +25,18 @@
         language-server = {
           ruff = {
             command = "ruff";
-            args = [ "server" ];
+            args = ["server"];
           };
           eslint = {
             command = "vscode-eslint-language-server";
-            args = [ "--stdio" ];
+            args = ["--stdio"];
             config = {
               validate = "on";
             };
           };
           vls = {
             command = "vue-language-server";
-            args = [ "--stdio" ];
+            args = ["--stdio"];
           };
           llm = {
             command = "helix-gpt";
@@ -52,7 +50,11 @@
               "nixd"
               "llm"
             ];
-            file-types = [ "nix" ];
+            formatter = {
+              command = "alejandra";
+              args = ["-q"];
+            };
+            file-types = ["nix"];
           }
           {
             name = "svelte";
@@ -64,7 +66,7 @@
           }
           {
             name = "vue";
-            file-types = [ "vue" ];
+            file-types = ["vue"];
             language-servers = [
               "eslint"
               "vls"
@@ -73,11 +75,8 @@
             injection-regex = "vue";
             scope = "text.html.vue";
             formatter = {
-              command = "prettierd";
-              args = [
-                "--stdin-filepath"
-                "x.vue"
-              ];
+              command = "prettier";
+              args = ["--parser" "vue"];
             };
             auto-format = true;
           }
@@ -88,11 +87,8 @@
               "mjs"
             ];
             formatter = {
-              command = "prettierd";
-              args = [
-                "--stdin-filepath"
-                "x.js"
-              ];
+              command = "prettier";
+              args = ["--parser" "typescript"];
             };
             language-servers = [
               "typescript-language-server"
@@ -107,12 +103,25 @@
             ];
             auto-format = true;
             formatter = {
-              command = "prettierd";
-              args = [
-                "--stdin-filepath"
-                "x.ts"
-              ];
+              command = "prettier";
+              args = ["--parser" "typescript"];
             };
+          }
+          {
+            name = "html";
+            formatter = {
+              command = "prettier";
+              args = ["--parser" "html"];
+            };
+            auto-format = true;
+          }
+          {
+            name = "css";
+            formatter = {
+              command = "prettier";
+              args = ["--parser" "css"];
+            };
+            auto-format = true;
           }
           {
             name = "markdown";
@@ -132,7 +141,7 @@
               "ruff"
               "llm"
             ];
-            file-types = [ "py" ];
+            file-types = ["py"];
           }
           {
             name = "bash";
@@ -140,7 +149,7 @@
               "bash-language-server"
               "llm"
             ];
-            file-types = [ "sh" ];
+            file-types = ["sh"];
           }
         ];
       };

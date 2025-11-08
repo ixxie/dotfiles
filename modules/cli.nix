@@ -1,6 +1,4 @@
-{ pkgs, ... }:
-
-{
+{pkgs, ...}: {
   # Basic Package Suite
   environment.systemPackages = with pkgs; [
     ddate
@@ -28,5 +26,6 @@
     unzip
     wget
     xclip
+    yazi
   ];
 }

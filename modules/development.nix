@@ -19,7 +19,6 @@
     nodePackages.svelte-language-server
     nodePackages."@vue/language-server"
     nodePackages.prettier
-    prettierd
     eslint_d
     postman
     markdown-oxide
@@ -29,6 +28,7 @@
     sqlitebrowser
     # system
     nixd
+    alejandra
     nodePackages.bash-language-server
   ];
 
@@ -36,9 +36,11 @@
   home-manager.users.ixxie = {
     programs.git = {
       enable = true;
-      userName = "Matan Bendix Shenhav";
-      userEmail = "matan@shenhav.fyi";
-      extraConfig = {
+      settings = {
+        user = {
+          name = "Matan Bendix Shenhav";
+          email = "matan@shenhav.fyi";
+        };
         init = {
           defaultBranch = "main";
         };
@@ -76,6 +78,7 @@
           cd = "switch $1";
           new = "switch -c";
           root = "!gr && :";
+          grab = "!f() { url=$1; owner=$(echo $url | cut -d'/' -f4); repo=$(echo $url | cut -d'/' -f5); branch=$(echo $url | cut -d'/' -f7); remote=\"$owner-$repo\"; git remote add $remote https://github.com/$owner/$repo 2>/dev/null || true; git fetch $remote $branch && git checkout -b $branch $remote/$branch 2>/dev/null || git checkout $branch; }; f";
         };
       };
     };

@@ -1,12 +1,15 @@
-{ pkgs, ... }:
-
 {
+  pkgs,
+  inputs,
+  ...
+}: {
   environment = {
     systemPackages = with pkgs; [
       # browsers
       firefox
       chromium
       tor-browser
+      inputs.zen-browser.packages.${system}.default
       # messaging
       signal-desktop-bin
       element-desktop

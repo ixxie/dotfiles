@@ -1,7 +1,5 @@
-{ pkgs, ... }:
-
-with pkgs;
-{
+{pkgs, ...}:
+with pkgs; {
   environment.systemPackages = [
     krita
     inkscape
@@ -10,12 +8,10 @@ with pkgs;
     pdftk
     gthumb
     imagemagick
-    scribus
     libreoffice
   ];
   fonts.packages = with pkgs; [
     source-code-pro
     google-fonts
   ];
-
 }

@@ -2,9 +2,7 @@
   pkgs,
   inputs,
   ...
-}:
-
-{
+}: {
   imports = [
     inputs.stylix.nixosModules.stylix
   ];
@@ -65,14 +63,6 @@
   home-manager.users.ixxie = {
     stylix = {
       autoEnable = true;
-      targets = {
-        helix.enable = true;
-        nushell.enable = true;
-        firefox.enable = true;
-        ghostty.enable = true;
-        starship.enable = true;
-        nixos-icons.enable = true;
-      };
       iconTheme = {
         enable = true;
         package = pkgs.numix-icon-theme-circle;
