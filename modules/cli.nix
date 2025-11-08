@@ -26,6 +26,5 @@
     unzip
     wget
     xclip
-    yazi
   ];
 }

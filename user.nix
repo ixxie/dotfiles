@@ -1,6 +1,8 @@
-{ pkgs, inputs, ... }:
-
 {
+  pkgs,
+  inputs,
+  ...
+}: {
   imports = [
     inputs.home-manager.nixosModules.home-manager
   ];
@@ -15,6 +17,42 @@
           EDITOR = "hx";
           BROWSER = "firefox";
           TERMINAL = "ghostty";
+        };
+      };
+      programs.yazi = {
+        enable = true;
+        settings = {
+          opener = {
+            open = [
+              {
+                run = ''xdg-open "$@"'';
+                orphan = true;
+                desc = "Open with default application";
+              }
+            ];
+          };
+          open = {
+            rules = [
+              {
+                mime = "*";
+                use = "open";
+              }
+            ];
+          };
+        };
+      };
+      xdg = {
+        enable = true;
+        mimeApps = {
+          enable = true;
+          defaultApplications = {
+            "video/mp4" = "io.github.celluloid_player.Celluloid.desktop";
+            "video/x-matroska" = "io.github.celluloid_player.Celluloid.desktop";
+            "video/webm" = "io.github.celluloid_player.Celluloid.desktop";
+            "video/mpeg" = "io.github.celluloid_player.Celluloid.desktop";
+            "video/quicktime" = "io.github.celluloid_player.Celluloid.desktop";
+            "video/x-msvideo" = "io.github.celluloid_player.Celluloid.desktop";
+          };
         };
       };
     };
