@@ -37,6 +37,7 @@ in {
         mOnSurface = "#828282";
         mOnSurfaceVariant = "#5d5d5d";
         mOnTertiary = "#111111";
+        mOnHover = "#111111";
         mOutline = "#3c3c3c";
         mPrimary = "#aaaaaa";
         mSecondary = "#a7a7a7";
@@ -44,6 +45,7 @@ in {
         mSurface = "#111111";
         mSurfaceVariant = "#191919";
         mTertiary = "#cccccc";
+        mHover = "#cccccc";
       };
       settings = {
         osd = {
@@ -140,7 +142,7 @@ in {
         general = {
           avatarImage = "${homeDir}/.face";
           compactLockScreen = true;
-          radiusRatio = 0.2;
+          radiusRatio = 0.3;
         };
         location = {
           monthBeforeDay = true;
@@ -156,19 +158,8 @@ in {
           fontFixed = "MonaspiceKr Nerd Font Mono";
         };
         wallpaper = {
+          enabled = true;
           directory = directory;
-          monitors = [
-            {
-              name = "DP-2";
-              directory = directory;
-              wallpaper = wallpaper;
-            }
-            {
-              name = "eDP-1";
-              directory = directory;
-              wallpaper = wallpaper;
-            }
-          ];
         };
       };
     };

@@ -15,7 +15,7 @@
         username = "ixxie";
         sessionVariables = {
           EDITOR = "hx";
-          BROWSER = "firefox";
+          BROWSER = "zen";
           TERMINAL = "ghostty";
         };
       };
@@ -46,6 +46,11 @@
         mimeApps = {
           enable = true;
           defaultApplications = {
+            "text/html" = "zen-beta.desktop";
+            "x-scheme-handler/http" = "zen-beta.desktop";
+            "x-scheme-handler/https" = "zen-beta.desktop";
+            "x-scheme-handler/about" = "zen-beta.desktop";
+            "x-scheme-handler/unknown" = "zen-beta.desktop";
             "video/mp4" = "io.github.celluloid_player.Celluloid.desktop";
             "video/x-matroska" = "io.github.celluloid_player.Celluloid.desktop";
             "video/webm" = "io.github.celluloid_player.Celluloid.desktop";
@@ -65,8 +70,10 @@
       "adbusers"
       "audio"
       "docker"
+      "libvirtd"
+      "input"
     ];
     isNormalUser = true;
-    shell = pkgs.nushell;
+    shell = pkgs.fish;
   };
 }

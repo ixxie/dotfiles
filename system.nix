@@ -1,6 +1,4 @@
-{ pkgs, ... }:
-
-{
+{pkgs, ...}: {
   # host
   system.stateVersion = "24.05";
   networking.hostName = "contingent";
@@ -20,6 +18,9 @@
   # environment
   time.timeZone = "Europe/Paris";
   i18n.defaultLocale = "en_IE.UTF-8";
+
+  # nix-ld for running unpatched binaries
+  programs.nix-ld.enable = true;
 
   # enable swap file
   swapDevices = [

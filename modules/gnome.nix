@@ -6,6 +6,10 @@
     gnome.core-apps.enable = false;
   };
 
+  environment.gnome.excludePackages = with pkgs; [
+    orca
+  ];
+
   environment.systemPackages = with pkgs; [
     gnome-tweaks
     gtk-engine-murrine

@@ -19,27 +19,36 @@
       url = "github:zhaofengli/colmena";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    quickshell = {
-      url = "github:outfoxxed/quickshell";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     noctalia = {
       #url = "path:/home/ixxie/repos/foss/noctalia-shell";
       url = "github:noctalia-dev/noctalia-shell";
       inputs.nixpkgs.follows = "nixpkgs";
-      inputs.quickshell.follows = "quickshell";
     };
     zen-browser = {
       url = "github:0xc000022070/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    bun2nix = {
+      url = "github:nix-community/bun2nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
-  outputs = inputs @ {
-    nixpkgs,
-    ...
-  }: {
+  outputs = inputs @ {nixpkgs, bun2nix, ...}: let
+    pkgs = nixpkgs.legacyPackages.x86_64-linux;
+    b2n = bun2nix.packages.x86_64-linux.default;
+    yo = b2n.mkDerivation {
+      pname = "yo";
+      version = "0.1.0";
+      src = ./cli;
+      bunDeps = b2n.fetchBunDeps {
+        bunNix = ./cli/bun.nix;
+      };
+      module = "src/index.ts";
+    };
+  in {
+    packages.x86_64-linux.yo = yo;
     nixosConfigurations.contingent = nixpkgs.lib.nixosSystem {
-      specialArgs = {inherit inputs;};
+      specialArgs = {inherit inputs yo;};
       modules = [
         ./hardware.nix
         ./system.nix
@@ -50,15 +59,15 @@
         ./modules/cli.nix
         ./modules/design.nix
         ./modules/development.nix
+        ./modules/fish.nix
         ./modules/framework.nix
-        ./modules/ghostty
+        ./modules/ghostty.nix
         ./modules/gnome.nix
         ./modules/helix.nix
         ./modules/media.nix
         ./modules/niri.nix
         ./modules/nix.nix
         ./modules/noctalia.nix
-        ./modules/nushell
         ./modules/xserver.nix
       ];
     };

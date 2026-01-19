@@ -1,6 +1,4 @@
-{ pkgs, ... }:
-
-{
+{pkgs, ...}: {
   environment.systemPackages = with pkgs; [
     # general
     gh
@@ -30,10 +28,17 @@
     nixd
     alejandra
     nodePackages.bash-language-server
+    # etc
+    showmethekey
   ];
 
-  # version control
   home-manager.users.ixxie = {
+    programs.direnv = {
+      enable = true;
+      silent = true;
+      nix-direnv.enable = true;
+    };
+
     programs.git = {
       enable = true;
       settings = {
@@ -70,7 +75,7 @@
           shove = "push -f origin HEAD";
           graph = "log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)'";
           stats = "diff --ignore-all-space --stat";
-          base = "rebase -i develop";
+          base = "!git fetch && git rebase -i origin/develop && :";
           comm = "!git add . && git commit -m $1 && :";
           wat = "config --get-regexp ^alias";
           rm = "branch -D";
@@ -85,7 +90,16 @@
   };
 
   # docker daemon
-  virtualisation.docker.enable = true;
+  virtualisation = {
+    docker.enable = true;
+    libvirtd.enable = true;
+  };
+
+  boot.extraModprobeConfig = ''
+    options kvm_intel nested=1
+    options kvm_intel emulate_invalid_guest_state=0
+    options kvm ignore_msrs=1
+  '';
 
   # android debug bridge
   programs.adb.enable = true;

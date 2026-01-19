@@ -7,7 +7,6 @@
     gnumake
     gparted
     htop
-    isoimagewriter
     libnotify
     ledger
     lm_sensors
