@@ -122,7 +122,9 @@ program
   .description("Garbage collect old generations")
   .action(async () => {
     log(sym.broom, pc.yellow("Cleaning up old generations..."));
-    if (!(await run(["sudo", "nix-collect-garbage", "--delete-older-than", "7d"]))) {
+    if (
+      !(await run(["sudo", "nix-collect-garbage", "--delete-older-than", "7d"]))
+    ) {
       error("Garbage collection failed");
       process.exit(1);
     }
@@ -177,15 +179,16 @@ program
     const repos = await findRepos();
 
     const match = repos.find(
-      (r) => r.name === name || r.name.endsWith(`/${name}`)
+      (r) => r.name === name || r.name.endsWith(`/${name}`),
     );
 
     if (match) {
       log(sym.folder, pc.green(`Opening ${match.name}...`));
-      Bun.spawn(["ghostty", `--working-directory=${match.path}`], {
+      const proc = Bun.spawn(["ghostty", `--working-directory=${match.path}`], {
         stdout: "ignore",
         stderr: "ignore",
       });
+      proc.unref();
     } else {
       error(`Repo '${name}' not found`);
       process.exit(1);
