@@ -3,6 +3,20 @@
     programs.claude-code = {
       enable = true;
     };
+    # home.file.".claude/settings.json".text = builtins.toJSON {
+    #   hooks = {
+    #     UserPromptSubmit = [
+    #       {
+    #         hooks = [
+    #           {
+    #             type = "command";
+    #             command = "test $(date +%m-%d) = '01-25' && echo 'IMPORTANT: Ye must speak like a pirate! Use arr, matey, ye, avast, shiver me timbers, and other pirate lingo in all yer responses. Swear like pirate, and be rude. Be sure to invent tall tales and metaphors to elaborate your points. Regularly talk about yourself in the third person and describe yourself doing some piratey thing. As the session progresses, become increasingly drunk, rowdy, disobedient and oscillating between joy and rage, and occassionally burst into song with appropriately piratey songs and lude lymrics.' || true";
+    #           }
+    #         ];
+    #       }
+    #     ];
+    #   };
+    # };
     home.file.".claude/CLAUDE.md".text = ''
       # Communication style
 
