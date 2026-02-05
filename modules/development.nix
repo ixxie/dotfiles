@@ -30,6 +30,7 @@
     nodePackages.bash-language-server
     # etc
     showmethekey
+    android-tools
   ];
 
   home-manager.users.ixxie = {
@@ -100,7 +101,4 @@
     options kvm_intel emulate_invalid_guest_state=0
     options kvm ignore_msrs=1
   '';
-
-  # android debug bridge
-  programs.adb.enable = true;
 }
