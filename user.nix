@@ -57,6 +57,7 @@
             "video/mpeg" = "io.github.celluloid_player.Celluloid.desktop";
             "video/quicktime" = "io.github.celluloid_player.Celluloid.desktop";
             "video/x-msvideo" = "io.github.celluloid_player.Celluloid.desktop";
+            "application/pdf" = "zen-beta.desktop";
           };
         };
       };
