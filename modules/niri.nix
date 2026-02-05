@@ -77,13 +77,6 @@ in {
               };
             };
           };
-          # spawn-at-startup = [
-          #   {
-          #     command = [
-          #       "noctalia-shell"
-          #     ];
-          #   }
-          # ];
           input = {
             keyboard = {
               #repeat-delay = 200;

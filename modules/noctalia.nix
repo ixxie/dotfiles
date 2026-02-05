@@ -1,4 +1,5 @@
 {
+  lib,
   pkgs,
   inputs,
   config,
@@ -29,7 +30,7 @@ in {
     programs.noctalia-shell = {
       enable = true;
       #systemd.enable = true;
-      colors = {
+      colors = lib.mkForce {
         mError = "#dddddd";
         mOnError = "#111111";
         mOnPrimary = "#111111";
@@ -152,7 +153,7 @@ in {
           lastSeenTs = 1757777327000;
         };
         screenRecorder.directory = "/home/ixxie/Videos";
-        ui = {
+        ui = lib.mkForce {
           fontBillboard = "MonaspiceNe Nerd Font";
           fontDefault = "MonaspiceNe Nerd Font";
           fontFixed = "MonaspiceKr Nerd Font Mono";

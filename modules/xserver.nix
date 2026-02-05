@@ -20,15 +20,6 @@
     common = {
       "org.freedesktop.impl.portal.FileChooser" = "gtk";
     };
-    niri = {
-      default = [
-        "wlr"
-        "gtk"
-      ];
-      "org.freedesktop.impl.portal.ScreenCast" = ["wlr"];
-      "org.freedesktop.impl.portal.Screenshot" = ["wlr"];
-      "org.freedesktop.impl.portal.FileChooser" = ["gtk"];
-    };
     gnome = {
       default = [
         "gnome"
