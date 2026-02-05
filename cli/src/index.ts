@@ -4,9 +4,11 @@ import pc from "picocolors";
 import { readdir, stat } from "node:fs/promises";
 import { join } from "node:path";
 
-const DOTFILES = "/home/ixxie/repos/dotfiles";
+const HOME = process.env.HOME ?? "/home/ixxie";
+const DOTFILES = `${HOME}/repos/dotfiles`;
 const FLAKE = `${DOTFILES}#contingent`;
-const REPOS = "/home/ixxie/repos";
+const REPOS = `${HOME}/repos`;
+const GC_KEEP_DAYS = "7d";
 
 const sym = {
   check: "✓",
@@ -97,7 +99,7 @@ program
 
     log(sym.rocket, pc.magenta("Building and switching configuration..."));
     if (await run(["sudo", "nixos-rebuild", "switch", "--flake", FLAKE])) {
-      success(pc.green("System switched!"));
+      success("System switched!");
     } else {
       error("Switch failed");
       process.exit(1);
@@ -110,7 +112,7 @@ program
   .action(async () => {
     log(sym.refresh, pc.yellow("Updating flake inputs..."));
     if (await run(["sudo", "nix", "flake", "update"], { cwd: DOTFILES })) {
-      success(pc.green("Flake updated!"));
+      success("Flake updated!");
     } else {
       error("Update failed");
       process.exit(1);
@@ -123,15 +125,16 @@ program
   .action(async () => {
     log(sym.broom, pc.yellow("Cleaning up old generations..."));
     if (
-      !(await run(["sudo", "nix-collect-garbage", "--delete-older-than", "7d"]))
+      !(await run(["sudo", "nix-collect-garbage", "--delete-older-than", GC_KEEP_DAYS]))
     ) {
       error("Garbage collection failed");
       process.exit(1);
     }
+    success("Old generations removed!");
 
     log(sym.gear, pc.yellow("Optimizing nix store..."));
     if (await run(["nix-store", "--optimise"])) {
-      success(pc.green("Cleanup complete!"));
+      success("Cleanup complete!");
     } else {
       error("Store optimization failed");
       process.exit(1);
@@ -150,8 +153,9 @@ program
     for (const r of repos) {
       if (r.name.includes("/")) {
         const [group] = r.name.split("/");
-        if (!grouped.has(group)) grouped.set(group, []);
-        grouped.get(group)!.push(r);
+        const list = grouped.get(group) ?? [];
+        list.push(r);
+        grouped.set(group, list);
       }
     }
 
@@ -195,6 +199,21 @@ program
     }
   });
 
+program
+  .command("tree")
+  .description("Tree with gitignore and dirs first")
+  .allowUnknownOption()
+  .allowExcessArguments()
+  .action(async (_, cmd) => {
+    const extra = cmd.args.length ? cmd.args : ["."];
+    const args = [
+      "eza", "--tree", "--icons",
+      "--git-ignore", "--group-directories-first",
+      ...extra,
+    ];
+    await run(args);
+  });
+
 // Completions
 program
   .command("completions")
@@ -213,7 +232,7 @@ program
         console.log(name);
       }
     } else {
-      const commands = ["switch", "update", "gc", "repos", "cd"];
+      const commands = ["switch", "update", "gc", "repos", "cd", "tree", "completions"];
       for (const cmd of commands) {
         if (!current || cmd.startsWith(current)) {
           console.log(cmd);
