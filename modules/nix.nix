@@ -8,7 +8,7 @@ in
   environment.systemPackages = with pkgs; [
     nixVersions.latest
     nix-prefetch-git
-    nixfmt-rfc-style
+    nixfmt
     glibcLocales # nix locale bug
     nixos-anywhere
     colmena

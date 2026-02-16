@@ -63,7 +63,7 @@
   home-manager.users.ixxie = {
     stylix = {
       autoEnable = true;
-      iconTheme = {
+      icons = {
         enable = true;
         package = pkgs.numix-icon-theme-circle;
         dark = "Numix-Circle";

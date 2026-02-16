@@ -9,7 +9,7 @@
       firefox
       chromium
       tor-browser
-      inputs.zen-browser.packages.${system}.default
+      inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
       # messaging
       signal-desktop-bin
       element-desktop

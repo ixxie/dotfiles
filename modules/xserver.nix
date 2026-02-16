@@ -5,7 +5,7 @@
   };
 
   environment.systemPackages = with pkgs; [
-    xfce.tumbler
+    tumbler
     xarchiver
     nautilus
     where-is-my-sddm-theme
