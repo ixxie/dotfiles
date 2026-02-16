@@ -24,6 +24,10 @@
       url = "github:noctalia-dev/noctalia-shell";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    retroshell = {
+      url = "path:/home/ixxie/repos/retroshell";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     zen-browser = {
       url = "github:0xc000022070/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -32,12 +36,32 @@
       url = "github:nix-community/bun2nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    microvm = {
+      url = "github:astro/microvm.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    cella = {
+      url = "path:/home/ixxie/repos/cella";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.microvm.follows = "microvm";
+      inputs.home-manager.follows = "home-manager";
+    };
   };
-  outputs = inputs @ {nixpkgs, bun2nix, ...}: let
+  outputs = inputs @ {
+    nixpkgs,
+    bun2nix,
+    cella,
+    ...
+  }: let
     pkgs = nixpkgs.legacyPackages.x86_64-linux;
+    lib = nixpkgs.lib;
     b2n = bun2nix.packages.x86_64-linux.default;
-    yo = b2n.mkDerivation {
-      pname = "yo";
+    org = b2n.mkDerivation {
+      pname = "org";
       version = "0.1.0";
       src = ./cli;
       bunDeps = b2n.fetchBunDeps {
@@ -46,9 +70,10 @@
       module = "src/index.ts";
     };
   in {
-    packages.x86_64-linux.yo = yo;
+    packages.x86_64-linux.org = org;
+
     nixosConfigurations.contingent = nixpkgs.lib.nixosSystem {
-      specialArgs = {inherit inputs yo;};
+      specialArgs = {inherit inputs org;};
       modules = [
         ./hardware.nix
         ./system.nix
@@ -68,9 +93,17 @@
         ./modules/niri.nix
         ./modules/nix.nix
         ./modules/noctalia.nix
+        #./modules/retroshell.nix
         ./modules/xserver.nix
+        # Secrets management
+        inputs.sops-nix.nixosModules.sops
+        ./modules/secrets.nix
+        # Cella sandboxed microVMs
+        inputs.cella.nixosModules.default
+        ./modules/cella.nix
       ];
     };
+
     formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.alejandra;
   };
 }
