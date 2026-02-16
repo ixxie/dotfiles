@@ -1,7 +1,4 @@
 {pkgs, ...}: {
-  environment.systemPackages = with pkgs; [
-    helix-gpt
-  ];
   home-manager.users.ixxie = {
     programs.helix = {
       enable = true;
@@ -38,9 +35,6 @@
             command = "vue-language-server";
             args = ["--stdio"];
           };
-          llm = {
-            command = "helix-gpt";
-          };
         };
         language = [
           {
@@ -48,7 +42,6 @@
             auto-format = true;
             language-servers = [
               "nixd"
-              "llm"
             ];
             formatter = {
               command = "alejandra";
@@ -61,7 +54,6 @@
             auto-format = true;
             file-types = [
               "svelte"
-              "llm"
             ];
           }
           {
@@ -70,7 +62,6 @@
             language-servers = [
               "eslint"
               "vls"
-              "llm"
             ];
             injection-regex = "vue";
             scope = "text.html.vue";
@@ -92,7 +83,6 @@
             };
             language-servers = [
               "typescript-language-server"
-              "llm"
             ];
             auto-format = true;
           }
@@ -128,7 +118,6 @@
             file-types = [
               "md"
               "mdx"
-              "llm"
             ];
             auto-format = true;
             soft-wrap.enable = true;
@@ -139,7 +128,6 @@
 
             language-servers = [
               "ruff"
-              "llm"
             ];
             file-types = ["py"];
           }
@@ -147,7 +135,6 @@
             name = "bash";
             language-servers = [
               "bash-language-server"
-              "llm"
             ];
             file-types = ["sh"];
           }
