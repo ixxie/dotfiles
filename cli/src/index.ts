@@ -32,11 +32,11 @@ function error(msg: string) {
   console.log(`${pc.red(sym.cross)} ${msg}`);
 }
 
-async function run(cmd: string[], opts?: { cwd?: string }) {
+async function run(cmd: string[], opts?: { cwd?: string; silent?: boolean }) {
   const proc = Bun.spawn(cmd, {
     cwd: opts?.cwd ?? process.cwd(),
-    stdout: "inherit",
-    stderr: "inherit",
+    stdout: opts?.silent ? "pipe" : "inherit",
+    stderr: opts?.silent ? "pipe" : "inherit",
   });
   return (await proc.exited) === 0;
 }
@@ -80,11 +80,14 @@ async function findRepos(): Promise<{ name: string; path: string }[]> {
 
 // Main program
 program
-  .name("yo")
+  .name("org")
   .description(pc.bold("System management CLI"))
   .version("0.1.0");
 
-program
+// System subcommand group
+const sys = program.command("sys").description("NixOS system management");
+
+sys
   .command("switch")
   .description("Rebuild and switch NixOS configuration")
   .option("-u, --update", "Update flake inputs first")
@@ -106,7 +109,7 @@ program
     }
   });
 
-program
+sys
   .command("update")
   .description("Update flake inputs")
   .action(async () => {
@@ -119,7 +122,7 @@ program
     }
   });
 
-program
+sys
   .command("gc")
   .description("Garbage collect old generations")
   .action(async () => {
@@ -231,8 +234,15 @@ program
         const name = r.name.includes("/") ? r.name.split("/")[1] : r.name;
         console.log(name);
       }
+    } else if (command === "sys") {
+      const sysCmds = ["switch", "update", "gc"];
+      for (const cmd of sysCmds) {
+        if (!current || cmd.startsWith(current)) {
+          console.log(cmd);
+        }
+      }
     } else {
-      const commands = ["switch", "update", "gc", "repos", "cd", "tree", "completions"];
+      const commands = ["sys", "repos", "cd", "tree", "completions"];
       for (const cmd of commands) {
         if (!current || cmd.startsWith(current)) {
           console.log(cmd);

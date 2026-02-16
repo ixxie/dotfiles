@@ -5,7 +5,7 @@
   makeWrapper,
 }:
 stdenv.mkDerivation {
-  pname = "yo";
+  pname = "org";
   version = "0.1.0";
 
   src = ./.;
@@ -15,18 +15,18 @@ stdenv.mkDerivation {
   dontBuild = true;
 
   installPhase = ''
-    mkdir -p $out/lib/yo $out/bin
+    mkdir -p $out/lib/org $out/bin
 
-    cp -r node_modules $out/lib/yo/
-    cp -r src $out/lib/yo/
-    cp package.json $out/lib/yo/
+    cp -r node_modules $out/lib/org/
+    cp -r src $out/lib/org/
+    cp package.json $out/lib/org/
 
-    makeWrapper ${bun}/bin/bun $out/bin/yo \
-      --add-flags "$out/lib/yo/src/index.ts"
+    makeWrapper ${bun}/bin/bun $out/bin/org \
+      --add-flags "$out/lib/org/src/index.ts"
   '';
 
   meta = with lib; {
     description = "System management CLI";
-    mainProgram = "yo";
+    mainProgram = "org";
   };
 }
