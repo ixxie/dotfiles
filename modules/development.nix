@@ -15,7 +15,6 @@
     vscode-langservers-extracted # html/css/json
     nodePackages.typescript-language-server
     nodePackages.svelte-language-server
-    nodePackages."@vue/language-server"
     nodePackages.prettier
     eslint_d
     postman
@@ -31,6 +30,8 @@
     # etc
     showmethekey
     android-tools
+    # agents
+    socat
   ];
 
   home-manager.users.ixxie = {
