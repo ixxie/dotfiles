@@ -79,8 +79,6 @@ in {
           };
           input = {
             keyboard = {
-              #repeat-delay = 200;
-              #repeat-rate = 60;
               xkb = {
                 layout = "us";
                 variant = "altgr-intl";
@@ -89,9 +87,7 @@ in {
             };
             touchpad = {
               tap = true;
-              #dwt = true;
               natural-scroll = true;
-              #click-method = "clickfinger";
             };
           };
           prefer-no-csd = true;

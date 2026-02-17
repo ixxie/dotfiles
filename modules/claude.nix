@@ -3,23 +3,25 @@
   pkgs,
   ...
 }: let
-  seccomp = pkgs.runCommand "claude-seccomp" {
-    src = pkgs.fetchurl {
-      url = "https://registry.npmjs.org/@anthropic-ai/sandbox-runtime/-/sandbox-runtime-0.0.37.tgz";
-      hash = "sha256-DuANvt7rBcRubDINPTPeREy6+i3TNFyvwVsG9Un2X6A=";
-    };
-  } ''
-    mkdir -p $out
-    tar xzf $src --strip-components=4 package/vendor/seccomp/x64/
-    cp * $out/
-    chmod +x $out/apply-seccomp
-  '';
+  seccomp =
+    pkgs.runCommand "claude-seccomp" {
+      src = pkgs.fetchurl {
+        url = "https://registry.npmjs.org/@anthropic-ai/sandbox-runtime/-/sandbox-runtime-0.0.37.tgz";
+        hash = "sha256-DuANvt7rBcRubDINPTPeREy6+i3TNFyvwVsG9Un2X6A=";
+      };
+    } ''
+      mkdir -p $out
+      tar xzf $src --strip-components=4 package/vendor/seccomp/x64/
+      cp * $out/
+      chmod +x $out/apply-seccomp
+    '';
 
   # Shared Claude settings - reused in cell/home.nix
   claudeSettings = {
     hasCompletedOnboarding = true;
     theme = "dark";
     preferredNotifChannel = "terminal";
+    disabledMcpjsonServers = ["claude_ai_Notion"];
   };
 
   claudeMd = ''

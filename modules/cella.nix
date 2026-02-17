@@ -1,4 +1,5 @@
-{pkgs, config, ...}: {
+{pkgs, config, inputs, ...}: {
+  imports = [inputs.cella.nixosModules.default];
   cella = {
     enable = true;
 

@@ -4,10 +4,10 @@
   ...
 }: {
   imports = [
-    inputs.retroshell.nixosModules.default
+    inputs.retrobar.nixosModules.default
   ];
 
-  services.retroshell = {
+  services.retrobar = {
     enable = true;
     extraConfig = {
       settings = {

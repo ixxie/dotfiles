@@ -24,7 +24,7 @@
       url = "github:noctalia-dev/noctalia-shell";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    retroshell = {
+    retrobar = {
       url = "path:/home/ixxie/repos/retroshell";
       inputs.nixpkgs.follows = "nixpkgs";
     };
@@ -80,6 +80,7 @@
         ./theme.nix
         ./user.nix
         # modules
+        ./modules/cella.nix
         ./modules/claude.nix
         ./modules/cli.nix
         ./modules/design.nix
@@ -93,14 +94,9 @@
         ./modules/niri.nix
         ./modules/nix.nix
         ./modules/noctalia.nix
-        #./modules/retroshell.nix
-        ./modules/xserver.nix
-        # Secrets management
-        inputs.sops-nix.nixosModules.sops
+        #./modules/retrobar.nix
         ./modules/secrets.nix
-        # Cella sandboxed microVMs
-        inputs.cella.nixosModules.default
-        ./modules/cella.nix
+        ./modules/xserver.nix
       ];
     };
 
