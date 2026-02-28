@@ -1,4 +1,9 @@
-{pkgs, ...}: {
+{pkgs, inputs, ...}: {
+  imports = [inputs.sops-nix.nixosModules.sops];
+  sops = {
+    defaultSopsFile = ./secrets.yaml;
+    age.keyFile = "/home/ixxie/.config/sops/age/keys.txt";
+  };
   # host
   system.stateVersion = "24.05";
   networking = {

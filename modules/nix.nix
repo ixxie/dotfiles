@@ -6,6 +6,11 @@
 }: let
   colmena = inputs.colmena.packages.x86_64-linux.colmena;
 in {
+  sops.secrets.nix-access-tokens = {
+    mode = "0440";
+    group = "nixbld";
+  };
+
   # Basic Package Suite
   environment.systemPackages = with pkgs; [
     nixVersions.latest

@@ -1,5 +1,9 @@
 { config, ... }:
 {
+  sops.secrets.opencode-api-key = {
+    owner = "ixxie";
+  };
+
   config.home-manager.users.ixxie = {
     programs.opencode = {
       enable = true;

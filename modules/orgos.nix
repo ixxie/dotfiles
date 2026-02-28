@@ -1,4 +1,8 @@
 {config, ...}: {
+  sops.secrets.zen-api-key = {
+    owner = "ixxie";
+  };
+
   config.home-manager.users.ixxie = {
     programs.fish.interactiveShellInit = ''
       # Zen API key
