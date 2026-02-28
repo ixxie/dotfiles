@@ -1,4 +1,20 @@
-{pkgs, ...}: {
+{pkgs, ...}: let
+  viu-desktop = pkgs.makeDesktopItem {
+    name = "viu";
+    desktopName = "viu";
+    exec = "ghostty -e viu -n %f";
+    mimeTypes = [
+      "image/png"
+      "image/jpeg"
+      "image/gif"
+      "image/webp"
+      "image/bmp"
+      "image/svg+xml"
+      "image/tiff"
+    ];
+    noDisplay = true;
+  };
+in {
   # Basic Package Suite
   environment.systemPackages = with pkgs; [
     ddate
@@ -17,6 +33,10 @@
     openssh
     p7zip-rar
     rar
+    _1password-cli
+    _1password-gui
+    viu
+    viu-desktop
     ripgrep
     screenkey
     simple-scan

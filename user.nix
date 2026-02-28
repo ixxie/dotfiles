@@ -35,6 +35,13 @@
             "video/mpeg" = "io.github.celluloid_player.Celluloid.desktop";
             "video/quicktime" = "io.github.celluloid_player.Celluloid.desktop";
             "video/x-msvideo" = "io.github.celluloid_player.Celluloid.desktop";
+            "image/png" = "viu.desktop";
+            "image/jpeg" = "viu.desktop";
+            "image/gif" = "viu.desktop";
+            "image/webp" = "viu.desktop";
+            "image/bmp" = "viu.desktop";
+            "image/svg+xml" = "viu.desktop";
+            "image/tiff" = "viu.desktop";
             "application/pdf" = "zen-beta.desktop";
           };
         };
