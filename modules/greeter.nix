@@ -1,17 +1,17 @@
 {pkgs, config, ...}: let
   s = config.scheme;
+  tuigreet = "${pkgs.greetd.tuigreet}/bin/tuigreet";
   theme = builtins.concatStringsSep ";" [
-    "border=black"
-    "text=white"
-    "prompt=blue"
-    "time=darkgray"
-    "action=cyan"
-    "button=green"
-    "container=black"
-    "input=white"
+    "border=${s.base0D}"
+    "text=${s.base05}"
+    "prompt=${s.base0D}"
+    "time=${s.base03}"
+    "action=${s.base0B}"
+    "button=${s.base0D}"
+    "container=${s.base00}"
+    "input=${s.base05}"
   ];
 in {
-  # set VT palette to base16 scheme
   console.colors = [
     s.base00 # 0  black
     s.base08 # 1  red
@@ -34,7 +34,7 @@ in {
   services.greetd = {
     enable = true;
     settings.default_session = {
-      command = "${pkgs.tuigreet}/bin/tuigreet --time --asterisks --window-padding 2 --theme '${theme}' --cmd niri-session";
+      command = "${tuigreet} --time --remember-session --asterisks --theme '${theme}'";
       user = "greeter";
     };
   };

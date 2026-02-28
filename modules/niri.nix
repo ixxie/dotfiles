@@ -39,8 +39,9 @@ in {
       xdg-desktop-portal-gtk
       xdg-desktop-portal-termfilechooser
     ];
-    config.common = {
-      "org.freedesktop.impl.portal.FileChooser" = "termfilechooser";
+    config = {
+      niri."org.freedesktop.impl.portal.FileChooser" = "termfilechooser";
+      common."org.freedesktop.impl.portal.FileChooser" = "termfilechooser";
     };
   };
 
@@ -59,7 +60,7 @@ in {
       [filechooser]
       cmd=${pkgs.xdg-desktop-portal-termfilechooser}/share/xdg-desktop-portal-termfilechooser/yazi-wrapper.sh
       default_dir=$HOME
-      env=TERMCMD=ghostty
+      env=TERMCMD=ghostty -e
     '';
 
     programs = {

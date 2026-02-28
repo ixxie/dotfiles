@@ -20,7 +20,7 @@
   # Shared Claude settings - reused in cell/home.nix
   claudeSettings = {
     hasCompletedOnboarding = true;
-    theme = "dark";
+    theme = "light";
     preferredNotifChannel = "terminal";
     disabledMcpjsonServers = ["claude_ai_Notion"];
   };
