@@ -7,9 +7,22 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    stylix = {
-      url = "github:danth/stylix";
-      inputs.nixpkgs.follows = "nixpkgs";
+    base16.url = "github:SenchoPens/base16.nix";
+    tt-schemes = {
+      url = "github:tinted-theming/schemes";
+      flake = false;
+    };
+    base16-helix = {
+      url = "github:tinted-theming/base16-helix";
+      flake = false;
+    };
+    base16-fish = {
+      url = "github:tomyun/base16-fish";
+      flake = false;
+    };
+    base16-yazi = {
+      url = "github:tinted-theming/tinted-yazi";
+      flake = false;
     };
     niri = {
       url = "github:sodiboo/niri-flake";
@@ -19,18 +32,17 @@
       url = "github:zhaofengli/colmena";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    noctalia = {
-      #url = "path:/home/ixxie/repos/foss/noctalia-shell";
-      url = "github:noctalia-dev/noctalia-shell";
+    noctalia-qs = {
+      url = "github:noctalia-dev/noctalia-qs/v0.0.4";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    retrobar = {
-      url = "path:/home/ixxie/repos/retroshell";
+    noctalia = {
+      url = "github:noctalia-dev/noctalia-shell";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.noctalia-qs.follows = "noctalia-qs";
     };
     zen-browser = {
       url = "github:0xc000022070/zen-browser-flake";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
     bun2nix = {
       url = "github:nix-community/bun2nix";
@@ -44,21 +56,17 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    cella = {
-      url = "path:/home/ixxie/repos/cella";
+    claude-code = {
+      url = "github:sadjow/claude-code-nix";
       inputs.nixpkgs.follows = "nixpkgs";
-      inputs.microvm.follows = "microvm";
-      inputs.home-manager.follows = "home-manager";
     };
+    gifplx.url = "path:/home/ixxie/repos/apps/gifplx";
   };
   outputs = inputs @ {
     nixpkgs,
     bun2nix,
-    cella,
     ...
   }: let
-    pkgs = nixpkgs.legacyPackages.x86_64-linux;
-    lib = nixpkgs.lib;
     b2n = bun2nix.packages.x86_64-linux.default;
     org = b2n.mkDerivation {
       pname = "org";
@@ -80,23 +88,28 @@
         ./theme.nix
         ./user.nix
         # modules
-        ./modules/cella.nix
+        ./modules/browsers.nix
         ./modules/claude.nix
         ./modules/cli.nix
         ./modules/design.nix
         ./modules/development.nix
         ./modules/fish.nix
         ./modules/framework.nix
+        ./modules/gifplx.nix
         ./modules/ghostty.nix
-        ./modules/gnome.nix
+        #./modules/gnome.nix
         ./modules/helix.nix
         ./modules/media.nix
+        ./modules/messaging.nix
+        ./modules/torrent.nix
         ./modules/niri.nix
         ./modules/nix.nix
+        ./modules/yazi.nix
         ./modules/noctalia.nix
-        #./modules/retrobar.nix
+        ./modules/opencode.nix
+        ./modules/orgos.nix
         ./modules/secrets.nix
-        ./modules/xserver.nix
+        ./modules/greeter.nix
       ];
     };
 

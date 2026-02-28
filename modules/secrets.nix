@@ -8,5 +8,18 @@
       mode = "0400";
       restartUnits = ["cella-proxy.service"];
     };
+
+    secrets.nix-access-tokens = {
+      mode = "0440";
+      group = "nixbld";
+    };
+
+    secrets.opencode-api-key = {
+      owner = "ixxie";
+    };
+
+    secrets.zen-api-key = {
+      owner = "ixxie";
+    };
   };
 }

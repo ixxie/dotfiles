@@ -19,29 +19,6 @@
           TERMINAL = "ghostty";
         };
       };
-      programs.yazi = {
-        enable = true;
-        shellWrapperName = "y";
-        settings = {
-          opener = {
-            open = [
-              {
-                run = ''xdg-open "$@"'';
-                orphan = true;
-                desc = "Open with default application";
-              }
-            ];
-          };
-          open = {
-            rules = [
-              {
-                mime = "*";
-                use = "open";
-              }
-            ];
-          };
-        };
-      };
       xdg = {
         enable = true;
         mimeApps = {

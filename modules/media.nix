@@ -1,28 +1,11 @@
-{
-  pkgs,
-  inputs,
-  ...
-}: {
-  environment = {
-    systemPackages = with pkgs; [
-      # browsers
-      firefox
-      chromium
-      tor-browser
-      inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
-      # messaging
-      signal-desktop-bin
-      element-desktop
-      discord
-      # media
-      spotify
-      celluloid
-      # p2p
-      transmission_4-gtk
-    ];
-  };
+{pkgs, ...}: {
+  environment.systemPackages = with pkgs; [
+    spotify
+    celluloid
+  ];
 
   # audio
+  security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
     pulse.enable = true;

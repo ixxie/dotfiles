@@ -25,5 +25,8 @@
     unzip
     wget
     xclip
+    # desktop utilities
+    tumbler
+    xarchiver
   ];
 }

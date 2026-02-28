@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 import { program } from "commander";
 import pc from "picocolors";
-import { readdir, stat } from "node:fs/promises";
+import { readdir, stat, readFile } from "node:fs/promises";
 import { join } from "node:path";
 
 const HOME = process.env.HOME ?? "/home/ixxie";
@@ -101,7 +101,12 @@ sys
     }
 
     log(sym.rocket, pc.magenta("Building and switching configuration..."));
-    if (await run(["sudo", "nixos-rebuild", "switch", "--flake", FLAKE])) {
+    let envArgs: string[] = [];
+    try {
+      const envContent = await readFile(join(DOTFILES, ".env"), "utf-8");
+      envArgs = envContent.split("\n").filter(l => l.trim() && !l.startsWith("#"));
+    } catch {}
+    if (await run(["sudo", "env", ...envArgs, "nixos-rebuild", "switch", "--impure", "--flake", FLAKE])) {
       success("System switched!");
     } else {
       error("Switch failed");

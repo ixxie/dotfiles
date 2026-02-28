@@ -1,7 +1,7 @@
 {pkgs, ...}:
 with pkgs; {
   environment.systemPackages = [
-    krita
+    # krita  # broken: lager fails to find boost_system with Boost 1.89
     inkscape
     gimp-with-plugins
     ffmpeg

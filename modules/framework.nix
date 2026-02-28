@@ -3,7 +3,9 @@
     inputs.nixos-hardware.nixosModules.framework-13-7040-amd
   ];
   services.fwupd.enable = true; # firmware
+  services.upower.enable = true; # battery monitoring
   services.power-profiles-daemon.enable = true; # battery
+  hardware.bluetooth.enable = true;
   boot.initrd.kernelModules = ["amdgpu"]; # graphics
   services.fprintd.enable = false;
   hardware = {

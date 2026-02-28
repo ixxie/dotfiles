@@ -1,9 +1,12 @@
 {pkgs, ...}: {
   # host
   system.stateVersion = "24.05";
-  networking.hostName = "contingent";
+  networking = {
+    hostName = "contingent";
+    networkmanager.enable = true;
+    enableIPv6 = true;
+  };
   security.sudo.wheelNeedsPassword = false;
-  networking.enableIPv6 = true;
 
   boot = {
     # Use latest kernel
@@ -14,6 +17,8 @@
       efi.canTouchEfiVariables = true;
     };
   };
+
+  services.printing.enable = true;
 
   # environment
   time.timeZone = "Europe/Paris";

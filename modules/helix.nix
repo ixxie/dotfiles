@@ -1,8 +1,9 @@
-{pkgs, ...}: {
+{pkgs, config, inputs, ...}: {
   home-manager.users.ixxie = {
     programs.helix = {
       enable = true;
       settings = {
+        theme = "base16-transparent";
         editor = {
           shell = [
             "nu"
@@ -119,6 +120,9 @@
               "md"
               "mdx"
             ];
+            language-servers = [
+              "marksman"
+            ];
             auto-format = true;
             soft-wrap.enable = true;
           }
@@ -141,5 +145,24 @@
         ];
       };
     };
+
+    # base16 theme
+    xdg.configFile."helix/themes/base16.toml".source =
+      config.scheme {templateRepo = inputs.base16-helix;};
+    xdg.configFile."helix/themes/base16-transparent.toml".text = ''
+      inherits = "base16"
+
+      "ui.background" = {}
+      "ui.gutter" = {}
+      "ui.gutter.selected" = {}
+      "ui.linenr" = {}
+      "ui.linenr.selected" = {}
+      "ui.statusline" = {}
+      "ui.statusline.inactive" = {}
+      "ui.popup" = {}
+      "ui.menu" = {}
+      "ui.menu.selected" = { modifiers = ["reversed"] }
+      "ui.help" = {}
+    '';
   };
 }

@@ -9,12 +9,6 @@
   directory = "${homeDir}/Pictures/Wallpapers";
   wallpaper = directory + "/" + "kukai-art-xS_lI4mtyzs-unsplash.jpg";
 in {
-  # pacakge
-  environment.systemPackages = with pkgs; [
-    inputs.noctalia.packages.${pkgs.stdenv.hostPlatform.system}.default
-  ];
-
-  # systemd
   imports = [
     inputs.noctalia.nixosModules.default
   ];
@@ -29,6 +23,7 @@ in {
 
     programs.noctalia-shell = {
       enable = true;
+      package = null;
       #systemd.enable = true;
       colors = lib.mkForce {
         mError = "#dddddd";

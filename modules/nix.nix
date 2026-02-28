@@ -1,9 +1,11 @@
-{ pkgs, inputs, ... }:
-
-let
-  colmena = inputs.colmena.packages.x86_64-linux.colmena;
-in
 {
+  pkgs,
+  inputs,
+  config,
+  ...
+}: let
+  colmena = inputs.colmena.packages.x86_64-linux.colmena;
+in {
   # Basic Package Suite
   environment.systemPackages = with pkgs; [
     nixVersions.latest
@@ -12,10 +14,14 @@ in
     glibcLocales # nix locale bug
     nixos-anywhere
     colmena
+    sops
   ];
 
   nix = {
     gc.automatic = true;
+    extraOptions = ''
+      !include ${config.sops.secrets.nix-access-tokens.path}
+    '';
     settings = {
       experimental-features = [
         "nix-command"

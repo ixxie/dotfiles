@@ -1,4 +1,10 @@
-{pkgs, org, ...}: let
+{
+  pkgs,
+  org,
+  config,
+  inputs,
+  ...
+}: let
   hx-open = pkgs.writeShellScriptBin "hx-open" ''
     exec ghostty -e hx "$@"
   '';
@@ -18,12 +24,12 @@ in {
           carapace _carapace | source
 
           # Load secrets
-          if test -f $DOTFILES/secrets/anthropic_key.txt
-            set -gx ANTHROPIC_API_KEY (cat $DOTFILES/secrets/anthropic_key.txt)
-          end
           if test -f $DOTFILES/secrets/github_token.txt
             set -gx CR_PAT (cat $DOTFILES/secrets/github_token.txt)
           end
+
+          # base16 theme
+          source ${config.scheme {templateRepo = inputs.base16-fish;}}
         '';
         shellAbbrs = {
           "repo.root" = "cd (git rev-parse --show-toplevel)";
@@ -53,61 +59,6 @@ in {
         functions = {
           mkcd = "mkdir -p $argv[1]; and cd $argv[1]";
 
-          nixos = {
-            body = "echo 'NixOS helper - use: nixos.gc, nixos.update, nixos.switch'";
-          };
-
-          "nixos.gc" = {
-            body = ''
-              sudo nix-collect-garbage --delete-older-than 7d
-              nix-store --optimise
-            '';
-            description = "Clean up the Nix store";
-          };
-
-          "nixos.update" = {
-            body = "cd ~/repos/dotfiles; and sudo nix flake update";
-            description = "Update the NixOS config's flake";
-          };
-
-          "nixos.switch" = {
-            body = ''
-              if contains -- --update $argv
-                nixos.update
-              end
-              sudo nixos-rebuild switch --flake '/home/ixxie/repos/dotfiles#contingent'
-            '';
-            description = "Rebuild the NixOS profile and switch to it";
-          };
-
-          kit = {
-            body = "echo 'Kit helper - use: kit.init, kit.up'";
-          };
-
-          "kit.init" = {
-            body = ''
-              set path (test -n "$argv[1]"; and echo $argv[1]; or echo ".")
-              bunx sv create --template minimal --types ts --install bun $path
-            '';
-            description = "Initialize a SvelteKit project";
-          };
-
-          "kit.up" = {
-            body = ''
-              mkdir old
-              mv * old 2>/dev/null
-              kit.init
-              cp -r old/src .
-              cp -r old/static .
-              mv old/.git .
-              mv old/.gitignore .
-              if contains -- --clean $argv
-                rm -rf old
-              end
-            '';
-            description = "Upgrade SvelteKit project";
-          };
-
           "showkeys" = {
             body = ''
               showmethekey-cli | while read -l line
@@ -117,47 +68,8 @@ in {
             description = "Show keypresses as notifications";
           };
 
-          rip = {
-            body = ''
-              set pattern $argv[1]
-              set replacement $argv[2]
-              set expr "s/$pattern/$replacement/g"
-
-              if contains -- --dry $argv
-                rg --pretty $pattern | sed $expr
-              else
-                for file in (rg -l $pattern)
-                  sed -i $expr $file
-                end
-              end
-            '';
-            description = "Find and replace with ripgrep";
-          };
-
           repo = {
             body = "echo 'Repo helper - use: repo.diff, repo.root'";
-          };
-
-          "repo.diff" = {
-            body = ''
-              if test (count $argv) -eq 0
-                set staged_diff (git diff --color)
-                set untracked_files (git ls-files --others --exclude-standard)
-
-                set untracked_diff ""
-                for file in $untracked_files
-                  set untracked_diff "$untracked_diff"(git diff --color -- /dev/null $file)
-                end
-
-                set combined "$staged_diff$untracked_diff"
-                if test -n "$combined"
-                  echo $combined | less --raw-control-chars
-                end
-              else
-                git diff $argv
-              end
-            '';
-            description = "Git diff with untracked files included";
           };
         };
       };
@@ -186,7 +98,6 @@ in {
         enable = true;
         enableFishIntegration = true;
       };
-
     };
   };
 }

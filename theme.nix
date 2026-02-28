@@ -1,74 +1,56 @@
 {
   pkgs,
   inputs,
+  config,
   ...
 }: {
-  imports = [
-    inputs.stylix.nixosModules.stylix
-  ];
+  imports = [inputs.base16.nixosModule];
 
-  stylix = {
-    enable = true;
-    autoEnable = false;
-    base16Scheme = "${pkgs.base16-schemes}/share/themes/everforest-dark-hard.yaml";
-    # base16Scheme = {
-    #   base00 = "#2d353b"; # bg0,       palette1 dark
-    #   base01 = "#343f44"; # bg1,       palette1 dark
-    #   base02 = "#475258"; # bg3,       palette1 dark
-    #   base03 = "#859289"; # grey1,     palette2 dark
-    #   base04 = "#9da9a0"; # grey2,     palette2 dark
-    #   base05 = "#d3c6aa"; # fg,        palette2 dark
-    #   base06 = "#e6e2cc"; # bg3,       palette1 light
-    #   base07 = "#fdf6e3"; # bg0,       palette1 light
-    #   base08 = "#e67e80"; # red,       palette2 dark
-    #   base09 = "#e69875"; # orange,    palette2 dark
-    #   base0A = "#dbbc7f"; # yellow,    palette2 dark
-    #   base0B = "#a7c080"; # green,     palette2 dark
-    #   base0C = "#83c092"; # aqua,      palette2 dark
-    #   base0D = "#7fbbb3"; # blue,      palette2 dark
-    #   base0E = "#d699b6"; # purple,    palette2 dark
-    #   base0F = "#9da9a0"; # grey2,     palette2 dark
-    # };
-    opacity.terminal = 0.8;
-    cursor = {
-      size = 8;
+  # base16 color scheme
+  scheme = "${inputs.tt-schemes}/base16/everforest-dark-hard.yaml";
+
+  # fonts
+  fonts.packages = [
+    pkgs.nerd-fonts.monaspace
+    pkgs.twemoji-color-font
+  ];
+  fonts.fontconfig.defaultFonts = {
+    serif = ["MonaspiceXe Nerd Font"];
+    sansSerif = ["MonaspiceNe Nerd Font"];
+    monospace = ["MonaspiceKr Nerd Font"];
+    emoji = ["Twemoji Color"];
+  };
+
+  home-manager.users.ixxie = {
+    # cursor
+    home.pointerCursor = {
+      size = 6;
       name = "graphite-dark";
       package = pkgs.graphite-cursors;
+      gtk.enable = true;
     };
-    fonts = {
-      serif = {
-        package = pkgs.nerd-fonts.monaspace;
-        name = "MonaspiceXe Nerd Font";
-      };
-      sansSerif = {
-        package = pkgs.nerd-fonts.monaspace;
+
+    # icons
+    gtk = {
+      enable = true;
+      font = {
         name = "MonaspiceNe Nerd Font";
+        size = 11;
       };
-      monospace = {
-        package = pkgs.nerd-fonts.monaspace;
-        name = "MonaspiceKr Nerd Font";
-      };
-      emoji = {
-        package = pkgs.twemoji-color-font;
-        name = "Twemoji Color";
-      };
-      sizes = {
-        applications = 11;
-        terminal = 8;
-        popups = 11;
-        desktop = 11;
+      iconTheme = {
+        name = "Numix-Circle";
+        package = pkgs.numix-icon-theme-circle;
       };
     };
-  };
-  home-manager.users.ixxie = {
-    stylix = {
-      autoEnable = true;
-      icons = {
-        enable = true;
-        package = pkgs.numix-icon-theme-circle;
-        dark = "Numix-Circle";
-        light = "Numix-Circle-Light";
-      };
+
+    fonts.fontconfig.enable = true;
+
+    # dconf font settings (read by GTK/GNOME apps)
+    dconf.settings."org/gnome/desktop/interface" = {
+      color-scheme = "prefer-dark";
+      font-name = "MonaspiceNe Nerd Font 11";
+      document-font-name = "MonaspiceXe Nerd Font 11";
+      monospace-font-name = "MonaspiceKr Nerd Font 11";
     };
   };
 }

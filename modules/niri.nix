@@ -29,7 +29,7 @@ in {
     package = niri;
   };
 
-  # screensharing
+  # portals
   xdg.portal = {
     enable = true;
     xdgOpenUsePortal = true;
@@ -37,7 +37,11 @@ in {
     extraPortals = with pkgs; [
       xdg-desktop-portal-wlr
       xdg-desktop-portal-gtk
+      xdg-desktop-portal-termfilechooser
     ];
+    config.common = {
+      "org.freedesktop.impl.portal.FileChooser" = "termfilechooser";
+    };
   };
 
   hardware.graphics.enable = true;
@@ -49,8 +53,15 @@ in {
   }: {
     imports = [
       inputs.niri.homeModules.config
-      inputs.niri.homeModules.stylix
     ];
+    # termfilechooser: use yazi via ghostty as file picker
+    xdg.configFile."xdg-desktop-portal-termfilechooser/config".text = ''
+      [filechooser]
+      cmd=${pkgs.xdg-desktop-portal-termfilechooser}/share/xdg-desktop-portal-termfilechooser/yazi-wrapper.sh
+      default_dir=$HOME
+      env=TERMCMD=ghostty
+    '';
+
     programs = {
       niri = {
         package = niri;
@@ -126,6 +137,7 @@ in {
             # apps
             "Mod+Return".action.spawn = "ghostty";
             "Mod+Space".action.spawn = noctalia "launcher toggle";
+            "Mod+B".action.spawn = ["pkill" "-USR1" "retrobar"];
             # session
             "Mod+Alt+P".action.spawn = "shutdown now";
             "Mod+Alt+R".action.spawn = "shutdown -r now";

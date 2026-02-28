@@ -18,7 +18,7 @@
     nodePackages.prettier
     eslint_d
     postman
-    markdown-oxide
+    marksman
     bun
     # data
     duckdb
