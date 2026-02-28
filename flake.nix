@@ -97,7 +97,6 @@
         ./modules/framework.nix
         ./modules/gifplx.nix
         ./modules/ghostty.nix
-        #./modules/gnome.nix
         ./modules/helix.nix
         ./modules/media.nix
         ./modules/messaging.nix
@@ -108,7 +107,6 @@
         ./modules/noctalia.nix
         ./modules/opencode.nix
         ./modules/orgos.nix
-        ./modules/secrets.nix
         ./modules/greeter.nix
       ];
     };
