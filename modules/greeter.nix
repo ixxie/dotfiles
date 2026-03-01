@@ -1,6 +1,6 @@
 {pkgs, config, ...}: let
   s = config.scheme;
-  tuigreet = "${pkgs.greetd.tuigreet}/bin/tuigreet";
+  tuigreet = "${pkgs.tuigreet}/bin/tuigreet";
   theme = builtins.concatStringsSep ";" [
     "border=${s.base0D}"
     "text=${s.base05}"

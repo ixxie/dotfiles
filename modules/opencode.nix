@@ -1,6 +1,6 @@
 { config, ... }:
 {
-  sops.secrets.opencode-api-key = {
+  config.sops.secrets.opencode-api-key = {
     owner = "ixxie";
   };
 

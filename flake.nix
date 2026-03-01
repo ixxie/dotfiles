@@ -61,6 +61,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     gifplx.url = "path:/home/ixxie/repos/apps/gifplx";
+    orgos = {
+      url = "path:/home/ixxie/repos/org/orgos";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "home-manager";
+      inputs.microvm.follows = "microvm";
+    };
   };
   outputs = inputs @ {
     nixpkgs,
@@ -68,8 +74,8 @@
     ...
   }: let
     b2n = bun2nix.packages.x86_64-linux.default;
-    org = b2n.mkDerivation {
-      pname = "org";
+    yo = b2n.mkDerivation {
+      pname = "yo";
       version = "0.1.0";
       src = ./cli;
       bunDeps = b2n.fetchBunDeps {
@@ -78,36 +84,49 @@
       module = "src/index.ts";
     };
   in {
-    packages.x86_64-linux.org = org;
+    packages.x86_64-linux.yo = yo;
 
     nixosConfigurations.contingent = nixpkgs.lib.nixosSystem {
-      specialArgs = {inherit inputs org;};
+      specialArgs = {inherit inputs yo;};
       modules = [
+        # frameworks
+        inputs.orgos.nixosModules.default
+
+        # host
         ./hardware.nix
         ./system.nix
         ./theme.nix
         ./user.nix
-        # modules
-        ./modules/browsers.nix
-        ./modules/claude.nix
-        ./modules/cli.nix
-        ./modules/design.nix
-        ./modules/development.nix
-        ./modules/fish.nix
-        ./modules/framework.nix
-        ./modules/gifplx.nix
-        ./modules/ghostty.nix
-        ./modules/helix.nix
-        ./modules/media.nix
-        ./modules/messaging.nix
-        ./modules/torrent.nix
+
+        # desktop
         ./modules/niri.nix
-        ./modules/nix.nix
-        ./modules/yazi.nix
         ./modules/noctalia.nix
+        ./modules/greeter.nix
+
+        # tools
+        ./modules/fish.nix
+        ./modules/helix.nix
+        ./modules/ghostty.nix
+        ./modules/yazi.nix
+
+        # apps
+        ./modules/browsers.nix
+        ./modules/messaging.nix
+        ./modules/media.nix
+        ./modules/design.nix
+        ./modules/torrent.nix
+
+        # dev
+        ./modules/development.nix
+        ./modules/claude.nix
         ./modules/opencode.nix
         ./modules/orgos.nix
-        ./modules/greeter.nix
+
+        # system
+        ./modules/nix.nix
+        ./modules/cli.nix
+        ./modules/framework.nix
+        ./modules/gifplx.nix
       ];
     };
 

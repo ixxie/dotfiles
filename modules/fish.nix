@@ -1,6 +1,6 @@
 {
   pkgs,
-  org,
+  yo,
   config,
   inputs,
   ...
@@ -12,7 +12,7 @@ in {
   programs.fish.enable = true;
 
   home-manager.users.ixxie = {
-    home.packages = [hx-open pkgs.carapace org];
+    home.packages = [hx-open pkgs.carapace yo];
     programs = {
       fish = {
         enable = true;
@@ -35,12 +35,12 @@ in {
           "repo.root" = "cd (git rev-parse --show-toplevel)";
         };
         completions = {
-          org = ''
-            complete -c org -f
-            complete -c org -n "__fish_use_subcommand" -a "(org completions)"
-            complete -c org -n "__fish_seen_subcommand_from cd" -a "(org completions cd)"
-            complete -c org -n "__fish_seen_subcommand_from sys" -a "(org completions sys)"
-            complete -c org -n "__fish_seen_subcommand_from cell" -a "(org completions cell)"
+          yo = ''
+            complete -c yo -f
+            complete -c yo -n "__fish_use_subcommand" -a "(yo completions)"
+            complete -c yo -n "__fish_seen_subcommand_from cd" -a "(yo completions cd)"
+            complete -c yo -n "__fish_seen_subcommand_from sys" -a "(yo completions sys)"
+            complete -c yo -n "__fish_seen_subcommand_from cell" -a "(yo completions cell)"
           '';
         };
         shellAliases = {

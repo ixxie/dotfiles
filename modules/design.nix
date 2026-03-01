@@ -8,7 +8,7 @@ with pkgs; {
     pdftk
     gthumb
     imagemagick
-    libreoffice
+    #libreoffice
   ];
   fonts.packages = with pkgs; [
     source-code-pro

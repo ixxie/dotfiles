@@ -48,6 +48,10 @@
       };
     };
   };
+
+  # enroll user into orgos — auto-wires HM modules with system defaults
+  orgos.users.ixxie = {};
+
   users.users.ixxie = {
     home = "/home/ixxie";
     extraGroups = [
