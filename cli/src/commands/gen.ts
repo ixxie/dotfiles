@@ -152,7 +152,8 @@ export default function register(program: Command) {
       }
       for (const g of gens.slice(-parseInt(opts.lines))) {
         const tag = g.current ? pc.green(" *") : "";
-        const label = g.label ? pc.dim(`  ${g.label}`) : "";
+        const isDefault = !g.label || /^\d+\.\d+\./.test(g.label) || g.label === "unlabeled";
+        const label = isDefault ? "" : pc.dim(`  ${g.label}`);
         console.log(`${pc.bold(g.id)}  ${g.date}${label}${tag}`);
       }
     });
