@@ -51,7 +51,7 @@ async function commitMessage(explicit?: string): Promise<string> {
 
     const proc = Bun.spawn(
       ["claude", "-p",
-        `Write a concise one-line commit message (no prefix, no quotes, max 72 chars) for these dotfile changes:\n\n${diff}`,
+        `Write a concise one-line commit message (no prefix, no quotes, max 72 chars) for these dotfile changes. Ignore flake.lock / flake input updates — focus on actual config changes:\n\n${diff}`,
         "--output-format", "json"],
       { stdout: "pipe", stderr: "pipe" },
     );
@@ -144,9 +144,8 @@ export default function register(program: Command) {
     .description("Update flake inputs and switch")
     .argument("[message...]", "Commit message (auto-generated if omitted)")
     .action(async (msgParts?: string[]) => {
-      log(sym.refresh, pc.yellow("Updating flake inputs..."));
       if (!(await run(["sudo", "nix", "flake", "update"], { cwd: DOTFILES }))) {
-        error("Failed to update flake");
+        error("Flake update failed");
         process.exit(1);
       }
       await genSwitch(msgParts);
