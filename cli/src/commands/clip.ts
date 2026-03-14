@@ -1,5 +1,5 @@
 import type { Command } from "commander";
-import { search } from "@inquirer/prompts";
+import { search } from "../lib/tui.ts";
 import { success, error } from "../utils.ts";
 import { truncate } from "../lib/interactive.ts";
 
@@ -75,13 +75,14 @@ export default function register(program: Command) {
       const cols = process.stdout.columns ?? 80;
       const selected = await search({
         message: "Clipboard history",
-        source: (input) => {
-          const term = input?.toLowerCase() ?? "";
+        source: (term) => {
+          const q = term.toLowerCase();
           return entries
-            .filter((e) => !term || e.toLowerCase().includes(term))
+            .filter((e) => !q || e.toLowerCase().includes(q))
             .map((e) => ({ name: truncate(e, cols - 4), value: e }));
         },
       });
+      if (!selected) return;
       await decodeAndCopy(selected);
       success("Copied from history");
     });

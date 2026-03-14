@@ -1,9 +1,16 @@
+import { config } from "./config.ts";
+
 export interface Result {
   title: string;
   seeds: number;
   peers: number;
   size: string;
   magnet: string;
+}
+
+function vpnFetch(url: string, opts?: RequestInit): Promise<Response> {
+  const proxy = config().proxy;
+  return fetch(url, { ...opts, ...(proxy ? { proxy } : {}) } as any);
 }
 
 function fmtSize(bytes: number): string {
@@ -23,7 +30,7 @@ function magnetFromHash(hash: string, name: string): string {
 }
 
 async function knaben(query: string, limit: number): Promise<Result[]> {
-  const res = await fetch("https://api.knaben.org/v1", {
+  const res = await vpnFetch("https://api.knaben.org/v1", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -62,7 +69,7 @@ async function knaben(query: string, limit: number): Promise<Result[]> {
 
 async function torrentsCSV(query: string, limit: number): Promise<Result[]> {
   const params = new URLSearchParams({ q: query, size: String(limit) });
-  const res = await fetch(`https://torrents-csv.com/service/search?${params}`);
+  const res = await vpnFetch(`https://torrents-csv.com/service/search?${params}`);
   if (!res.ok) throw new Error(`TorrentsCSV returned ${res.status}`);
 
   const data = await res.json() as {

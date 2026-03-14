@@ -1,13 +1,13 @@
 import type { Command } from "commander";
 import pc from "picocolors";
-import { select } from "@inquirer/prompts";
+import { select, tui } from "../lib/tui.ts";
 import { log, error } from "../utils.ts";
 import * as search from "../lib/search.ts";
 import * as transmission from "../lib/transmission.ts";
 import * as omdb from "../lib/omdb.ts";
 import * as claude from "../lib/claude.ts";
 import { saveItem, upsertRating, addToWatchlist, getRatings, getWatchlist, getPrefs, getRatingForImdb } from "../lib/db.ts";
-import { truncate, fmtBytes, fmtSpeed, fmtEta, progressBar, stars, rawMode, clearScreen } from "../lib/interactive.ts";
+import { truncate, fmtBytes, fmtSpeed, fmtEta, progressBar, stars } from "../lib/interactive.ts";
 import { config } from "../lib/config.ts";
 
 async function pickOmdb(title: string): Promise<omdb.OmdbItem | null> {
@@ -23,11 +23,12 @@ async function pickOmdb(title: string): Promise<omdb.OmdbItem | null> {
 
   const choice = await select({
     message: "Which title?",
-    choices: results.map(r => ({
+    items: results.map(r => ({
       name: `${r.Title} (${r.Year}) [${r.Type}]`,
       value: r.imdbID,
     })),
   });
+  if (!choice) return null;
 
   return omdb.getById(choice);
 }
@@ -51,12 +52,13 @@ async function cmdSearch(query: string[]) {
 
   const choice = await select({
     message: "Pick a torrent to add",
-    choices: results.map((r, i) => ({
+    items: results.map((r, i) => ({
       name: `${pc.green(String(r.seeds).padStart(4))} ${pc.cyan(String(r.peers).padStart(4))} ${pc.magenta(r.size.padEnd(8))} ${truncate(r.title, 58)}`,
       value: i,
     })),
     pageSize: 20,
   });
+  if (choice === null) return;
 
   const chosen = results[choice];
   log("\u{1F4E5}", `Adding ${pc.white(truncate(chosen.title, 60))}...`);
@@ -71,78 +73,55 @@ async function cmdSearch(query: string[]) {
 }
 
 async function cmdTorrents() {
-  let selected = 0;
-  let torrents: transmission.Torrent[] = [];
+  const state = { cursor: 0, torrents: [] as transmission.Torrent[] };
 
-  const render = () => {
-    clearScreen();
-    console.log(pc.bold(" Torrents\n"));
-
-    if (torrents.length === 0) {
-      console.log(pc.dim("  No active torrents."));
-    } else {
-      for (let i = 0; i < torrents.length; i++) {
-        const t = torrents[i];
-        const prefix = i === selected ? pc.yellow("\u25B6 ") : "  ";
-        const status = transmission.STATUS[t.status] ?? "Unknown";
-        const name = truncate(t.name, 50);
-        const prog = progressBar(t.percentDone);
-        const dl = fmtSpeed(t.rateDownload);
-        const ul = fmtSpeed(t.rateUpload);
-        const eta = t.eta > 0 ? fmtEta(t.eta) : "";
-        const ratio = t.uploadRatio >= 0 ? t.uploadRatio.toFixed(2) : "-.--";
-
-        console.log(`${prefix}${name}`);
-        console.log(`    ${prog}  ${pc.dim(status)}  ${pc.cyan("\u2193" + dl)}  ${pc.green("\u2191" + ul)}  ${pc.yellow("R:" + ratio)}  ${eta ? pc.dim(eta) : ""}`);
-        if (i < torrents.length - 1) console.log();
-      }
-    }
-
-    console.log();
-    console.log(pc.dim("  \u2191/\u2193 navigate  p pause  r resume  d delete  c cleanup  q quit"));
-  };
-
-  const refresh = async () => {
+  const refresh = async (s: typeof state) => {
     try {
-      torrents = await transmission.list();
-      if (selected >= torrents.length) selected = Math.max(0, torrents.length - 1);
-    } catch {
-      // keep stale data on transient error
-    }
+      s.torrents = await transmission.list();
+      if (s.cursor >= s.torrents.length) s.cursor = Math.max(0, s.torrents.length - 1);
+    } catch {}
   };
 
-  await refresh();
-  render();
+  await refresh(state);
 
-  const interval = setInterval(async () => {
-    await refresh();
-    render();
-  }, 2000);
-
-  return new Promise<void>(resolve => {
-    const cleanup = rawMode(async (key) => {
-      const t = torrents[selected];
-      if (key === "up" && selected > 0) {
-        selected--;
-      } else if (key === "down" && selected < torrents.length - 1) {
-        selected++;
-      } else if (key === "p" && t) {
-        await transmission.pause([t.id]);
-      } else if (key === "r" && t) {
-        await transmission.resume([t.id]);
-      } else if (key === "d" && t) {
-        await transmission.remove([t.id]);
-      } else if (key === "c") {
-        await doCleanup();
-      } else if (key === "q") {
-        clearInterval(interval);
-        cleanup();
-        resolve();
-        return;
+  await tui({
+    state,
+    render: (s) => {
+      console.log(pc.bold(" Torrents\n"));
+      if (s.torrents.length === 0) {
+        console.log(pc.dim("  No active torrents."));
+      } else {
+        for (let i = 0; i < s.torrents.length; i++) {
+          const t = s.torrents[i];
+          const prefix = i === s.cursor ? pc.yellow("\u25B6 ") : "  ";
+          const status = transmission.STATUS[t.status] ?? "Unknown";
+          const name = truncate(t.name, 50);
+          const prog = progressBar(t.percentDone);
+          const dl = fmtSpeed(t.rateDownload);
+          const ul = fmtSpeed(t.rateUpload);
+          const eta = t.eta > 0 ? fmtEta(t.eta) : "";
+          const ratio = t.uploadRatio >= 0 ? t.uploadRatio.toFixed(2) : "-.--";
+          console.log(`${prefix}${name}`);
+          console.log(`    ${prog}  ${pc.dim(status)}  ${pc.cyan("\u2193" + dl)}  ${pc.green("\u2191" + ul)}  ${pc.yellow("R:" + ratio)}  ${eta ? pc.dim(eta) : ""}`);
+          if (i < s.torrents.length - 1) console.log();
+        }
       }
-      await refresh();
-      render();
-    });
+    },
+    keys: [
+      ["up", "up"], ["down", "down"],
+      ["p", "pause"], ["r", "resume"], ["d", "delete"], ["c", "cleanup"],
+    ],
+    onKey: async (key, s) => {
+      const t = s.torrents[s.cursor];
+      if (key === "up" && s.cursor > 0) s.cursor--;
+      else if (key === "down" && s.cursor < s.torrents.length - 1) s.cursor++;
+      else if (key === "p" && t) await transmission.pause([t.id]);
+      else if (key === "r" && t) await transmission.resume([t.id]);
+      else if (key === "d" && t) await transmission.remove([t.id]);
+      else if (key === "c") await doCleanup();
+      await refresh(s);
+    },
+    poll: { fn: refresh, ms: 2000 },
   });
 }
 
@@ -194,56 +173,34 @@ async function cmdSuggest(prompt?: string[]) {
     return;
   }
 
-  let selected = 0;
-  const saved = new Set<number>();
+  const state = { cursor: 0, saved: new Set<number>() };
 
-  const render = () => {
-    clearScreen();
-    console.log(pc.bold(" Suggestions\n"));
-
-    for (let i = 0; i < suggestions.length; i++) {
-      const s = suggestions[i];
-      const prefix = i === selected ? pc.yellow("\u25B6 ") : "  ";
-      const tag = saved.has(i) ? ` ${pc.green("[saved]")}` : "";
-
-      console.log(`${prefix}${pc.bold(s.title)} (${s.year ?? "?"}) [${s.type ?? "?"}]${tag}`);
-      console.log(`    ${pc.dim(s.reason)}`);
-      if (i < suggestions.length - 1) console.log();
-    }
-
-    console.log();
-    console.log(pc.dim("  \u2191/\u2193 navigate  i info  s save  t torrent  q quit"));
-  };
-
-  const waitKey = (): Promise<string> => new Promise(res => {
-    const stop = rawMode(key => { stop(); res(key); });
+  await tui({
+    state,
+    render: (s) => {
+      console.log(pc.bold(" Suggestions\n"));
+      for (let i = 0; i < suggestions.length; i++) {
+        const sg = suggestions[i];
+        const prefix = i === s.cursor ? pc.yellow("\u25B6 ") : "  ";
+        const tag = s.saved.has(i) ? ` ${pc.green("[saved]")}` : "";
+        console.log(`${prefix}${pc.bold(sg.title)} (${sg.year ?? "?"}) [${sg.type ?? "?"}]${tag}`);
+        console.log(`    ${pc.dim(sg.reason)}`);
+        if (i < suggestions.length - 1) console.log();
+      }
+    },
+    keys: [
+      ["up", "up"], ["down", "down"],
+      ["i", "info"], ["s", "save"], ["t", "torrent"],
+    ],
+    onKey: async (key, s) => {
+      const sg = suggestions[s.cursor];
+      if (key === "up" && s.cursor > 0) s.cursor--;
+      else if (key === "down" && s.cursor < suggestions.length - 1) s.cursor++;
+      else if (key === "i" && sg) await cmdInfo([sg.title]);
+      else if (key === "s" && sg) { await cmdSave([sg.title]); s.saved.add(s.cursor); }
+      else if (key === "t" && sg) await cmdSearch([sg.title]);
+    },
   });
-
-  render();
-  while (true) {
-    const key = await waitKey();
-    const s = suggestions[selected];
-
-    if (key === "up" && selected > 0) {
-      selected--;
-      render();
-    } else if (key === "down" && selected < suggestions.length - 1) {
-      selected++;
-      render();
-    } else if (key === "i" && s) {
-      await cmdInfo([s.title]);
-      render();
-    } else if (key === "s" && s) {
-      await cmdSave([s.title]);
-      saved.add(selected);
-      render();
-    } else if (key === "t" && s) {
-      await cmdSearch([s.title]);
-      render();
-    } else if (key === "q") {
-      return;
-    }
-  }
 }
 
 async function cmdRate(args: string[]) {
@@ -283,66 +240,53 @@ async function cmdSave(args: string[]) {
 }
 
 async function cmdList() {
-  let tab = 0; // 0 = watchlist, 1 = ratings
-  let selected = 0;
+  const state = { tab: 0, cursor: 0 };
 
-  const render = () => {
-    clearScreen();
-    const tabs = [
-      tab === 0 ? pc.bold(pc.underline("Watchlist")) : pc.dim("Watchlist"),
-      tab === 1 ? pc.bold(pc.underline("Ratings")) : pc.dim("Ratings"),
-    ];
-    console.log(` ${tabs.join("  |  ")}\n`);
+  await tui({
+    state,
+    render: (s) => {
+      const tabs = [
+        s.tab === 0 ? pc.bold(pc.underline("Watchlist")) : pc.dim("Watchlist"),
+        s.tab === 1 ? pc.bold(pc.underline("Ratings")) : pc.dim("Ratings"),
+      ];
+      console.log(` ${tabs.join("  |  ")}\n`);
 
-    if (tab === 0) {
-      const items = getWatchlist();
-      if (items.length === 0) {
-        console.log(pc.dim("  Watchlist empty."));
+      if (s.tab === 0) {
+        const items = getWatchlist();
+        if (items.length === 0) {
+          console.log(pc.dim("  Watchlist empty."));
+        } else {
+          for (let i = 0; i < items.length; i++) {
+            const it = items[i];
+            const prefix = i === s.cursor ? pc.yellow("\u25B6 ") : "  ";
+            console.log(`${prefix}${it.title} ${pc.dim(`(${it.year ?? "?"})`)}`);
+            console.log(`    ${pc.dim(it.type ?? "")}  ${pc.dim(it.genre ?? "")}`);
+          }
+        }
       } else {
-        for (let i = 0; i < items.length; i++) {
-          const it = items[i];
-          const prefix = i === selected ? pc.yellow("\u25B6 ") : "  ";
-          console.log(`${prefix}${it.title} ${pc.dim(`(${it.year ?? "?"})`)}`);
-          console.log(`    ${pc.dim(it.type ?? "")}  ${pc.dim(it.genre ?? "")}`);
+        const items = getRatings();
+        if (items.length === 0) {
+          console.log(pc.dim("  No ratings yet."));
+        } else {
+          for (let i = 0; i < items.length; i++) {
+            const it = items[i];
+            const prefix = i === s.cursor ? pc.yellow("\u25B6 ") : "  ";
+            console.log(`${prefix}${pc.yellow(stars(it.rating))} ${it.title} ${pc.dim(`(${it.year ?? "?"})`)}`);
+            console.log(`    ${pc.dim(it.type ?? "")}  ${pc.dim(it.genre ?? "")}`);
+          }
         }
       }
-    } else {
-      const items = getRatings();
-      if (items.length === 0) {
-        console.log(pc.dim("  No ratings yet."));
-      } else {
-        for (let i = 0; i < items.length; i++) {
-          const it = items[i];
-          const prefix = i === selected ? pc.yellow("\u25B6 ") : "  ";
-          console.log(`${prefix}${pc.yellow(stars(it.rating))} ${it.title} ${pc.dim(`(${it.year ?? "?"})`)}`);
-          console.log(`    ${pc.dim(it.type ?? "")}  ${pc.dim(it.genre ?? "")}`);
-        }
-      }
-    }
-
-    console.log();
-    console.log(pc.dim("  \u2190/\u2192 switch tab  \u2191/\u2193 navigate  q quit"));
-  };
-
-  render();
-
-  return new Promise<void>(resolve => {
-    const cleanup = rawMode((key) => {
-      const currentItems = tab === 0 ? getWatchlist() : getRatings();
-      if (key === "left" || key === "right") {
-        tab = tab === 0 ? 1 : 0;
-        selected = 0;
-      } else if (key === "up" && selected > 0) {
-        selected--;
-      } else if (key === "down" && selected < currentItems.length - 1) {
-        selected++;
-      } else if (key === "q") {
-        cleanup();
-        resolve();
-        return;
-      }
-      render();
-    });
+    },
+    keys: [
+      ["left", "tab"], ["right", "tab"],
+      ["up", "up"], ["down", "down"],
+    ],
+    onKey: (key, s) => {
+      const items = s.tab === 0 ? getWatchlist() : getRatings();
+      if (key === "left" || key === "right") { s.tab = s.tab === 0 ? 1 : 0; s.cursor = 0; }
+      else if (key === "up" && s.cursor > 0) s.cursor--;
+      else if (key === "down" && s.cursor < items.length - 1) s.cursor++;
+    },
   });
 }
 

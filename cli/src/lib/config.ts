@@ -4,6 +4,7 @@ const CONFIG_PATH = `${process.env.HOME}/.config/yo/config.json`;
 
 export interface Config {
   cleanupRatio?: number;
+  proxy?: string;
 }
 
 let _config: Config | null = null;

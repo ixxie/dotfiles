@@ -1,6 +1,6 @@
 import type { Command } from "commander";
 import pc from "picocolors";
-import { input, search } from "@inquirer/prompts";
+import { input, search } from "../lib/tui.ts";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { DOTFILES, FLAKE, sym, log, success, error, run } from "../utils.ts";
@@ -73,7 +73,7 @@ async function generateMessage(): Promise<string | null> {
   return null;
 }
 
-async function commitMessage(): Promise<string> {
+async function commitMessage(): Promise<string | null> {
   const generated = await generateMessage();
   if (generated) {
     log(sym.check, pc.dim(`Suggested: ${generated}`));
@@ -122,9 +122,9 @@ async function switchConfig(label: string) {
 }
 
 async function genSwitch() {
-  // stage first so claude can see the diff
   await run(["git", "add", "-A"], { cwd: DOTFILES });
   const msg = await commitMessage();
+  if (!msg) return;
   const hash = await gitCommit(msg);
   const label = sanitizeLabel(`${hash}-${msg}`);
   await switchConfig(label);
@@ -193,10 +193,10 @@ export default function register(program: Command) {
       }
       const selected = await search({
         message: "Switch to generation",
-        source: (input) => {
-          const term = input?.toLowerCase() ?? "";
+        source: (term) => {
+          const q = term.toLowerCase();
           return gens
-            .filter((g) => !term || g.id.includes(term) || g.date.includes(term))
+            .filter((g) => !q || g.id.includes(q) || g.date.includes(q) || g.label.includes(q))
             .reverse()
             .map((g) => ({
               name: `${g.id}  ${g.date}  ${g.label}${g.current ? pc.green(" *") : ""}`,
@@ -204,6 +204,7 @@ export default function register(program: Command) {
             }));
         },
       });
+      if (!selected) return;
       const path = `${PROFILE}-${selected}-link`;
       log(sym.refresh, pc.yellow(`Switching to generation ${selected}...`));
       if (await run(["sudo", path + "/bin/switch-to-configuration", "switch"])) {

@@ -38,39 +38,3 @@ export function stars(n: number): string {
   return "\u2605".repeat(full) + "\u2606".repeat(5 - full);
 }
 
-export type KeyHandler = (key: string, raw: Buffer) => void;
-
-export function rawMode(handler: KeyHandler): () => void {
-  process.stdin.setRawMode(true);
-  process.stdin.resume();
-  process.stdin.setEncoding("utf8");
-
-  const onData = (data: Buffer) => {
-    const s = data.toString();
-    // ctrl-c
-    if (s === "\x03") {
-      cleanup();
-      process.exit(0);
-    }
-    // arrow keys come as escape sequences
-    if (s === "\x1b[A") return handler("up", data);
-    if (s === "\x1b[B") return handler("down", data);
-    if (s === "\x1b[C") return handler("right", data);
-    if (s === "\x1b[D") return handler("left", data);
-    handler(s, data);
-  };
-
-  process.stdin.on("data", onData);
-
-  const cleanup = () => {
-    process.stdin.removeListener("data", onData);
-    process.stdin.setRawMode(false);
-    process.stdin.pause();
-  };
-
-  return cleanup;
-}
-
-export function clearScreen() {
-  process.stdout.write("\x1b[2J\x1b[H");
-}
