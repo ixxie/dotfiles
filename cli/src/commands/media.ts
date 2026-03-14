@@ -18,8 +18,8 @@ import { config } from "../lib/config.ts";
 
 // state
 
-type Tab = "list" | "recommend" | "search" | "download";
-const TAB_ORDER: Tab[] = ["list", "recommend", "search", "download"];
+type Tab = "watchlist" | "ratings" | "recommend" | "search" | "download";
+const TAB_ORDER: Tab[] = ["watchlist", "ratings", "recommend", "search", "download"];
 
 interface State {
   tab: Tab;
@@ -33,10 +33,11 @@ interface State {
   sugLoading: boolean;
   sugInfo: omdb.OmdbItem | null;
 
-  // list
-  listMode: number;
-  listCursor: number;
-  listInfo: omdb.OmdbItem | null;
+  // watchlist / ratings
+  wlCursor: number;
+  wlInfo: omdb.OmdbItem | null;
+  ratCursor: number;
+  ratInfo: omdb.OmdbItem | null;
 
   // search
   searchResults: searchLib.Result[];
@@ -58,9 +59,9 @@ interface State {
 
 function initState(): State {
   return {
-    tab: "list", prompt: "", promptActive: false, status: "",
+    tab: "watchlist", prompt: "", promptActive: false, status: "",
     suggestions: [], sugCursor: 0, sugLoading: false, sugInfo: null,
-    listMode: 0, listCursor: 0, listInfo: null,
+    wlCursor: 0, wlInfo: null, ratCursor: 0, ratInfo: null,
     searchResults: [], searchCursor: 0, searchLoading: false, searchBest: -1,
     torrents: [], dlCursor: 0, dlDetail: null, dlFileCursor: 0, dlFocusFiles: false,
     scrollLeft: 0, scrollRight: 0,
@@ -328,37 +329,33 @@ function renderState(s: State) {
       }
       break;
     }
-    case "list": {
-      const modeLabel = s.listMode === 0 ? "Watchlist" : "Ratings";
-      const otherLabel = s.listMode === 0 ? "Ratings" : "Watchlist";
-      left.push(`  ${pc.bold(pc.underline(modeLabel))}  ${pc.dim(otherLabel)}`);
-      left.push("");
-
-      if (s.listMode === 0) {
-        const items = getWatchlist();
-        if (!items.length) {
-          left.push(pc.dim("  Empty"));
-        } else {
-          for (let i = 0; i < items.length; i++) {
-            const it = items[i];
-            const prefix = i === s.listCursor ? pc.yellow("\u25B6 ") : "  ";
-            left.push(`${prefix}${it.title} ${pc.dim(`(${it.year ?? "?"})`)}`);
-            left.push(`    ${pc.dim(it.type ?? "")}  ${pc.dim(it.genre ?? "")}`);
-          }
-        }
+    case "watchlist": {
+      const items = getWatchlist();
+      if (!items.length) {
+        left.push(pc.dim("  Empty"));
       } else {
-        const items = getRatings();
-        if (!items.length) {
-          left.push(pc.dim("  No ratings"));
-        } else {
-          for (let i = 0; i < items.length; i++) {
-            const it = items[i];
-            const prefix = i === s.listCursor ? pc.yellow("\u25B6 ") : "  ";
-            left.push(`${prefix}${pc.yellow(stars(it.rating))} ${it.title} ${pc.dim(`(${it.year ?? "?"})`)}`);
-          }
+        for (let i = 0; i < items.length; i++) {
+          const it = items[i];
+          const prefix = i === s.wlCursor ? pc.yellow("\u25B6 ") : "  ";
+          left.push(`${prefix}${it.title} ${pc.dim(`(${it.year ?? "?"})`)}`);
+          left.push(`    ${pc.dim(it.type ?? "")}  ${pc.dim(it.genre ?? "")}`);
         }
       }
-      right = infoLines(s.listInfo, rightW);
+      right = infoLines(s.wlInfo, rightW);
+      break;
+    }
+    case "ratings": {
+      const items = getRatings();
+      if (!items.length) {
+        left.push(pc.dim("  No ratings"));
+      } else {
+        for (let i = 0; i < items.length; i++) {
+          const it = items[i];
+          const prefix = i === s.ratCursor ? pc.yellow("\u25B6 ") : "  ";
+          left.push(`${prefix}${pc.yellow(stars(it.rating))} ${it.title} ${pc.dim(`(${it.year ?? "?"})`)}`);
+        }
+      }
+      right = infoLines(s.ratInfo, rightW);
       break;
     }
   }
@@ -418,7 +415,8 @@ function getTabKeys(s: State): Keys {
         return [["up", "up"], ["down", "down"], ["3", "high"], ["2", "med"], ["1", "low"], ["0", "off"], ["w", "watch"], ["esc", "back"]];
       }
       return [...nav, ["up", "up"], ["down", "down"], ["enter", "files"], ["backspace", "remove"], ["c", "cleanup"], ["esc", "quit"]];
-    case "list": return [...nav, ["tab", "mode"], ["up", "up"], ["down", "down"], ["enter", "search"], ["t", "trailer"], ["backspace", "remove"], ["esc", "quit"]];
+    case "watchlist": return [...nav, ["up", "up"], ["down", "down"], ["enter", "search"], ["t", "trailer"], ["backspace", "remove"], ["esc", "quit"]];
+    case "ratings": return [...nav, ["up", "up"], ["down", "down"], ["enter", "search"], ["t", "trailer"], ["esc", "quit"]];
     default: return nav;
   }
 }
@@ -455,7 +453,8 @@ async function handleKey(key: string, s: State, draw: () => void): Promise<"quit
     s.status = "";
     s.scrollLeft = 0; s.scrollRight = 0;
     if (s.tab === "download") s.dlFocusFiles = false;
-    if (s.tab === "list") loadListInfo(s, draw);
+    if (s.tab === "watchlist") loadWlInfo(s, draw);
+    if (s.tab === "ratings") loadRatInfo(s, draw);
     return;
   }
   if (key === "right" && ti < TAB_ORDER.length - 1 && !(s.tab === "download" && s.dlFocusFiles)) {
@@ -463,7 +462,8 @@ async function handleKey(key: string, s: State, draw: () => void): Promise<"quit
     s.status = "";
     s.scrollLeft = 0; s.scrollRight = 0;
     if (s.tab === "download") s.dlFocusFiles = false;
-    if (s.tab === "list") loadListInfo(s, draw);
+    if (s.tab === "watchlist") loadWlInfo(s, draw);
+    if (s.tab === "ratings") loadRatInfo(s, draw);
     return;
   }
 
@@ -482,7 +482,8 @@ async function handleKey(key: string, s: State, draw: () => void): Promise<"quit
     case "recommend": return handleRecommend(key, s, draw);
     case "search": return handleSearch(key, s, draw);
     case "download": return handleDownload(key, s, draw);
-    case "list": return handleList(key, s, draw);
+    case "watchlist": return handleWatchlist(key, s, draw);
+    case "ratings": return handleRatings(key, s, draw);
   }
 }
 
@@ -544,43 +545,59 @@ function loadSugInfo(s: State, draw: () => void) {
   }).catch(() => {});
 }
 
-function handleList(key: string, s: State, draw: () => void) {
-  const items = s.listMode === 0 ? getWatchlist() : getRatings();
-
-  if (key === "tab") {
-    s.listMode = s.listMode === 0 ? 1 : 0;
-    s.listCursor = 0;
-    s.listInfo = null;
-  } else if (key === "up" && s.listCursor > 0) {
-    s.listCursor--;
-    loadListInfo(s, draw);
-  } else if (key === "down" && s.listCursor < items.length - 1) {
-    s.listCursor++;
-    loadListInfo(s, draw);
-  } else if (key === "enter" && items[s.listCursor]) {
-    const it = items[s.listCursor];
+function handleWatchlist(key: string, s: State, draw: () => void) {
+  const items = getWatchlist();
+  if (key === "up" && s.wlCursor > 0) {
+    s.wlCursor--;
+    loadWlInfo(s, draw);
+  } else if (key === "down" && s.wlCursor < items.length - 1) {
+    s.wlCursor++;
+    loadWlInfo(s, draw);
+  } else if (key === "enter" && items[s.wlCursor]) {
     s.tab = "search";
-    s.prompt = it.title;
+    s.prompt = items[s.wlCursor].title;
     loadSearch(s, draw);
-  } else if (key === "t" && items[s.listCursor]) {
-    const it = items[s.listCursor];
-    openTrailer(it.title, it.year ?? undefined);
-  } else if (key === "backspace" && s.listMode === 0) {
-    const wl = getWatchlist();
-    if (wl[s.listCursor]) {
-      removeFromWatchlist(wl[s.listCursor].imdb_id);
-      s.status = `Removed ${wl[s.listCursor].title}`;
-      if (s.listCursor >= getWatchlist().length) s.listCursor = Math.max(0, getWatchlist().length - 1);
-    }
+  } else if (key === "t" && items[s.wlCursor]) {
+    openTrailer(items[s.wlCursor].title, items[s.wlCursor].year ?? undefined);
+  } else if (key === "backspace" && items[s.wlCursor]) {
+    removeFromWatchlist(items[s.wlCursor].imdb_id);
+    s.status = `Removed ${items[s.wlCursor].title}`;
+    if (s.wlCursor >= getWatchlist().length) s.wlCursor = Math.max(0, getWatchlist().length - 1);
+    loadWlInfo(s, draw);
   }
 }
 
-function loadListInfo(s: State, draw: () => void) {
-  const items = s.listMode === 0 ? getWatchlist() : getRatings();
-  const it = items[s.listCursor];
+function handleRatings(key: string, s: State, draw: () => void) {
+  const items = getRatings();
+  if (key === "up" && s.ratCursor > 0) {
+    s.ratCursor--;
+    loadRatInfo(s, draw);
+  } else if (key === "down" && s.ratCursor < items.length - 1) {
+    s.ratCursor++;
+    loadRatInfo(s, draw);
+  } else if (key === "enter" && items[s.ratCursor]) {
+    s.tab = "search";
+    s.prompt = items[s.ratCursor].title;
+    loadSearch(s, draw);
+  } else if (key === "t" && items[s.ratCursor]) {
+    openTrailer(items[s.ratCursor].title, items[s.ratCursor].year ?? undefined);
+  }
+}
+
+function loadWlInfo(s: State, draw: () => void) {
+  const items = getWatchlist();
+  const it = items[s.wlCursor];
   if (!it) return;
-  s.listInfo = null;
-  fetchInfo(it.imdb_id, item => { s.listInfo = item; }, draw);
+  s.wlInfo = null;
+  fetchInfo(it.imdb_id, item => { s.wlInfo = item; }, draw);
+}
+
+function loadRatInfo(s: State, draw: () => void) {
+  const items = getRatings();
+  const it = items[s.ratCursor];
+  if (!it) return;
+  s.ratInfo = null;
+  fetchInfo(it.imdb_id, item => { s.ratInfo = item; }, draw);
 }
 
 async function handleSearch(key: string, s: State, draw: () => void) {
@@ -699,7 +716,7 @@ async function mediaTui() {
   // initial loads
   loadSuggestions(s, draw);
   refreshTorrents(s);
-  loadListInfo(s, draw);
+  loadWlInfo(s, draw);
   draw();
 
   // poll downloads
