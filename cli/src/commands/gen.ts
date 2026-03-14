@@ -150,7 +150,7 @@ export default function register(program: Command) {
         error("No generations found");
         return;
       }
-      for (const g of gens.slice(-parseInt(opts.lines))) {
+      for (const g of gens.slice(0, parseInt(opts.lines))) {
         const tag = g.current ? pc.green(" *") : "";
         const isDefault = !g.label || /^\d+\.\d+\./.test(g.label) || g.label === "unlabeled";
         const label = isDefault ? "" : pc.dim(`  ${g.label}`);
