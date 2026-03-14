@@ -91,6 +91,14 @@ export function addToWatchlist(itemId: number, priority = 0) {
   );
 }
 
+export function removeFromWatchlist(imdbId: string) {
+  db().run(`
+    DELETE FROM watchlist WHERE item_id IN (
+      SELECT id FROM items WHERE imdb_id = ?
+    )
+  `, [imdbId]);
+}
+
 export interface RatedItem {
   title: string;
   year: string | null;

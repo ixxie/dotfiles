@@ -1,5 +1,54 @@
 import pc from "picocolors";
 
+// ansi helpers
+
+export function stripAnsi(s: string): string {
+  return s.replace(/\x1b\[[0-9;]*m/g, "");
+}
+
+export function visWidth(s: string): number {
+  return stripAnsi(s).length;
+}
+
+export function truncVis(s: string, width: number): string {
+  let vis = 0;
+  let result = "";
+  const re = /(\x1b\[[0-9;]*m)|(.)/g;
+  let m;
+  while ((m = re.exec(s)) !== null) {
+    if (m[1]) {
+      result += m[1];
+    } else {
+      if (vis >= width - 1) { result += "\u2026"; break; }
+      result += m[2];
+      vis++;
+    }
+  }
+  return result;
+}
+
+export function padTo(s: string, width: number): string {
+  const vis = visWidth(s);
+  if (vis >= width) return truncVis(s, width);
+  return s + " ".repeat(width - vis);
+}
+
+export function wordWrap(text: string, width: number): string[] {
+  const words = text.split(/\s+/);
+  const lines: string[] = [];
+  let line = "";
+  for (const word of words) {
+    if (line.length + word.length + 1 > width && line) {
+      lines.push(line);
+      line = word;
+    } else {
+      line = line ? line + " " + word : word;
+    }
+  }
+  if (line) lines.push(line);
+  return lines;
+}
+
 // key parsing
 
 const KEY_LABELS: Record<string, string> = {
@@ -9,7 +58,8 @@ const KEY_LABELS: Record<string, string> = {
 
 function parseKey(data: Buffer): string {
   const s = data.toString();
-  if (s === "\x03" || s === "\x1b") return "esc";
+  if (s === "\x03") { process.exit(0); }
+  if (s === "\x1b") return "esc";
   if (s === "\r") return "enter";
   if (s === "\x7f") return "backspace";
   if (s === "\x1b[A") return "up";
@@ -20,7 +70,7 @@ function parseKey(data: Buffer): string {
   return s;
 }
 
-function startRaw(handler: (key: string) => void): () => void {
+export function startRaw(handler: (key: string) => void): () => void {
   process.stdin.setRawMode(true);
   process.stdin.resume();
   process.stdin.setEncoding("utf8");
@@ -35,15 +85,15 @@ function startRaw(handler: (key: string) => void): () => void {
   };
 }
 
-function clear() {
+export function clear() {
   process.stdout.write("\x1b[2J\x1b[H");
 }
 
-// menu bar
+// layout
 
 export type Keys = [key: string, label: string][];
 
-function menuBar(keys: Keys) {
+export function menuBar(keys: Keys) {
   const parts = keys.map(([key, label]) => {
     const display = KEY_LABELS[key] ?? key;
     return `${pc.bold(display)} ${pc.dim(label)}`;
@@ -52,24 +102,40 @@ function menuBar(keys: Keys) {
   console.log("  " + parts.join("  "));
 }
 
+export function renderSplit(leftLines: string[], rightLines: string[], leftWidth: number) {
+  const max = Math.max(leftLines.length, rightLines.length);
+  const sep = pc.dim("\u2502");
+  for (let i = 0; i < max; i++) {
+    const left = padTo(leftLines[i] ?? "", leftWidth);
+    const right = rightLines[i] ?? "";
+    console.log(`${left} ${sep} ${right}`);
+  }
+}
+
+export function tabBar(tabs: string[], active: number): string {
+  return "  " + tabs.map((t, i) =>
+    i === active ? pc.bold(pc.underline(t)) : pc.dim(t)
+  ).join(pc.dim("  \u2502  "));
+}
+
 // full-screen TUI
 
 export interface TuiOpts<S> {
   state: S;
   render: (state: S) => void;
-  keys: Keys;
+  keys: Keys | ((state: S) => Keys);
   onKey: (key: string, state: S) => void | "quit" | Promise<void | "quit">;
   poll?: { fn: (state: S) => Promise<void>; ms: number };
 }
 
 export function tui<S>(opts: TuiOpts<S>): Promise<void> {
   const { state, render, keys, onKey, poll } = opts;
-  const allKeys: Keys = [...keys, ["esc", "quit"]];
 
   const draw = () => {
     clear();
     render(state);
-    menuBar(allKeys);
+    const k = typeof keys === "function" ? keys(state) : keys;
+    menuBar(k);
   };
   draw();
 
@@ -83,12 +149,6 @@ export function tui<S>(opts: TuiOpts<S>): Promise<void> {
 
   return new Promise<void>((resolve) => {
     const cleanup = startRaw(async (key) => {
-      if (key === "esc") {
-        if (interval) clearInterval(interval);
-        cleanup();
-        resolve();
-        return;
-      }
       const result = await onKey(key, state);
       if (result === "quit") {
         if (interval) clearInterval(interval);
@@ -115,7 +175,6 @@ export function input(opts: {
     console.log(`  ${buf}\u2588`);
     menuBar([["enter", "confirm"], ["esc", "cancel"]]);
   };
-
   draw();
 
   return new Promise((resolve) => {
@@ -140,20 +199,16 @@ export function select<T>(opts: {
   const draw = () => {
     clear();
     console.log(`  ${pc.bold(opts.message)}\n`);
-
     const end = Math.min(offset + pageSize, items.length);
     for (let i = offset; i < end; i++) {
       const prefix = i === cursor ? pc.yellow("\u25B6 ") : "  ";
       console.log(`${prefix}${items[i].name}`);
     }
-
     if (items.length > pageSize) {
       console.log(pc.dim(`\n  ${cursor + 1}/${items.length}`));
     }
-
     menuBar([["up", "up"], ["down", "down"], ["enter", "select"], ["esc", "cancel"]]);
   };
-
   draw();
 
   return new Promise((resolve) => {
@@ -188,7 +243,6 @@ export function search<T>(opts: {
     clear();
     console.log(`  ${pc.bold(opts.message)}\n`);
     console.log(`  ${pc.cyan("/")} ${query}\u2588\n`);
-
     const end = Math.min(offset + pageSize, items.length);
     if (items.length === 0) {
       console.log(pc.dim("  No matches"));
@@ -201,10 +255,8 @@ export function search<T>(opts: {
         console.log(pc.dim(`\n  ${cursor + 1}/${items.length}`));
       }
     }
-
     menuBar([["up", "up"], ["down", "down"], ["enter", "select"], ["esc", "cancel"]]);
   };
-
   draw();
 
   return new Promise((resolve) => {

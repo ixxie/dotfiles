@@ -4,6 +4,7 @@ export interface Result {
   title: string;
   seeds: number;
   peers: number;
+  bytes: number;
   size: string;
   magnet: string;
 }
@@ -61,6 +62,7 @@ async function knaben(query: string, limit: number): Promise<Result[]> {
       title: h.title,
       seeds: h.seeders ?? 0,
       peers: h.peers ?? 0,
+      bytes: h.bytes ?? 0,
       size: fmtSize(h.bytes ?? 0),
       magnet: h.magnetUrl ?? (h.hash ? magnetFromHash(h.hash, h.title) : ""),
     }))
@@ -86,6 +88,7 @@ async function torrentsCSV(query: string, limit: number): Promise<Result[]> {
     title: t.name,
     seeds: t.seeders ?? 0,
     peers: t.leechers ?? 0,
+    bytes: t.size_bytes ?? 0,
     size: fmtSize(t.size_bytes ?? 0),
     magnet: magnetFromHash(t.infohash, t.name),
   }));
