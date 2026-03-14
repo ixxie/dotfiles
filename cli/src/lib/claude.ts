@@ -5,12 +5,13 @@ export interface Suggestion {
   reason: string;
 }
 
-export async function suggest(ratingsCtx: string, prefsCtx: string, userPrompt?: string): Promise<Suggestion[]> {
+export async function suggest(ratingsCtx: string, prefsCtx: string, excludeCtx: string, userPrompt?: string): Promise<Suggestion[]> {
   const parts = [
     ratingsCtx && `My ratings:\n${ratingsCtx}`,
     prefsCtx && `My preferences:\n${prefsCtx}`,
+    excludeCtx && `Already seen or on my watchlist (DO NOT suggest these):\n${excludeCtx}`,
     userPrompt && `Mood/constraint: ${userPrompt}`,
-    "Suggest 10 titles I'd enjoy.",
+    "Suggest 20 titles I'd enjoy.",
     "Reply with ONLY a raw JSON array, no markdown fences, no explanation.",
     'Format: [{"title":"...","year":"...","type":"movie|series","reason":"..."},...]',
   ].filter(Boolean);

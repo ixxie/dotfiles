@@ -10,7 +10,7 @@ import * as transmission from "../lib/transmission.ts";
 import * as omdb from "../lib/omdb.ts";
 import * as claude from "../lib/claude.ts";
 import {
-  saveItem, addToWatchlist, removeFromWatchlist,
+  saveItem, upsertRating, addToWatchlist, removeFromWatchlist,
   getRatings, getWatchlist, getPrefs, getRatingForImdb,
 } from "../lib/db.ts";
 import { truncate, fmtSpeed, fmtEta, progressBar, stars } from "../lib/interactive.ts";
@@ -108,13 +108,18 @@ function loadSuggestions(s: State, draw: () => void) {
   }
 
   const ratings = getRatings();
+  const watchlist = getWatchlist();
   const prefs = getPrefs();
   const ratingsCtx = ratings.map(r =>
     `${r.title} (${r.year ?? "?"}) - ${stars(r.rating)} ${r.type ?? ""}`
   ).join("\n");
   const prefsCtx = prefs.map(p => `${p.key}: ${p.value}`).join("\n");
+  const excludeCtx = [
+    ...ratings.map(r => `${r.title} (${r.year ?? "?"})`),
+    ...watchlist.map(w => `${w.title} (${w.year ?? "?"})`),
+  ].join("\n");
 
-  claude.suggest(ratingsCtx, prefsCtx, s.prompt || undefined)
+  claude.suggest(ratingsCtx, prefsCtx, excludeCtx, s.prompt || undefined)
     .then(results => {
       s.suggestions = results;
       s.sugCursor = 0;
@@ -393,7 +398,7 @@ function getTabKeys(s: State): Keys {
   const nav: Keys = [["left", "prev tab"], ["right", "next tab"]];
 
   switch (s.tab) {
-    case "recommend": return [...nav, ["/", "query"], ["up", "up"], ["down", "down"], ["enter", "search"], ["t", "trailer"], ["esc", "quit"]];
+    case "recommend": return [...nav, ["/", "query"], ["up", "up"], ["down", "down"], ["1-5", "rate"], ["enter", "search"], ["t", "trailer"], ["esc", "quit"]];
     case "search": return [...nav, ["/", "query"], ["up", "up"], ["down", "down"], ["enter", "add"], ["esc", "quit"]];
     case "download":
       if (s.dlFocusFiles) {
@@ -436,12 +441,14 @@ async function handleKey(key: string, s: State, draw: () => void): Promise<"quit
     s.tab = TAB_ORDER[ti - 1];
     s.status = "";
     if (s.tab === "download") s.dlFocusFiles = false;
+    if (s.tab === "list") loadListInfo(s, draw);
     return;
   }
   if (key === "right" && ti < TAB_ORDER.length - 1 && !(s.tab === "download" && s.dlFocusFiles)) {
     s.tab = TAB_ORDER[ti + 1];
     s.status = "";
     if (s.tab === "download") s.dlFocusFiles = false;
+    if (s.tab === "list") loadListInfo(s, draw);
     return;
   }
 
@@ -490,6 +497,22 @@ function handleRecommend(key: string, s: State, draw: () => void) {
   } else if (key === "t" && s.suggestions[s.sugCursor]) {
     const sg = s.suggestions[s.sugCursor];
     openTrailer(sg.title, sg.year);
+  } else if (key >= "1" && key <= "5" && s.suggestions[s.sugCursor]) {
+    const sg = s.suggestions[s.sugCursor];
+    const rating = parseInt(key);
+    omdb.resolve(sg.title).then(async results => {
+      if (results[0]) {
+        const item = await omdb.getById(results[0].imdbID);
+        if (item) {
+          const id = saveItem(item);
+          upsertRating(id, rating);
+          s.suggestions.splice(s.sugCursor, 1);
+          if (s.sugCursor >= s.suggestions.length) s.sugCursor = Math.max(0, s.suggestions.length - 1);
+          s.status = `Rated ${sg.title} ${stars(rating)}`;
+          draw();
+        }
+      }
+    }).catch(() => {});
   }
 }
 
@@ -661,6 +684,7 @@ async function mediaTui() {
   // initial loads
   loadSuggestions(s, draw);
   refreshTorrents(s);
+  loadListInfo(s, draw);
   draw();
 
   // poll downloads
