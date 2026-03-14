@@ -41,6 +41,7 @@ in {
             complete -c yo -n "__fish_seen_subcommand_from cd" -a "(yo completions cd)"
             complete -c yo -n "__fish_seen_subcommand_from sys" -a "(yo completions sys)"
             complete -c yo -n "__fish_seen_subcommand_from cell" -a "(yo completions cell)"
+            complete -c yo -n "__fish_seen_subcommand_from open" -a "(yo completions open)"
           '';
         };
         shellAliases = {

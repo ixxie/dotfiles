@@ -6,6 +6,7 @@
     "yo": "./src/index.ts"
   },
   "dependencies": {
+    "@inquirer/prompts": "^8.3.0",
     "commander": "^13.0.0",
     "picocolors": "^1.1.1"
   },

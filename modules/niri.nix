@@ -22,6 +22,7 @@ in {
     playerctl
     libinput
     wl-clipboard-rs
+    cliphist
   ];
 
   programs.niri = {
@@ -67,6 +68,10 @@ in {
       niri = {
         package = niri;
         settings = {
+          spawn-at-startup = [
+            {command = ["wl-paste" "--watch" "cliphist" "store"];}
+            {command = ["wl-paste" "--type" "image" "--watch" "cliphist" "store"];}
+          ];
           environment = {
             NIXOS_OZONE_WL = "1";
             QT_QPA_PLATFORM = "wayland";

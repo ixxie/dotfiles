@@ -38,13 +38,17 @@ in {
     viu
     viu-desktop
     ripgrep
+    sway-launcher-desktop
+    grim
+    slurp
+    wl-screenrec
+    wl-clipboard
     screenkey
     simple-scan
     testdisk
     tree
     unzip
     wget
-    xclip
     # desktop utilities
     tumbler
     xarchiver

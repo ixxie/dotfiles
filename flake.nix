@@ -61,12 +61,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     gifplx.url = "path:/home/ixxie/repos/apps/gifplx";
-    orgos = {
-      url = "path:/home/ixxie/repos/org/orgos";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.home-manager.follows = "home-manager";
-      inputs.microvm.follows = "microvm";
-    };
+    # orgos = {
+    #   url = "path:/home/ixxie/repos/org/orgos";
+    #   inputs.nixpkgs.follows = "nixpkgs";
+    #   inputs.home-manager.follows = "home-manager";
+    #   inputs.microvm.follows = "microvm";
+    # };
   };
   outputs = inputs @ {
     nixpkgs,
@@ -90,7 +90,7 @@
       specialArgs = {inherit inputs yo;};
       modules = [
         # frameworks
-        inputs.orgos.nixosModules.default
+        #inputs.orgos.nixosModules.default
 
         # host
         ./hardware.nix
@@ -120,7 +120,7 @@
         ./modules/development.nix
         ./modules/claude.nix
         ./modules/opencode.nix
-        ./modules/orgos.nix
+        #./modules/orgos.nix
 
         # system
         ./modules/nix.nix

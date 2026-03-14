@@ -1,6 +1,6 @@
 {pkgs, ...}: {
   environment.systemPackages = with pkgs; [
-    signal-desktop-bin
+    signal-desktop
     element-desktop
     discord
     iamb

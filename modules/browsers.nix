@@ -15,7 +15,6 @@
     ];
     programs.zen-browser = {
       enable = true;
-      suppressXdgMigrationWarning = true;
       policies.Preferences = {
         "widget.use-xdg-desktop-portal.file-picker" = {
           Value = 1;

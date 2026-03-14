@@ -1,4 +1,6 @@
-{pkgs, inputs, ...}: {
+{pkgs, inputs, ...}: let
+  label = builtins.getEnv "NIXOS_LABEL";
+in {
   imports = [inputs.sops-nix.nixosModules.sops];
   sops = {
     defaultSopsFile = ./secrets.yaml;
@@ -6,6 +8,7 @@
   };
   # host
   system.stateVersion = "24.05";
+  system.nixos.label = if label != "" then label else "unlabeled";
   networking = {
     hostName = "contingent";
     networkmanager.enable = true;

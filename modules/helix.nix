@@ -4,6 +4,7 @@
       enable = true;
       settings = {
         theme = "base16-transparent";
+        keys.normal.space.r = ":reload-all";
         editor = {
           shell = [
             "nu"
