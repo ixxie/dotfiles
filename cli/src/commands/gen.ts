@@ -115,8 +115,8 @@ async function switchConfig(label: string) {
   }
 }
 
-async function genSwitch(msgParts?: string[]) {
-  const explicit = msgParts?.length ? msgParts.join(" ") : undefined;
+async function genSwitch(opts: { message?: string }) {
+  const explicit = opts.message ?? undefined;
 
   // stage first so claude can see the diff
   await run(["git", "add", "-A"], { cwd: DOTFILES });
@@ -130,25 +130,25 @@ export default function register(program: Command) {
   const gen = program
     .command("gen")
     .description("NixOS generation management")
-    .argument("[message...]", "Commit message (auto-generated if omitted)")
+    .option("-m, --message <msg>", "Commit message (auto-generated if omitted)")
     .action(genSwitch);
 
   gen
     .command("switch")
     .description("Rebuild and switch NixOS configuration")
-    .argument("[message...]", "Commit message (auto-generated if omitted)")
+    .option("-m, --message <msg>", "Commit message (auto-generated if omitted)")
     .action(genSwitch);
 
   gen
     .command("update")
     .description("Update flake inputs and switch")
-    .argument("[message...]", "Commit message (auto-generated if omitted)")
-    .action(async (msgParts?: string[]) => {
+    .option("-m, --message <msg>", "Commit message (auto-generated if omitted)")
+    .action(async (opts: { message?: string }) => {
       if (!(await run(["sudo", "nix", "flake", "update"], { cwd: DOTFILES }))) {
         error("Flake update failed");
         process.exit(1);
       }
-      await genSwitch(msgParts);
+      await genSwitch(opts);
     });
 
   gen
