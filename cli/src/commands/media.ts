@@ -91,14 +91,21 @@ async function autoSelectEpisodes(id: number, files: transmission.TorrentFile[])
   await transmission.setFilesWanted(id, wanted, unwanted);
 }
 
+function openTrailer(title: string, year?: string) {
+  const q = encodeURIComponent(`${title} ${year ?? ""} trailer`.trim());
+  Bun.spawn(["xdg-open", `https://www.youtube.com/results?search_query=${q}`], { stdout: "ignore", stderr: "ignore" });
+}
+
 // async actions
 
 let debounceTimer: ReturnType<typeof setTimeout> | null = null;
 
 function loadSuggestions(s: State, draw: () => void) {
   s.sugLoading = true;
-  s.status = "Loading suggestions...";
-  draw();
+  if (s.tab === "recommend") {
+    s.status = "Loading suggestions...";
+    draw();
+  }
 
   const ratings = getRatings();
   const prefs = getPrefs();
@@ -112,9 +119,9 @@ function loadSuggestions(s: State, draw: () => void) {
       s.suggestions = results;
       s.sugCursor = 0;
       s.sugInfo = null;
-      s.status = `${results.length} suggestions`;
+      if (s.tab === "recommend") s.status = `${results.length} suggestions`;
     })
-    .catch(() => { s.status = "Suggestion failed"; })
+    .catch(() => { if (s.tab === "recommend") s.status = "Suggestion failed"; })
     .finally(() => { s.sugLoading = false; draw(); });
 }
 
@@ -314,7 +321,8 @@ function renderState(s: State) {
     case "list": {
       const modeLabel = s.listMode === 0 ? "Watchlist" : "Ratings";
       const otherLabel = s.listMode === 0 ? "Ratings" : "Watchlist";
-      left.push(`  ${pc.bold(pc.underline(modeLabel))}  ${pc.dim(otherLabel)}\n`);
+      left.push(`  ${pc.bold(pc.underline(modeLabel))}  ${pc.dim(otherLabel)}`);
+      left.push("");
 
       if (s.listMode === 0) {
         const items = getWatchlist();
@@ -385,14 +393,14 @@ function getTabKeys(s: State): Keys {
   const nav: Keys = [["left", "prev tab"], ["right", "next tab"]];
 
   switch (s.tab) {
-    case "recommend": return [...nav, ["/", "query"], ["up", "up"], ["down", "down"], ["enter", "search"], ["esc", "quit"]];
+    case "recommend": return [...nav, ["/", "query"], ["up", "up"], ["down", "down"], ["enter", "search"], ["t", "trailer"], ["esc", "quit"]];
     case "search": return [...nav, ["/", "query"], ["up", "up"], ["down", "down"], ["enter", "add"], ["esc", "quit"]];
     case "download":
       if (s.dlFocusFiles) {
         return [["up", "up"], ["down", "down"], ["3", "high"], ["2", "med"], ["1", "low"], ["0", "off"], ["w", "watch"], ["esc", "back"]];
       }
       return [...nav, ["up", "up"], ["down", "down"], ["enter", "files"], ["backspace", "remove"], ["c", "cleanup"], ["esc", "quit"]];
-    case "list": return [...nav, ["tab", "mode"], ["up", "up"], ["down", "down"], ["enter", "search"], ["backspace", "remove"], ["esc", "quit"]];
+    case "list": return [...nav, ["tab", "mode"], ["up", "up"], ["down", "down"], ["enter", "search"], ["t", "trailer"], ["backspace", "remove"], ["esc", "quit"]];
     default: return nav;
   }
 }
@@ -426,11 +434,13 @@ async function handleKey(key: string, s: State, draw: () => void): Promise<"quit
   const ti = TAB_ORDER.indexOf(s.tab);
   if (key === "left" && ti > 0 && !(s.tab === "download" && s.dlFocusFiles)) {
     s.tab = TAB_ORDER[ti - 1];
+    s.status = "";
     if (s.tab === "download") s.dlFocusFiles = false;
     return;
   }
   if (key === "right" && ti < TAB_ORDER.length - 1 && !(s.tab === "download" && s.dlFocusFiles)) {
     s.tab = TAB_ORDER[ti + 1];
+    s.status = "";
     if (s.tab === "download") s.dlFocusFiles = false;
     return;
   }
@@ -477,6 +487,9 @@ function handleRecommend(key: string, s: State, draw: () => void) {
     s.tab = "search";
     s.prompt = sg.title;
     loadSearch(s, draw);
+  } else if (key === "t" && s.suggestions[s.sugCursor]) {
+    const sg = s.suggestions[s.sugCursor];
+    openTrailer(sg.title, sg.year);
   }
 }
 
@@ -511,6 +524,9 @@ function handleList(key: string, s: State, draw: () => void) {
     s.tab = "search";
     s.prompt = it.title;
     loadSearch(s, draw);
+  } else if (key === "t" && items[s.listCursor]) {
+    const it = items[s.listCursor];
+    openTrailer(it.title, it.year ?? undefined);
   } else if (key === "backspace" && s.listMode === 0) {
     const wl = getWatchlist();
     if (wl[s.listCursor]) {
