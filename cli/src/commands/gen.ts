@@ -11,20 +11,27 @@ const PROFILE = "/nix/var/nix/profiles/system";
 interface Gen {
   id: string;
   date: string;
+  label: string;
   current: boolean;
 }
 
 async function listGens(): Promise<Gen[]> {
   const proc = Bun.spawn(
-    ["sudo", "nix-env", "--list-generations", "--profile", PROFILE],
-    { stdout: "pipe" },
+    ["sudo", "nixos-rebuild", "list-generations", "--flake", FLAKE],
+    { stdout: "pipe", stderr: "pipe" },
   );
   const out = (await new Response(proc.stdout).text()).trim();
   if (!out) return [];
-  return out.split("\n").map((line) => {
-    const current = line.includes("(current)");
-    const parts = line.trim().split(/\s+/);
-    return { id: parts[0], date: `${parts[1]} ${parts[2]}`, current };
+  const lines = out.split("\n").slice(1); // skip header
+  return lines.map((line) => {
+    const current = line.includes("True");
+    const parts = line.trim().split(/\s{2,}/);
+    return {
+      id: parts[0],
+      date: parts[1],
+      label: parts[2] ?? "",
+      current,
+    };
   });
 }
 
@@ -47,7 +54,7 @@ async function generateMessage(): Promise<string | null> {
 
     const proc = Bun.spawn(
       ["claude", "-p",
-        `Write a concise one-line commit message (no prefix, no quotes, max 72 chars) for these dotfile changes. Ignore flake.lock / flake input updates — focus on actual config changes:\n\n${diff}`,
+        `Summarize these dotfile changes in 3-5 words (max 8). No prefix, no quotes, lowercase. Ignore flake.lock / flake input updates — focus on actual config changes:\n\n${diff}`,
         "--output-format", "json"],
       { stdout: "pipe", stderr: "pipe" },
     );
@@ -144,8 +151,9 @@ export default function register(program: Command) {
         return;
       }
       for (const g of gens.slice(-parseInt(opts.lines))) {
-        const tag = g.current ? pc.green(" (current)") : "";
-        console.log(`${pc.bold(g.id)}  ${g.date}${tag}`);
+        const tag = g.current ? pc.green(" *") : "";
+        const label = g.label ? pc.dim(`  ${g.label}`) : "";
+        console.log(`${pc.bold(g.id)}  ${g.date}${label}${tag}`);
       }
     });
 
@@ -190,7 +198,7 @@ export default function register(program: Command) {
             .filter((g) => !term || g.id.includes(term) || g.date.includes(term))
             .reverse()
             .map((g) => ({
-              name: `${g.id}  ${g.date}${g.current ? pc.green(" (current)") : ""}`,
+              name: `${g.id}  ${g.date}  ${g.label}${g.current ? pc.green(" *") : ""}`,
               value: g.id,
             }));
         },
