@@ -18,8 +18,8 @@ import { config } from "../lib/config.ts";
 
 // state
 
-type Tab = "recommend" | "search" | "download" | "list";
-const TAB_ORDER: Tab[] = ["recommend", "search", "download", "list"];
+type Tab = "list" | "recommend" | "search" | "download";
+const TAB_ORDER: Tab[] = ["list", "recommend", "search", "download"];
 
 interface State {
   tab: Tab;
@@ -54,7 +54,7 @@ interface State {
 
 function initState(): State {
   return {
-    tab: "recommend", prompt: "", promptActive: false, status: "",
+    tab: "list", prompt: "", promptActive: false, status: "",
     suggestions: [], sugCursor: 0, sugLoading: false, sugInfo: null,
     listMode: 0, listCursor: 0, listInfo: null,
     searchResults: [], searchCursor: 0, searchLoading: false, searchBest: -1,
@@ -165,7 +165,7 @@ async function doCleanup(s: State) {
 
 // rendering
 
-const TAB_LABELS = TAB_ORDER as readonly string[];
+const TAB_LABELS: string[] = [...TAB_ORDER];
 
 function fmtSize(bytes: number): string {
   if (bytes >= 1e9) return (bytes / 1e9).toFixed(1) + " GB";
@@ -240,6 +240,7 @@ function renderState(s: State) {
   const rightW = cols - leftW - 3;
 
   // tab bar
+  console.log();
   console.log(tabBar(TAB_LABELS, TAB_ORDER.indexOf(s.tab)));
   console.log();
 
@@ -346,7 +347,7 @@ function renderState(s: State) {
 
   // viewport: scroll and pad to fill terminal height
   const rows = process.stdout.rows ?? 24;
-  let used = 2; // tab bar + blank line after it
+  let used = 3; // blank + tab bar + blank line after it
   if (s.promptActive) used += 2;
   if (s.status) used += 2;
   used += 2; // menu bar

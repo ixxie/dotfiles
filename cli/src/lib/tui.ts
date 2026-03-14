@@ -114,8 +114,8 @@ export function renderSplit(leftLines: string[], rightLines: string[], leftWidth
 
 export function tabBar(tabs: string[], active: number): string {
   return "  " + tabs.map((t, i) =>
-    i === active ? pc.bold(pc.underline(t)) : t
-  ).join(pc.dim("  \u2502  "));
+    i === active ? pc.bold(pc.cyan(t)) : t
+  ).join("  \u2502  ");
 }
 
 // full-screen TUI
