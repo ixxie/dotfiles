@@ -18,8 +18,11 @@ import { config } from "../lib/config.ts";
 
 // state
 
+type Tab = "recommend" | "search" | "download" | "list";
+const TAB_ORDER: Tab[] = ["recommend", "search", "download", "list"];
+
 interface State {
-  tab: number;
+  tab: Tab;
   prompt: string;
   promptActive: boolean;
   status: string;
@@ -46,16 +49,16 @@ interface State {
   dlCursor: number;
   dlDetail: transmission.TorrentDetail | null;
   dlFileCursor: number;
-  dlExpanded: boolean;
+  dlFocusFiles: boolean;
 }
 
 function initState(): State {
   return {
-    tab: 0, prompt: "", promptActive: false, status: "",
+    tab: "recommend", prompt: "", promptActive: false, status: "",
     suggestions: [], sugCursor: 0, sugLoading: false, sugInfo: null,
     listMode: 0, listCursor: 0, listInfo: null,
     searchResults: [], searchCursor: 0, searchLoading: false, searchBest: -1,
-    torrents: [], dlCursor: 0, dlDetail: null, dlFileCursor: 0, dlExpanded: false,
+    torrents: [], dlCursor: 0, dlDetail: null, dlFileCursor: 0, dlFocusFiles: false,
   };
 }
 
@@ -141,7 +144,7 @@ async function refreshTorrents(s: State) {
   try {
     s.torrents = await transmission.list();
     if (s.dlCursor >= s.torrents.length) s.dlCursor = Math.max(0, s.torrents.length - 1);
-    if (s.dlExpanded && s.torrents[s.dlCursor]) {
+    if (s.dlFocusFiles && s.torrents[s.dlCursor]) {
       s.dlDetail = await transmission.getDetail(s.torrents[s.dlCursor].id);
     }
   } catch {}
@@ -162,7 +165,7 @@ async function doCleanup(s: State) {
 
 // rendering
 
-const TABS = ["r recommend", "l list", "s search", "d download"];
+const TAB_LABELS = TAB_ORDER as readonly string[];
 
 function fmtSize(bytes: number): string {
   if (bytes >= 1e9) return (bytes / 1e9).toFixed(1) + " GB";
@@ -204,7 +207,7 @@ function torrentInfoLines(r: searchLib.Result | null, best: boolean, width: numb
   return lines;
 }
 
-function dlInfoLines(d: transmission.TorrentDetail | null, width: number): string[] {
+function dlInfoLines(d: transmission.TorrentDetail | null, width: number, fileCursor = -1): string[] {
   if (!d) return [pc.dim("No selection")];
   const lines: string[] = [];
   const status = transmission.STATUS[d.status] ?? "Unknown";
@@ -220,11 +223,12 @@ function dlInfoLines(d: transmission.TorrentDetail | null, width: number): strin
       const f = d.files[i];
       const stat = d.fileStats[i];
       const name = f.name.split("/").pop() ?? f.name;
-      const prio = stat.wanted ? transmission.PRIORITY[stat.priority] ?? "NORM" : "OFF";
       const prioColor = !stat.wanted ? pc.dim("OFF") :
         stat.priority === 1 ? pc.green("HIGH") :
         stat.priority === -1 ? pc.yellow("LOW") : pc.dim("NORM");
-      lines.push(`  ${truncate(name, width - 20)} ${fmtSize(f.length)} [${prioColor}]`);
+      const prefix = i === fileCursor ? pc.yellow("\u25B6 ") : "  ";
+      const pct = f.length > 0 ? Math.round(f.bytesCompleted / f.length * 100) : 0;
+      lines.push(`${prefix}${truncate(name, width - 26)} ${fmtSize(f.length).padStart(8)} [${prioColor}] ${pc.dim(pct + "%")}`);
     }
   }
   return lines;
@@ -236,7 +240,7 @@ function renderState(s: State) {
   const rightW = cols - leftW - 3;
 
   // tab bar
-  console.log(tabBar(TABS, s.tab));
+  console.log(tabBar(TAB_LABELS, TAB_ORDER.indexOf(s.tab)));
   console.log();
 
   // prompt
@@ -253,7 +257,7 @@ function renderState(s: State) {
   let right: string[] = [];
 
   switch (s.tab) {
-    case 0: { // recommend
+    case "recommend": {
       if (s.sugLoading && !s.suggestions.length) {
         left.push(pc.dim("  Loading suggestions..."));
       } else if (!s.suggestions.length) {
@@ -270,7 +274,45 @@ function renderState(s: State) {
       right = infoLines(s.sugInfo, rightW);
       break;
     }
-    case 1: { // list
+    case "search": {
+      if (s.searchLoading) {
+        left.push(pc.dim("  Searching..."));
+      } else if (!s.searchResults.length) {
+        left.push(pc.dim("  Press p to search for torrents"));
+      } else {
+        for (let i = 0; i < s.searchResults.length; i++) {
+          const r = s.searchResults[i];
+          const isBest = i === s.searchBest;
+          const prefix = i === s.searchCursor ? pc.yellow("\u25B6 ") : (isBest ? pc.green("\u2605 ") : "  ");
+          left.push(`${prefix}${pc.green(String(r.seeds).padStart(5))} ${pc.magenta(r.size.padEnd(8))} ${truncate(r.title, leftW - 18)}`);
+        }
+      }
+      const sr = s.searchResults[s.searchCursor];
+      right = torrentInfoLines(sr ?? null, s.searchCursor === s.searchBest, rightW);
+      break;
+    }
+    case "download": {
+      if (!s.torrents.length) {
+        left.push(pc.dim("  No active downloads"));
+      } else {
+        for (let i = 0; i < s.torrents.length; i++) {
+          const t = s.torrents[i];
+          const prefix = i === s.dlCursor ? pc.yellow(s.dlFocusFiles ? "\u25CB " : "\u25B6 ") : "  ";
+          const status = transmission.STATUS[t.status] ?? "?";
+          left.push(`${prefix}${truncate(t.name, leftW - 4)}`);
+          left.push(`    ${progressBar(t.percentDone)}  ${pc.dim(status)}  ${pc.cyan("\u2193" + fmtSpeed(t.rateDownload))}  ${pc.green("\u2191" + fmtSpeed(t.rateUpload))}`);
+          if (i < s.torrents.length - 1) left.push("");
+        }
+      }
+      const t = s.torrents[s.dlCursor];
+      if (t && s.dlDetail) {
+        right = dlInfoLines(s.dlDetail, rightW, s.dlFocusFiles ? s.dlFileCursor : -1);
+      } else {
+        right = [pc.dim("Select a torrent")];
+      }
+      break;
+    }
+    case "list": {
       const modeLabel = s.listMode === 0 ? "Watchlist" : "Ratings";
       const otherLabel = s.listMode === 0 ? "Ratings" : "Watchlist";
       left.push(`  ${pc.bold(pc.underline(modeLabel))}  ${pc.dim(otherLabel)}\n`);
@@ -302,83 +344,57 @@ function renderState(s: State) {
       right = infoLines(s.listInfo, rightW);
       break;
     }
-    case 2: { // search
-      if (s.searchLoading) {
-        left.push(pc.dim("  Searching..."));
-      } else if (!s.searchResults.length) {
-        left.push(pc.dim("  Press p to search for torrents"));
-      } else {
-        for (let i = 0; i < s.searchResults.length; i++) {
-          const r = s.searchResults[i];
-          const isBest = i === s.searchBest;
-          const prefix = i === s.searchCursor ? pc.yellow("\u25B6 ") : (isBest ? pc.green("\u2605 ") : "  ");
-          left.push(`${prefix}${pc.green(String(r.seeds).padStart(5))} ${pc.magenta(r.size.padEnd(8))} ${truncate(r.title, leftW - 18)}`);
-        }
-      }
-      const sr = s.searchResults[s.searchCursor];
-      right = torrentInfoLines(sr ?? null, s.searchCursor === s.searchBest, rightW);
-      break;
-    }
-    case 3: { // download
-      if (s.dlExpanded && s.dlDetail) {
-        const d = s.dlDetail;
-        left.push(`  ${pc.bold(truncate(d.name, leftW - 4))}`);
-        left.push(`  ${progressBar(d.percentDone)}`);
-        left.push("");
-        for (let i = 0; i < d.files.length; i++) {
-          const f = d.files[i];
-          const stat = d.fileStats[i];
-          const prefix = i === s.dlFileCursor ? pc.yellow("\u25B6 ") : "  ";
-          const name = f.name.split("/").pop() ?? f.name;
-          const prio = !stat.wanted ? pc.dim("OFF") :
-            stat.priority === 1 ? pc.green("HIGH") :
-            stat.priority === -1 ? pc.yellow("LOW") : pc.dim("NORM");
-          const pct = f.length > 0 ? Math.round(f.bytesCompleted / f.length * 100) : 0;
-          left.push(`${prefix}${truncate(name, leftW - 28)} ${fmtSize(f.length).padStart(8)} ${prio} ${pc.dim(pct + "%")}`);
-        }
-        right = dlInfoLines(d, rightW);
-      } else {
-        if (!s.torrents.length) {
-          left.push(pc.dim("  No active downloads"));
-        } else {
-          for (let i = 0; i < s.torrents.length; i++) {
-            const t = s.torrents[i];
-            const prefix = i === s.dlCursor ? pc.yellow("\u25B6 ") : "  ";
-            const status = transmission.STATUS[t.status] ?? "?";
-            left.push(`${prefix}${truncate(t.name, leftW - 4)}`);
-            left.push(`    ${progressBar(t.percentDone)}  ${pc.dim(status)}  ${pc.cyan("\u2193" + fmtSpeed(t.rateDownload))}  ${pc.green("\u2191" + fmtSpeed(t.rateUpload))}`);
-            if (i < s.torrents.length - 1) left.push("");
-          }
-        }
-        const t = s.torrents[s.dlCursor];
-        if (t && s.dlDetail) {
-          right = dlInfoLines(s.dlDetail, rightW);
-        } else {
-          right = [pc.dim("Select a torrent")];
-        }
-      }
-      break;
-    }
   }
 
-  renderSplit(left, right, leftW);
+  // viewport: scroll and pad to fill terminal height
+  const rows = process.stdout.rows ?? 24;
+  let used = 2; // tab bar + blank line after it
+  if (s.promptActive) used += 2;
+  if (s.status) used += 2;
+  used += 2; // menu bar
+  const contentH = Math.max(1, rows - used);
+
+  // scroll panes to keep cursor visible
+  const scrollCtx = Math.floor(contentH / 3);
+
+  const leftCursor = left.findIndex(l => l.includes("\u25B6"));
+  let lOff = 0;
+  if (leftCursor >= 0 && left.length > contentH) {
+    lOff = Math.max(0, leftCursor - scrollCtx);
+    lOff = Math.min(lOff, left.length - contentH);
+  }
+
+  const rightCursor = right.findIndex(l => l.includes("\u25B6"));
+  let rOff = 0;
+  if (rightCursor >= 0 && right.length > contentH) {
+    rOff = Math.max(0, rightCursor - scrollCtx);
+    rOff = Math.min(rOff, right.length - contentH);
+  }
+
+  const leftView = left.slice(lOff, lOff + contentH);
+  const rightView = right.slice(rOff, rOff + contentH);
+
+  while (leftView.length < contentH) leftView.push("");
+  while (rightView.length < contentH) rightView.push("");
+
+  renderSplit(leftView, rightView, leftW);
 }
 
 // key handling
 
 function getTabKeys(s: State): Keys {
-  const common: Keys = [["tab", "tab"], ["p", "prompt"]];
+  const nav: Keys = [["left", "prev tab"], ["right", "next tab"]];
 
   switch (s.tab) {
-    case 0: return [...common, ["up", "up"], ["down", "down"], ["enter", "search"], ["esc", "quit"]];
-    case 1: return [...common, ["up", "up"], ["down", "down"], ["left", "mode"], ["right", "mode"], ["enter", "search"], ["backspace", "remove"], ["esc", "quit"]];
-    case 2: return [...common, ["up", "up"], ["down", "down"], ["enter", "add"], ["esc", "quit"]];
-    case 3:
-      if (s.dlExpanded) {
+    case "recommend": return [...nav, ["p", "prompt"], ["up", "up"], ["down", "down"], ["enter", "search"], ["esc", "quit"]];
+    case "search": return [...nav, ["p", "prompt"], ["up", "up"], ["down", "down"], ["enter", "add"], ["esc", "quit"]];
+    case "download":
+      if (s.dlFocusFiles) {
         return [["up", "up"], ["down", "down"], ["3", "high"], ["2", "med"], ["1", "low"], ["0", "off"], ["w", "watch"], ["esc", "back"]];
       }
-      return [...common, ["up", "up"], ["down", "down"], ["enter", "open"], ["backspace", "remove"], ["c", "cleanup"], ["esc", "quit"]];
-    default: return common;
+      return [...nav, ["up", "up"], ["down", "down"], ["enter", "files"], ["backspace", "remove"], ["c", "cleanup"], ["esc", "quit"]];
+    case "list": return [...nav, ["tab", "mode"], ["up", "up"], ["down", "down"], ["enter", "search"], ["backspace", "remove"], ["esc", "quit"]];
+    default: return nav;
   }
 }
 
@@ -389,17 +405,17 @@ async function handleKey(key: string, s: State, draw: () => void): Promise<"quit
       s.promptActive = false;
     } else if (key === "enter") {
       s.promptActive = false;
-      if (s.tab === 0) loadSuggestions(s, draw);
-      else if (s.tab === 2) loadSearch(s, draw);
+      if (s.tab === "recommend") loadSuggestions(s, draw);
+      else if (s.tab === "search") loadSearch(s, draw);
     } else if (key === "backspace") {
       s.prompt = s.prompt.slice(0, -1);
-      if (s.tab === 0) {
+      if (s.tab === "recommend") {
         if (debounceTimer) clearTimeout(debounceTimer);
         debounceTimer = setTimeout(() => loadSuggestions(s, draw), 1000);
       }
     } else if (key.length === 1 && key >= " ") {
       s.prompt += key;
-      if (s.tab === 0) {
+      if (s.tab === "recommend") {
         if (debounceTimer) clearTimeout(debounceTimer);
         debounceTimer = setTimeout(() => loadSuggestions(s, draw), 1000);
       }
@@ -407,29 +423,35 @@ async function handleKey(key: string, s: State, draw: () => void): Promise<"quit
     return;
   }
 
-  // tab switching
-  if (key === "r") { s.tab = 0; return; }
-  if (key === "l") { s.tab = 1; s.listCursor = 0; return; }
-  if (key === "s") { s.tab = 2; return; }
-  if (key === "d") { s.tab = 3; s.dlExpanded = false; return; }
-  if (key === "tab") { s.tab = (s.tab + 1) % 4; return; }
+  // tab switching with left/right
+  const ti = TAB_ORDER.indexOf(s.tab);
+  if (key === "left" && ti > 0 && !(s.tab === "download" && s.dlFocusFiles)) {
+    s.tab = TAB_ORDER[ti - 1];
+    if (s.tab === "download") s.dlFocusFiles = false;
+    return;
+  }
+  if (key === "right" && ti < TAB_ORDER.length - 1 && !(s.tab === "download" && s.dlFocusFiles)) {
+    s.tab = TAB_ORDER[ti + 1];
+    if (s.tab === "download") s.dlFocusFiles = false;
+    return;
+  }
 
   // prompt activation
-  if (key === "p" && (s.tab === 0 || s.tab === 2)) {
+  if (key === "p" && (s.tab === "recommend" || s.tab === "search")) {
     s.promptActive = true;
     s.prompt = "";
     return;
   }
 
   // quit
-  if (key === "q" || (key === "esc" && !s.dlExpanded)) return "quit";
+  if (key === "q" || (key === "esc" && !(s.tab === "download" && s.dlFocusFiles))) return "quit";
 
   // tab-specific keys
   switch (s.tab) {
-    case 0: return handleRecommend(key, s, draw);
-    case 1: return handleList(key, s, draw);
-    case 2: return handleSearch(key, s, draw);
-    case 3: return handleDownload(key, s, draw);
+    case "recommend": return handleRecommend(key, s, draw);
+    case "search": return handleSearch(key, s, draw);
+    case "download": return handleDownload(key, s, draw);
+    case "list": return handleList(key, s, draw);
   }
 }
 
@@ -453,7 +475,7 @@ function handleRecommend(key: string, s: State, draw: () => void) {
       }
     }).catch(() => {});
     // switch to search with title
-    s.tab = 2;
+    s.tab = "search";
     s.prompt = sg.title;
     loadSearch(s, draw);
   }
@@ -475,7 +497,7 @@ function loadSugInfo(s: State, draw: () => void) {
 function handleList(key: string, s: State, draw: () => void) {
   const items = s.listMode === 0 ? getWatchlist() : getRatings();
 
-  if (key === "left" || key === "right") {
+  if (key === "tab") {
     s.listMode = s.listMode === 0 ? 1 : 0;
     s.listCursor = 0;
     s.listInfo = null;
@@ -487,7 +509,7 @@ function handleList(key: string, s: State, draw: () => void) {
     loadListInfo(s, draw);
   } else if (key === "enter" && items[s.listCursor]) {
     const it = items[s.listCursor];
-    s.tab = 2;
+    s.tab = "search";
     s.prompt = it.title;
     loadSearch(s, draw);
   } else if (key === "backspace" && s.listMode === 0) {
@@ -522,8 +544,8 @@ async function handleSearch(key: string, s: State, draw: () => void) {
       s.status = "Added to downloads";
       // switch to download tab
       await refreshTorrents(s);
-      s.tab = 3;
-      s.dlExpanded = false;
+      s.tab = "download";
+      s.dlFocusFiles = false;
       // try to focus the new torrent (usually last)
       s.dlCursor = Math.max(0, s.torrents.length - 1);
 
@@ -543,12 +565,12 @@ async function handleSearch(key: string, s: State, draw: () => void) {
 }
 
 async function handleDownload(key: string, s: State, draw: () => void) {
-  if (s.dlExpanded && s.dlDetail) {
+  if (s.dlFocusFiles && s.dlDetail) {
     const files = s.dlDetail.files;
     const tid = s.dlDetail.id;
 
     if (key === "esc") {
-      s.dlExpanded = false;
+      s.dlFocusFiles = false;
       s.dlDetail = null;
     } else if (key === "up" && s.dlFileCursor > 0) {
       s.dlFileCursor--;
@@ -587,7 +609,7 @@ async function handleDownload(key: string, s: State, draw: () => void) {
     s.dlCursor++;
     await loadDlDetail(s);
   } else if (key === "enter" && s.torrents[s.dlCursor]) {
-    s.dlExpanded = true;
+    s.dlFocusFiles = true;
     s.dlFileCursor = 0;
     await loadDlDetail(s);
   } else if (key === "backspace" && s.torrents[s.dlCursor]) {
@@ -629,7 +651,7 @@ async function mediaTui() {
   // poll downloads
   const interval = setInterval(async () => {
     await refreshTorrents(s);
-    if (s.tab === 3) draw();
+    if (s.tab === "download") draw();
   }, 2000);
 
   return new Promise<void>((resolve) => {
