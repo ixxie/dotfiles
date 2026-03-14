@@ -1232,6 +1232,10 @@
 
     I am in a NixOS environment: if you need access to a CLI tool and don't find it, you may use `nix shell` commands.
 
+    ## NixOS Rebuild
+
+    When you need to rebuild NixOS (e.g. after changing nix config files), always use `yo gen` instead of `sudo nixos-rebuild switch`.
+
     ## JS/TS Projects
 
     I use a variety of tools, so check in the current project whether npm, bun or pnpm are used.

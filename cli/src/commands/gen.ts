@@ -1,6 +1,6 @@
 import type { Command } from "commander";
 import pc from "picocolors";
-import { search } from "@inquirer/prompts";
+import { input, search } from "@inquirer/prompts";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { DOTFILES, FLAKE, sym, log, success, error, run } from "../utils.ts";
@@ -35,19 +35,15 @@ async function stdout(cmd: string[], opts?: { cwd?: string }): Promise<string> {
   return code === 0 ? out : "";
 }
 
-// sanitize for system.nixos.label (alphanumeric, hyphens, underscores, periods, colons)
 function sanitizeLabel(s: string): string {
   return s.replace(/[^a-zA-Z0-9._:-]/g, "_").slice(0, 80);
 }
 
-async function commitMessage(explicit?: string): Promise<string> {
-  if (explicit) return explicit;
-
-  // try claude
+async function generateMessage(): Promise<string | null> {
   try {
     log(sym.gear, pc.dim("Generating commit message..."));
     const diff = await stdout(["git", "diff", "--cached", "--stat"], { cwd: DOTFILES });
-    if (!diff) return timestamp();
+    if (!diff) return null;
 
     const proc = Bun.spawn(
       ["claude", "-p",
@@ -57,7 +53,7 @@ async function commitMessage(explicit?: string): Promise<string> {
     );
     const out = (await new Response(proc.stdout).text()).trim();
     const code = await proc.exited;
-    if (code !== 0 || !out) return timestamp();
+    if (code !== 0 || !out) return null;
 
     let text = out;
     try {
@@ -67,22 +63,26 @@ async function commitMessage(explicit?: string): Promise<string> {
     text = text.replace(/^["'\s]+|["'\s]+$/g, "").trim();
     if (text && text.length > 0 && text.length <= 120) return text;
   } catch {}
-
-  return timestamp();
+  return null;
 }
 
-function timestamp(): string {
-  return new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+async function commitMessage(): Promise<string> {
+  const generated = await generateMessage();
+  if (generated) {
+    log(sym.check, pc.dim(`Suggested: ${generated}`));
+  }
+  return await input({
+    message: "Commit message",
+    default: generated ?? new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19),
+  });
 }
 
 async function gitCommit(msg: string): Promise<string> {
-  // stage everything
   if (!(await run(["git", "add", "-A"], { cwd: DOTFILES }))) {
     error("git add failed");
     process.exit(1);
   }
 
-  // check if there's anything to commit
   const status = await stdout(["git", "status", "--porcelain"], { cwd: DOTFILES });
   if (!status) {
     log(sym.check, pc.dim("No changes to commit"));
@@ -94,7 +94,6 @@ async function gitCommit(msg: string): Promise<string> {
     success(`Committed: ${msg}`);
   }
 
-  // get short hash
   return await stdout(["git", "rev-parse", "--short", "HEAD"], { cwd: DOTFILES });
 }
 
@@ -115,12 +114,10 @@ async function switchConfig(label: string) {
   }
 }
 
-async function genSwitch(opts: { message?: string }) {
-  const explicit = opts.message ?? undefined;
-
+async function genSwitch() {
   // stage first so claude can see the diff
   await run(["git", "add", "-A"], { cwd: DOTFILES });
-  const msg = await commitMessage(explicit);
+  const msg = await commitMessage();
   const hash = await gitCommit(msg);
   const label = sanitizeLabel(`${hash}-${msg}`);
   await switchConfig(label);
@@ -129,28 +126,38 @@ async function genSwitch(opts: { message?: string }) {
 export default function register(program: Command) {
   const gen = program
     .command("gen")
-    .description("NixOS generation management")
-    .enablePositionalOptions()
-    .passThroughOptions()
-    .option("-m, --message <msg>", "Commit message (auto-generated if omitted)")
-    .action(genSwitch);
+    .description("NixOS generation management");
 
   gen
     .command("switch")
-    .description("Rebuild and switch NixOS configuration")
-    .option("-m, --message <msg>", "Commit message (auto-generated if omitted)")
+    .description("Commit, label, and rebuild NixOS configuration")
     .action(genSwitch);
+
+  gen
+    .command("list")
+    .description("List NixOS generations")
+    .option("-n, --lines <n>", "Number of entries", "20")
+    .action(async (opts) => {
+      const gens = await listGens();
+      if (!gens.length) {
+        error("No generations found");
+        return;
+      }
+      for (const g of gens.slice(-parseInt(opts.lines))) {
+        const tag = g.current ? pc.green(" (current)") : "";
+        console.log(`${pc.bold(g.id)}  ${g.date}${tag}`);
+      }
+    });
 
   gen
     .command("update")
     .description("Update flake inputs and switch")
-    .option("-m, --message <msg>", "Commit message (auto-generated if omitted)")
-    .action(async (opts: { message?: string }) => {
+    .action(async () => {
       if (!(await run(["sudo", "nix", "flake", "update"], { cwd: DOTFILES }))) {
         error("Flake update failed");
         process.exit(1);
       }
-      await genSwitch(opts);
+      await genSwitch();
     });
 
   gen

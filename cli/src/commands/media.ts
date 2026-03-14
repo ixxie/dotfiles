@@ -2,7 +2,7 @@ import type { Command } from "commander";
 import pc from "picocolors";
 import { select } from "@inquirer/prompts";
 import { log, error } from "../utils.ts";
-import * as jackett from "../lib/jackett.ts";
+import * as search from "../lib/search.ts";
 import * as transmission from "../lib/transmission.ts";
 import * as omdb from "../lib/omdb.ts";
 import * as claude from "../lib/claude.ts";
@@ -36,9 +36,9 @@ async function cmdSearch(query: string[]) {
   const q = query.join(" ");
   log("\u{1F50D}", `Searching for ${pc.white(q)}...`);
 
-  let results: jackett.Result[];
+  let results: search.Result[];
   try {
-    results = await jackett.search(q);
+    results = await search.search(q);
   } catch (e) {
     error(`Jackett search failed: ${(e as Error).message}`);
     process.exit(1);
@@ -462,13 +462,4 @@ export default function register(program: Command) {
     .description("Remove completed torrents above seed ratio threshold")
     .action(cmdCleanup);
 
-  media
-    .command("dash")
-    .description("Open Prowlarr dashboard in browser")
-    .action(async () => {
-      Bun.spawn(["xdg-open", "http://127.0.0.1:9696"], {
-        stdout: "ignore",
-        stderr: "ignore",
-      });
-    });
 }
