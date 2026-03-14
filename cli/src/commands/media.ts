@@ -257,9 +257,12 @@ function renderState(s: State) {
   const leftW = Math.floor(cols * 0.55);
   const rightW = cols - leftW - 3;
 
-  // tab bar
+  // tab bar with nav arrows
+  const ti = TAB_ORDER.indexOf(s.tab);
+  const leftArrow = ti > 0 ? pc.bold("\u2190 ") : "  ";
+  const rightArrow = ti < TAB_ORDER.length - 1 ? pc.bold(" \u2192") : "";
   console.log();
-  console.log(tabBar(TAB_LABELS, TAB_ORDER.indexOf(s.tab)));
+  console.log(`${leftArrow}${tabBar(TAB_LABELS, ti)}${rightArrow}`);
   console.log();
 
   // prompt
@@ -405,19 +408,19 @@ function renderState(s: State) {
 // key handling
 
 function getTabKeys(s: State): Keys {
-  const nav: Keys = [["left", "prev tab"], ["right", "next tab"]];
+  const arrows: Keys = [["up", ""], ["down", ""]];
 
   switch (s.tab) {
-    case "recommend": return [...nav, ["/", "query"], ["up", "up"], ["down", "down"], ["1-5", "rate"], ["enter", "search"], ["t", "trailer"], ["esc", "quit"]];
-    case "search": return [...nav, ["/", "query"], ["up", "up"], ["down", "down"], ["enter", "add"], ["esc", "quit"]];
+    case "recommend": return [...arrows, ["/", "query"], ["1-5", "rate"], ["enter", "search"], ["t", "trailer"], ["esc", "quit"]];
+    case "search": return [...arrows, ["/", "query"], ["enter", "add"], ["esc", "quit"]];
     case "download":
       if (s.dlFocusFiles) {
-        return [["up", "up"], ["down", "down"], ["3", "high"], ["2", "med"], ["1", "low"], ["0", "off"], ["w", "watch"], ["esc", "back"]];
+        return [...arrows, ["3", "high"], ["2", "med"], ["1", "low"], ["0", "off"], ["w", "watch"], ["esc", "back"]];
       }
-      return [...nav, ["up", "up"], ["down", "down"], ["enter", "files"], ["backspace", "remove"], ["c", "cleanup"], ["esc", "quit"]];
-    case "watchlist": return [...nav, ["up", "up"], ["down", "down"], ["enter", "search"], ["t", "trailer"], ["backspace", "remove"], ["esc", "quit"]];
-    case "ratings": return [...nav, ["up", "up"], ["down", "down"], ["enter", "search"], ["t", "trailer"], ["esc", "quit"]];
-    default: return nav;
+      return [...arrows, ["enter", "files"], ["backspace", "remove"], ["c", "cleanup"], ["esc", "quit"]];
+    case "watchlist": return [...arrows, ["enter", "search"], ["t", "trailer"], ["backspace", "remove"], ["esc", "quit"]];
+    case "ratings": return [...arrows, ["enter", "search"], ["t", "trailer"], ["esc", "quit"]];
+    default: return [...arrows, ["esc", "quit"]];
   }
 }
 
@@ -535,7 +538,6 @@ function handleRecommend(key: string, s: State, draw: () => void) {
 function loadSugInfo(s: State, draw: () => void) {
   const sg = s.suggestions[s.sugCursor];
   if (!sg) return;
-  s.sugInfo = null;
   omdb.resolve(sg.title).then(async results => {
     if (results[0]) {
       const item = await omdb.getById(results[0].imdbID);
@@ -588,7 +590,6 @@ function loadWlInfo(s: State, draw: () => void) {
   const items = getWatchlist();
   const it = items[s.wlCursor];
   if (!it) return;
-  s.wlInfo = null;
   fetchInfo(it.imdb_id, item => { s.wlInfo = item; }, draw);
 }
 
@@ -596,7 +597,6 @@ function loadRatInfo(s: State, draw: () => void) {
   const items = getRatings();
   const it = items[s.ratCursor];
   if (!it) return;
-  s.ratInfo = null;
   fetchInfo(it.imdb_id, item => { s.ratInfo = item; }, draw);
 }
 

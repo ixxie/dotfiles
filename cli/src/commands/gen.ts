@@ -1,12 +1,18 @@
 import type { Command } from "commander";
 import pc from "picocolors";
-import { input, search } from "../lib/tui.ts";
-import { readFile } from "node:fs/promises";
+import {
+  input, search, clear, startRaw, menuBar, renderSplit,
+  type Keys,
+} from "../lib/tui.ts";
+import { readFile, writeFile, mkdir } from "node:fs/promises";
+import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { DOTFILES, FLAKE, sym, log, success, error, run } from "../utils.ts";
+import { truncate } from "../lib/interactive.ts";
 
 const GC_KEEP_DAYS = "7d";
 const PROFILE = "/nix/var/nix/profiles/system";
+const DIFF_DIR = `${process.env.HOME}/.local/share/yo/gen-diffs`;
 
 interface Gen {
   id: string;
@@ -130,10 +136,242 @@ async function genSwitch() {
   await switchConfig(label);
 }
 
+// diff helpers
+
+function extractHash(label: string): string | null {
+  const m = label.match(/^([a-f0-9]{7,})-/);
+  return m ? m[1] : null;
+}
+
+async function savedDiff(genId: string): Promise<string | null> {
+  const path = join(DIFF_DIR, `${genId}.diff`);
+  try { return await readFile(path, "utf-8"); } catch { return null; }
+}
+
+async function saveDiff(genId: string, diff: string) {
+  if (!existsSync(DIFF_DIR)) await mkdir(DIFF_DIR, { recursive: true });
+  await writeFile(join(DIFF_DIR, `${genId}.diff`), diff);
+}
+
+async function genDiff(gen: Gen, prevGen: Gen | null): Promise<string> {
+  const hash = extractHash(gen.label);
+  const prevHash = prevGen ? extractHash(prevGen.label) : null;
+
+  // labeled gen with commit hash: show git diff between commits
+  if (hash && prevHash) {
+    const diff = await stdout(["git", "diff", "--stat", "-p", `${prevHash}..${hash}`], { cwd: DOTFILES });
+    return diff || "(empty diff)";
+  }
+  if (hash) {
+    const diff = await stdout(["git", "show", "--stat", "-p", hash], { cwd: DOTFILES });
+    return diff || "(empty diff)";
+  }
+
+  // unlabeled: check saved diff
+  const saved = await savedDiff(gen.id);
+  if (saved) return saved;
+
+  return "(no diff available)";
+}
+
+// colorize diff output
+
+function colorDiff(lines: string[]): string[] {
+  return lines.map(l => {
+    if (l.startsWith("+") && !l.startsWith("+++")) return pc.green(l);
+    if (l.startsWith("-") && !l.startsWith("---")) return pc.red(l);
+    if (l.startsWith("@@")) return pc.cyan(l);
+    if (l.startsWith("diff ") || l.startsWith("index ")) return pc.bold(l);
+    return l;
+  });
+}
+
+// dashboard
+
+interface DashState {
+  gens: Gen[];
+  cursor: number;
+  diff: string[];
+  status: string;
+  scrollLeft: number;
+  scrollRight: number;
+}
+
+async function genDash() {
+  const s: DashState = {
+    gens: [], cursor: 0, diff: [], status: "Loading...",
+    scrollLeft: 0, scrollRight: 0,
+  };
+
+  const cols = () => process.stdout.columns ?? 100;
+  const rows = () => process.stdout.rows ?? 24;
+
+  const draw = () => {
+    clear();
+    const c = cols();
+    const leftW = Math.floor(c * 0.35);
+    const rightW = c - leftW - 3;
+
+    // header
+    console.log();
+    console.log(`  ${pc.bold(pc.cyan("NixOS Generations"))}`);
+    console.log();
+
+    if (s.status) {
+      console.log(`  ${pc.dim(s.status)}`);
+      console.log();
+    }
+
+    // left: generation list
+    const left: string[] = [];
+    for (let i = 0; i < s.gens.length; i++) {
+      const g = s.gens[i];
+      const prefix = i === s.cursor ? pc.yellow("\u25B6 ") : "  ";
+      const tag = g.current ? pc.green(" \u2022") : "";
+      const isDefault = !g.label || /^\d+\.\d+\./.test(g.label) || g.label === "unlabeled";
+      const label = isDefault ? pc.dim("unlabeled") : truncate(g.label, leftW - 16);
+      left.push(`${prefix}${pc.bold(g.id)} ${pc.dim(g.date)}${tag}`);
+      left.push(`    ${label}`);
+      if (i < s.gens.length - 1) left.push("");
+    }
+    if (!s.gens.length) left.push(pc.dim("  No generations"));
+
+    // right: diff
+    const right = s.diff.length ? [...s.diff] : [pc.dim("No diff")];
+
+    // viewport
+    const used = 3 + (s.status ? 2 : 0) + 2; // header + status + menu
+    const contentH = Math.max(1, rows() - used);
+    const margin = 2;
+
+    const leftCursor = left.findIndex(l => l.includes("\u25B6"));
+    if (left.length <= contentH) {
+      s.scrollLeft = 0;
+    } else if (leftCursor >= 0) {
+      if (leftCursor < s.scrollLeft + margin) s.scrollLeft = Math.max(0, leftCursor - margin);
+      else if (leftCursor >= s.scrollLeft + contentH - margin) s.scrollLeft = Math.min(left.length - contentH, leftCursor - contentH + margin + 1);
+    }
+
+    const leftView = left.slice(s.scrollLeft, s.scrollLeft + contentH);
+    const rightView = right.slice(s.scrollRight, s.scrollRight + contentH);
+    while (leftView.length < contentH) leftView.push("");
+    while (rightView.length < contentH) rightView.push("");
+
+    renderSplit(leftView, rightView, leftW);
+
+    const keys: Keys = [
+      ["up", "up"], ["down", "down"],
+      ["j", "scroll \u2193"], ["k", "scroll \u2191"],
+      ["r", "regen"], ["c", "commit"],
+      ["esc", "quit"],
+    ];
+    menuBar(keys);
+  };
+
+  async function loadDiff() {
+    if (!s.gens.length) { s.diff = []; return; }
+    const gen = s.gens[s.cursor];
+    const prev = s.cursor < s.gens.length - 1 ? s.gens[s.cursor + 1] : null;
+    s.status = "Loading diff...";
+    s.scrollRight = 0;
+    draw();
+    const raw = await genDiff(gen, prev);
+    s.diff = colorDiff(raw.split("\n"));
+    s.status = "";
+    draw();
+  }
+
+  async function refresh() {
+    s.gens = await listGens();
+    if (s.cursor >= s.gens.length) s.cursor = Math.max(0, s.gens.length - 1);
+    await loadDiff();
+  }
+
+  async function doRegen() {
+    const diff = await stdout(["git", "diff"], { cwd: DOTFILES });
+    const staged = await stdout(["git", "diff", "--cached"], { cwd: DOTFILES });
+    const fullDiff = [staged, diff].filter(Boolean).join("\n");
+
+    log(sym.rocket, pc.magenta("Regenerating (no commit)..."));
+    let envArgs: string[] = [];
+    try {
+      const envContent = await readFile(join(DOTFILES, ".env"), "utf-8");
+      envArgs = envContent.split("\n").filter(l => l.trim() && !l.startsWith("#"));
+    } catch {}
+
+    const ok = await run(["sudo", "env", ...envArgs, "nixos-rebuild", "switch", "--impure", "--flake", FLAKE]);
+    if (ok) {
+      success("Regenerated!");
+      const gens = await listGens();
+      const current = gens.find(g => g.current);
+      if (current && fullDiff) await saveDiff(current.id, fullDiff);
+    } else {
+      error("Regen failed");
+    }
+  }
+
+  async function doCommit() {
+    await run(["git", "add", "-A"], { cwd: DOTFILES });
+    const msg = await commitMessage();
+    if (!msg) return;
+    const hash = await gitCommit(msg);
+    const label = sanitizeLabel(`${hash}-${msg}`);
+    await switchConfig(label);
+  }
+
+  async function waitForKey() {
+    console.log(pc.dim("\nPress any key to return..."));
+    await new Promise<void>(r => {
+      const c = startRaw(() => { c(); r(); });
+    });
+  }
+
+  // initial load
+  await refresh();
+
+  // event loop: exits raw mode for shell commands, re-enters after
+  while (true) {
+    const action = await new Promise<string>((resolve) => {
+      const stop = startRaw(async (key) => {
+        if (key === "esc" || key === "q") { stop(); resolve("quit"); return; }
+
+        if (key === "up" && s.cursor > 0) {
+          s.cursor--;
+          await loadDiff();
+        } else if (key === "down" && s.cursor < s.gens.length - 1) {
+          s.cursor++;
+          await loadDiff();
+        } else if (key === "j") {
+          const maxScroll = Math.max(0, s.diff.length - 10);
+          if (s.scrollRight < maxScroll) { s.scrollRight++; draw(); }
+        } else if (key === "k") {
+          if (s.scrollRight > 0) { s.scrollRight--; draw(); }
+        } else if (key === "r") { stop(); resolve("regen"); }
+        else if (key === "c") { stop(); resolve("commit"); }
+      });
+    });
+
+    if (action === "quit") break;
+
+    console.log();
+    if (action === "regen") await doRegen();
+    else if (action === "commit") await doCommit();
+
+    await waitForKey();
+    s.cursor = 0;
+    await refresh();
+  }
+}
+
 export default function register(program: Command) {
   const gen = program
     .command("gen")
     .description("NixOS generation management");
+
+  gen
+    .command("dash")
+    .description("Interactive generation dashboard with diffs")
+    .action(genDash);
 
   gen
     .command("switch")

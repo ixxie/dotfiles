@@ -96,7 +96,7 @@ export type Keys = [key: string, label: string][];
 export function menuBar(keys: Keys) {
   const parts = keys.map(([key, label]) => {
     const display = KEY_LABELS[key] ?? key;
-    return `${pc.bold(display)} ${pc.dim(label)}`;
+    return label ? `${pc.bold(display)} ${pc.dim(label)}` : pc.bold(display);
   });
   console.log();
   console.log("  " + parts.join("  "));
