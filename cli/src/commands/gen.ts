@@ -129,12 +129,10 @@ async function genSwitch(opts: { message?: string }) {
 export default function register(program: Command) {
   const gen = program
     .command("gen")
-    .description("NixOS generation management")
-    .option("-m, --message <msg>", "Commit message (auto-generated if omitted)")
-    .action(genSwitch);
+    .description("NixOS generation management");
 
   gen
-    .command("switch")
+    .command("switch", { isDefault: true })
     .description("Rebuild and switch NixOS configuration")
     .option("-m, --message <msg>", "Commit message (auto-generated if omitted)")
     .action(genSwitch);
