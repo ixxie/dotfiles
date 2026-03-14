@@ -258,9 +258,7 @@ function renderState(s: State) {
 
   switch (s.tab) {
     case "recommend": {
-      if (s.sugLoading && !s.suggestions.length) {
-        left.push(pc.dim("  Loading suggestions..."));
-      } else if (!s.suggestions.length) {
+      if (!s.suggestions.length && !s.sugLoading) {
         left.push(pc.dim("  Press p to set a mood, or wait for auto-suggest"));
       } else {
         for (let i = 0; i < s.suggestions.length; i++) {
@@ -386,8 +384,8 @@ function getTabKeys(s: State): Keys {
   const nav: Keys = [["left", "prev tab"], ["right", "next tab"]];
 
   switch (s.tab) {
-    case "recommend": return [...nav, ["p", "prompt"], ["up", "up"], ["down", "down"], ["enter", "search"], ["esc", "quit"]];
-    case "search": return [...nav, ["p", "prompt"], ["up", "up"], ["down", "down"], ["enter", "add"], ["esc", "quit"]];
+    case "recommend": return [...nav, ["/", "query"], ["up", "up"], ["down", "down"], ["enter", "search"], ["esc", "quit"]];
+    case "search": return [...nav, ["/", "query"], ["up", "up"], ["down", "down"], ["enter", "add"], ["esc", "quit"]];
     case "download":
       if (s.dlFocusFiles) {
         return [["up", "up"], ["down", "down"], ["3", "high"], ["2", "med"], ["1", "low"], ["0", "off"], ["w", "watch"], ["esc", "back"]];
@@ -437,7 +435,7 @@ async function handleKey(key: string, s: State, draw: () => void): Promise<"quit
   }
 
   // prompt activation
-  if (key === "p" && (s.tab === "recommend" || s.tab === "search")) {
+  if (key === "/" && (s.tab === "recommend" || s.tab === "search")) {
     s.promptActive = true;
     s.prompt = "";
     return;
