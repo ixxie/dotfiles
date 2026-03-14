@@ -50,6 +50,10 @@ interface State {
   dlDetail: transmission.TorrentDetail | null;
   dlFileCursor: number;
   dlFocusFiles: boolean;
+
+  // scroll offsets
+  scrollLeft: number;
+  scrollRight: number;
 }
 
 function initState(): State {
@@ -59,6 +63,7 @@ function initState(): State {
     listMode: 0, listCursor: 0, listInfo: null,
     searchResults: [], searchCursor: 0, searchLoading: false, searchBest: -1,
     torrents: [], dlCursor: 0, dlDetail: null, dlFileCursor: 0, dlFocusFiles: false,
+    scrollLeft: 0, scrollRight: 0,
   };
 }
 
@@ -366,25 +371,33 @@ function renderState(s: State) {
   used += 2; // menu bar
   const contentH = Math.max(1, rows - used);
 
-  // scroll panes to keep cursor visible
-  const scrollCtx = Math.floor(contentH / 3);
+  // scroll panes: only adjust when cursor leaves viewport
+  const margin = 2;
 
   const leftCursor = left.findIndex(l => l.includes("\u25B6"));
-  let lOff = 0;
-  if (leftCursor >= 0 && left.length > contentH) {
-    lOff = Math.max(0, leftCursor - scrollCtx);
-    lOff = Math.min(lOff, left.length - contentH);
+  if (left.length <= contentH) {
+    s.scrollLeft = 0;
+  } else if (leftCursor >= 0) {
+    if (leftCursor < s.scrollLeft + margin) {
+      s.scrollLeft = Math.max(0, leftCursor - margin);
+    } else if (leftCursor >= s.scrollLeft + contentH - margin) {
+      s.scrollLeft = Math.min(left.length - contentH, leftCursor - contentH + margin + 1);
+    }
   }
 
   const rightCursor = right.findIndex(l => l.includes("\u25B6"));
-  let rOff = 0;
-  if (rightCursor >= 0 && right.length > contentH) {
-    rOff = Math.max(0, rightCursor - scrollCtx);
-    rOff = Math.min(rOff, right.length - contentH);
+  if (right.length <= contentH) {
+    s.scrollRight = 0;
+  } else if (rightCursor >= 0) {
+    if (rightCursor < s.scrollRight + margin) {
+      s.scrollRight = Math.max(0, rightCursor - margin);
+    } else if (rightCursor >= s.scrollRight + contentH - margin) {
+      s.scrollRight = Math.min(right.length - contentH, rightCursor - contentH + margin + 1);
+    }
   }
 
-  const leftView = left.slice(lOff, lOff + contentH);
-  const rightView = right.slice(rOff, rOff + contentH);
+  const leftView = left.slice(s.scrollLeft, s.scrollLeft + contentH);
+  const rightView = right.slice(s.scrollRight, s.scrollRight + contentH);
 
   while (leftView.length < contentH) leftView.push("");
   while (rightView.length < contentH) rightView.push("");
@@ -417,13 +430,13 @@ async function handleKey(key: string, s: State, draw: () => void): Promise<"quit
       s.promptActive = false;
     } else if (key === "enter") {
       s.promptActive = false;
-      if (s.tab === "recommend") loadSuggestions(s, draw);
+      if (s.tab === "recommend" && s.prompt) loadSuggestions(s, draw);
       else if (s.tab === "search") loadSearch(s, draw);
     } else if (key === "backspace") {
       s.prompt = s.prompt.slice(0, -1);
       if (s.tab === "recommend") {
         if (debounceTimer) clearTimeout(debounceTimer);
-        debounceTimer = setTimeout(() => loadSuggestions(s, draw), 1000);
+        if (s.prompt) debounceTimer = setTimeout(() => loadSuggestions(s, draw), 1000);
       }
     } else if (key.length === 1 && key >= " ") {
       s.prompt += key;
@@ -440,6 +453,7 @@ async function handleKey(key: string, s: State, draw: () => void): Promise<"quit
   if (key === "left" && ti > 0 && !(s.tab === "download" && s.dlFocusFiles)) {
     s.tab = TAB_ORDER[ti - 1];
     s.status = "";
+    s.scrollLeft = 0; s.scrollRight = 0;
     if (s.tab === "download") s.dlFocusFiles = false;
     if (s.tab === "list") loadListInfo(s, draw);
     return;
@@ -447,6 +461,7 @@ async function handleKey(key: string, s: State, draw: () => void): Promise<"quit
   if (key === "right" && ti < TAB_ORDER.length - 1 && !(s.tab === "download" && s.dlFocusFiles)) {
     s.tab = TAB_ORDER[ti + 1];
     s.status = "";
+    s.scrollLeft = 0; s.scrollRight = 0;
     if (s.tab === "download") s.dlFocusFiles = false;
     if (s.tab === "list") loadListInfo(s, draw);
     return;
