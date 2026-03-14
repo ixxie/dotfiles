@@ -259,7 +259,7 @@ function renderState(s: State) {
   switch (s.tab) {
     case "recommend": {
       if (!s.suggestions.length && !s.sugLoading) {
-        left.push(pc.dim("  Press p to set a mood, or wait for auto-suggest"));
+        left.push(pc.dim("  Press / to set a mood, or wait for auto-suggest"));
       } else {
         for (let i = 0; i < s.suggestions.length; i++) {
           const sg = s.suggestions[i];
@@ -276,7 +276,7 @@ function renderState(s: State) {
       if (s.searchLoading) {
         left.push(pc.dim("  Searching..."));
       } else if (!s.searchResults.length) {
-        left.push(pc.dim("  Press p to search for torrents"));
+        left.push(pc.dim("  Press / to search for torrents"));
       } else {
         for (let i = 0; i < s.searchResults.length; i++) {
           const r = s.searchResults[i];
