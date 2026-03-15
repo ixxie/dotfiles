@@ -125,12 +125,13 @@ export function clear() {
 }
 
 export function flush() {
-  const frame = _buf ?? [];
+  const rows = process.stdout.rows ?? 24;
+  const frame = (_buf ?? []).slice(0, rows);
   _buf = null;
   console.log = _origLog;
   // build frame: hide cursor, home, content with per-line clear, clear below, show cursor
   const out = "\x1b[?25l\x1b[H" +
-    frame.map(l => l + "\x1b[K").join("\n") + "\n" +
+    frame.map(l => l + "\x1b[K").join("\n") +
     "\x1b[J\x1b[?25h";
   _origWrite(out);
 }
