@@ -2,7 +2,7 @@ import type { Command } from "commander";
 import pc from "picocolors";
 import {
   clear, flush, startRaw, menuBar, tabBar, renderSplit, wordWrap,
-  truncVis, padTo, visWidth, stripAnsi,
+  truncVis, padTo, visWidth, stripAnsi, input,
   type Keys,
 } from "../lib/tui.ts";
 import * as searchLib from "../lib/search.ts";
@@ -12,6 +12,7 @@ import * as claude from "../lib/claude.ts";
 import {
   saveItem, upsertRating, addToWatchlist, removeFromWatchlist,
   getRatings, getWatchlist, getPrefs, getRatingForImdb,
+  getProfiles, createProfile, type Profile,
 } from "../lib/db.ts";
 import { truncate, fmtSpeed, fmtEta, progressBar, stars } from "../lib/interactive.ts";
 import { config } from "../lib/config.ts";
@@ -21,14 +22,28 @@ import { config } from "../lib/config.ts";
 type Tab = "genres" | "watchlist" | "ratings" | "recommend" | "search" | "download";
 const TAB_ORDER: Tab[] = ["genres", "watchlist", "ratings", "recommend", "search", "download"];
 
+// profile helpers
+
+function activeIds(s: State): number[] {
+  return s.activeProfiles.map(p => p.id);
+}
+
+function isGroup(s: State): boolean {
+  return s.activeProfiles.length > 1;
+}
+
+function profileName(s: State, id: number): string {
+  return s.profiles.find(p => p.id === id)?.name ?? "?";
+}
+
 // genre helpers
 
-function allGenres(): string[] {
+function allGenres(profileIds?: number[]): string[] {
   const seen = new Set<string>();
-  for (const r of getRatings()) {
+  for (const r of getRatings(profileIds)) {
     if (r.genre) r.genre.split(",").map(g => g.trim()).filter(Boolean).forEach(g => seen.add(g));
   }
-  for (const w of getWatchlist()) {
+  for (const w of getWatchlist(profileIds)) {
     if (w.genre) w.genre.split(",").map(g => g.trim()).filter(Boolean).forEach(g => seen.add(g));
   }
   return [...seen].sort();
@@ -80,17 +95,29 @@ interface State {
   // scroll offsets
   scrollLeft: number;
   scrollRight: number;
+
+  // profiles
+  profiles: Profile[];
+  activeProfiles: Profile[];
+  profileMode: boolean;
+  profileCursor: number;
+  profilePending: Set<number>;
 }
 
 function initState(): State {
   return {
     tab: "genres", prompt: "", promptActive: false, status: "",
-    genres: allGenres(), genreSelected: new Set(), genreCursor: 0,
+    genres: allGenres(getProfiles().slice(0, 1).map(p => p.id)), genreSelected: new Set(), genreCursor: 0,
     suggestions: [], sugCursor: 0, sugLoading: false, sugInfo: null,
     wlCursor: 0, wlInfo: null, ratCursor: 0, ratInfo: null,
     searchResults: [], searchCursor: 0, searchLoading: false, searchBest: -1,
     torrents: [], dlCursor: 0, dlDetail: null, dlFileCursor: 0, dlFocusFiles: false,
     scrollLeft: 0, scrollRight: 0,
+    profiles: getProfiles(),
+    activeProfiles: getProfiles().slice(0, 1),
+    profileMode: false,
+    profileCursor: 0,
+    profilePending: new Set([getProfiles()[0]?.id ?? 1]),
   };
 }
 
@@ -139,13 +166,33 @@ function loadSuggestions(s: State, draw: () => void) {
     draw();
   }
 
-  const ratings = getRatings();
-  const watchlist = getWatchlist();
-  const prefs = getPrefs();
-  const ratingsCtx = ratings.map(r =>
-    `${r.title} (${r.year ?? "?"}) - ${stars(r.rating)} ${r.type ?? ""}`
-  ).join("\n");
-  const prefsCtx = prefs.map(p => `${p.key}: ${p.value}`).join("\n");
+  const ids = activeIds(s);
+  const ratings = getRatings(ids);
+  const watchlist = getWatchlist(ids);
+
+  // build per-profile context for group mode
+  let ratingsCtx: string;
+  let prefsCtx: string;
+  if (isGroup(s)) {
+    const sections = s.activeProfiles.map(p => {
+      const pRatings = ratings.filter(r => r.profile_id === p.id);
+      const pPrefs = getPrefs(p.id);
+      const rLines = pRatings.map(r =>
+        `  ${r.title} (${r.year ?? "?"}) - ${stars(r.rating)} ${r.type ?? ""}`
+      ).join("\n");
+      const pLines = pPrefs.map(pr => `  ${pr.key}: ${pr.value}`).join("\n");
+      return `${p.name}'s ratings:\n${rLines || "  (none)"}` +
+        (pLines ? `\n${p.name}'s preferences:\n${pLines}` : "");
+    });
+    ratingsCtx = sections.join("\n\n");
+    prefsCtx = "Recommending for a group watching together. Find common ground they'd all enjoy.";
+  } else {
+    ratingsCtx = ratings.map(r =>
+      `${r.title} (${r.year ?? "?"}) - ${stars(r.rating)} ${r.type ?? ""}`
+    ).join("\n");
+    prefsCtx = getPrefs(ids[0]).map(p => `${p.key}: ${p.value}`).join("\n");
+  }
+
   const excludeCtx = [
     ...ratings.map(r => `${r.title} (${r.year ?? "?"})`),
     ...watchlist.map(w => `${w.title} (${w.year ?? "?"})`),
@@ -222,7 +269,7 @@ function fmtSize(bytes: number): string {
   return (bytes / 1e3).toFixed(0) + " KB";
 }
 
-function infoLines(item: omdb.OmdbItem | null, width: number): string[] {
+function infoLines(item: omdb.OmdbItem | null, width: number, s?: State): string[] {
   if (!item) return [pc.dim("No info")];
   const lines: string[] = [];
   lines.push(pc.bold(item.Title) + ` (${item.Year ?? "?"})`);
@@ -232,8 +279,17 @@ function infoLines(item: omdb.OmdbItem | null, width: number): string[] {
   if (item.Director && item.Director !== "N/A") lines.push(pc.dim("Dir: ") + item.Director);
   if (item.Actors) lines.push(pc.dim("Cast: ") + truncate(item.Actors, width - 6));
   if (item.imdbRating) lines.push(pc.dim("IMDb: ") + pc.yellow(item.imdbRating + "/10"));
-  const rating = getRatingForImdb(item.imdbID);
-  if (rating) lines.push(pc.dim("You: ") + pc.yellow(stars(rating.rating)));
+  const ids = s ? activeIds(s) : undefined;
+  const ratings = getRatingForImdb(item.imdbID, ids);
+  if (ratings.length) {
+    if (s && isGroup(s)) {
+      for (const r of ratings) {
+        lines.push(pc.dim(`${profileName(s, r.profile_id)}: `) + pc.yellow(stars(r.rating)));
+      }
+    } else if (ratings[0]) {
+      lines.push(pc.dim("You: ") + pc.yellow(stars(ratings[0].rating)));
+    }
+  }
   lines.push("");
   if (item.Plot && item.Plot !== "N/A") {
     lines.push(...wordWrap(item.Plot, width));
@@ -288,13 +344,23 @@ function renderState(s: State) {
   const leftW = Math.floor(cols * 0.55);
   const rightW = cols - leftW - 3;
 
-  // tab bar with nav arrows
+  // tab bar with nav arrows and profile indicator
   const ti = TAB_ORDER.indexOf(s.tab);
   const leftArrow = ti > 0 ? pc.bold("\u2190 ") : "  ";
   const rightArrow = ti < TAB_ORDER.length - 1 ? pc.bold(" \u2192") : "";
+  const profileTag = isGroup(s)
+    ? pc.magenta(`[${s.activeProfiles.map(p => p.name).join(" + ")}]`)
+    : s.profiles.length > 1
+      ? pc.dim(`[${s.activeProfiles[0].name}]`)
+      : "";
   console.log();
-  console.log(`${leftArrow}${tabBar(TAB_LABELS, ti)}${rightArrow}`);
+  console.log(`${leftArrow}${tabBar(TAB_LABELS, ti)}${rightArrow}  ${profileTag}`);
   console.log();
+
+  // profile bar
+  if (s.profileMode) {
+    console.log(`  ${profileBar(s)}\n`);
+  }
 
   // prompt
   if (s.promptActive) {
@@ -348,7 +414,7 @@ function renderState(s: State) {
           if (i < s.suggestions.length - 1) left.push("");
         }
       }
-      right = infoLines(s.sugInfo, rightW);
+      right = infoLines(s.sugInfo, rightW, s);
       break;
     }
     case "search": {
@@ -397,11 +463,12 @@ function renderState(s: State) {
         for (let i = 0; i < items.length; i++) {
           const it = items[i];
           const prefix = i === s.wlCursor ? pc.yellow("\u25B6 ") : "  ";
-          left.push(`${prefix}${it.title} ${pc.dim(`(${it.year ?? "?"})`)}`);
+          const owner = isGroup(s) ? pc.magenta(` [${profileName(s, it.profile_id)}]`) : "";
+          left.push(`${prefix}${it.title} ${pc.dim(`(${it.year ?? "?"})`)}${owner}`);
           left.push(`    ${pc.dim(it.type ?? "")}  ${pc.dim(it.genre ?? "")}`);
         }
       }
-      right = infoLines(s.wlInfo, rightW);
+      right = infoLines(s.wlInfo, rightW, s);
       break;
     }
     case "ratings": {
@@ -412,10 +479,11 @@ function renderState(s: State) {
         for (let i = 0; i < items.length; i++) {
           const it = items[i];
           const prefix = i === s.ratCursor ? pc.yellow("\u25B6 ") : "  ";
-          left.push(`${prefix}${pc.yellow(stars(it.rating))} ${it.title} ${pc.dim(`(${it.year ?? "?"})`)}`);
+          const owner = isGroup(s) ? pc.magenta(` [${profileName(s, it.profile_id)}]`) : "";
+          left.push(`${prefix}${pc.yellow(stars(it.rating))} ${it.title} ${pc.dim(`(${it.year ?? "?"})`)}${owner}`);
         }
       }
-      right = infoLines(s.ratInfo, rightW);
+      right = infoLines(s.ratInfo, rightW, s);
       break;
     }
   }
@@ -423,6 +491,7 @@ function renderState(s: State) {
   // viewport: scroll and pad to fill terminal height
   const rows = process.stdout.rows ?? 24;
   let used = 3; // blank + tab bar + blank line after it
+  if (s.profileMode) used += 2;
   if (s.promptActive) used += 2;
   if (s.status) used += 2;
   used += 2; // menu bar
@@ -464,25 +533,81 @@ function renderState(s: State) {
 
 // key handling
 
+function profileBar(s: State): string {
+  return s.profiles.map((p, i) => {
+    const on = s.profilePending.has(p.id);
+    const check = on ? pc.green("\u25C9") : pc.dim("\u25CB");
+    const name = i === s.profileCursor ? pc.yellow(pc.bold(p.name)) : p.name;
+    return `${check} ${name}`;
+  }).join("  ") + "  " + pc.cyan("+ new");
+}
+
 function getTabKeys(s: State): Keys {
+  if (s.profileMode) {
+    return [["left", ""], ["right", ""], [" ", "toggle"], ["+", "new"], ["enter", "confirm"], ["esc", "cancel"]];
+  }
+
   const arrows: Keys = [["up", ""], ["down", ""]];
+  const prof: Keys = [["p", "profiles"]];
 
   switch (s.tab) {
-    case "genres": return [...arrows, ["enter", "toggle"], ["esc", "quit"]];
-    case "recommend": return [...arrows, ["/", "query"], ["1-5", "rate"], ["enter", "search"], ["t", "trailer"], ["esc", "quit"]];
-    case "search": return [...arrows, ["/", "query"], ["enter", "add"], ["esc", "quit"]];
+    case "genres": return [...arrows, ["enter", "toggle"], ...prof, ["esc", "quit"]];
+    case "recommend": return [...arrows, ["/", "query"], ["1-5", "rate"], ["w", "watchlist"], ["enter", "search"], ["t", "trailer"], ...prof, ["esc", "quit"]];
+    case "search": return [...arrows, ["/", "query"], ["enter", "add"], ...prof, ["esc", "quit"]];
     case "download":
       if (s.dlFocusFiles) {
         return [...arrows, ["3", "high"], ["2", "med"], ["1", "low"], ["0", "off"], ["w", "watch"], ["esc", "back"]];
       }
-      return [...arrows, ["enter", "files"], ["backspace", "remove"], ["c", "cleanup"], ["esc", "quit"]];
-    case "watchlist": return [...arrows, ["enter", "search"], ["t", "trailer"], ["backspace", "remove"], ["esc", "quit"]];
-    case "ratings": return [...arrows, ["enter", "search"], ["t", "trailer"], ["esc", "quit"]];
-    default: return [...arrows, ["esc", "quit"]];
+      return [...arrows, ["enter", "files"], ["backspace", "remove"], ["c", "cleanup"], ...prof, ["esc", "quit"]];
+    case "watchlist": return [...arrows, ["enter", "search"], ["t", "trailer"], ["backspace", "remove"], ...prof, ["esc", "quit"]];
+    case "ratings": return [...arrows, ["enter", "search"], ["t", "trailer"], ...prof, ["esc", "quit"]];
+    default: return [...arrows, ...prof, ["esc", "quit"]];
   }
 }
 
 async function handleKey(key: string, s: State, draw: () => void): Promise<"quit" | void> {
+  // profile mode
+  if (s.profileMode) {
+    if (key === "esc") {
+      s.profileMode = false;
+    } else if (key === "left" && s.profileCursor > 0) {
+      s.profileCursor--;
+    } else if (key === "right" && s.profileCursor < s.profiles.length - 1) {
+      s.profileCursor++;
+    } else if (key === " " && s.profiles[s.profileCursor]) {
+      const id = s.profiles[s.profileCursor].id;
+      if (s.profilePending.has(id)) {
+        s.profilePending.delete(id);
+      } else {
+        s.profilePending.add(id);
+      }
+    } else if (key === "+" || (key === "right" && s.profileCursor >= s.profiles.length - 1)) {
+      // create new profile
+      s.profileMode = false;
+      draw();
+      const name = await input({ message: "Profile name:" });
+      if (name?.trim()) {
+        const created = createProfile(name.trim());
+        s.profiles = getProfiles();
+        s.profilePending.add(created.id);
+      }
+      s.profileMode = true;
+      s.profileCursor = s.profiles.length - 1;
+    } else if (key === "enter") {
+      if (s.profilePending.size > 0) {
+        s.activeProfiles = s.profiles.filter(p => s.profilePending.has(p.id));
+      }
+      s.profileMode = false;
+      s.genres = allGenres(activeIds(s));
+      s.genreSelected.clear();
+      s.wlCursor = 0; s.wlInfo = null;
+      s.ratCursor = 0; s.ratInfo = null;
+      loadSuggestions(s, draw);
+      s.status = `Profiles: ${s.activeProfiles.map(p => p.name).join(", ")}`;
+    }
+    return;
+  }
+
   // prompt mode
   if (s.promptActive) {
     if (key === "esc") {
@@ -525,6 +650,14 @@ async function handleKey(key: string, s: State, draw: () => void): Promise<"quit
     if (s.tab === "download") s.dlFocusFiles = false;
     if (s.tab === "watchlist") loadWlInfo(s, draw);
     if (s.tab === "ratings") loadRatInfo(s, draw);
+    return;
+  }
+
+  // profile switcher
+  if (key === "p") {
+    s.profileMode = true;
+    s.profileCursor = 0;
+    s.profilePending = new Set(activeIds(s));
     return;
   }
 
@@ -576,19 +709,21 @@ function handleRecommend(key: string, s: State, draw: () => void) {
   } else if (key === "down" && s.sugCursor < s.suggestions.length - 1) {
     s.sugCursor++;
     loadSugInfo(s, draw);
-  } else if (key === "enter" && s.suggestions[s.sugCursor]) {
+  } else if (key === "w" && s.suggestions[s.sugCursor]) {
     const sg = s.suggestions[s.sugCursor];
-    // add to watchlist via OMDB
-    omdb.resolve(sg.title).then(async results => {
+    omdb.resolve(sg.title, sg.type, sg.year).then(async results => {
       if (results.length > 0) {
         const item = await omdb.getById(results[0].imdbID);
         if (item) {
           const id = saveItem(item);
-          addToWatchlist(id);
+          for (const pid of activeIds(s)) addToWatchlist(id, pid);
+          s.status = `Added ${sg.title} to watchlist`;
+          draw();
         }
       }
     }).catch(() => {});
-    // switch to search with title
+  } else if (key === "enter" && s.suggestions[s.sugCursor]) {
+    const sg = s.suggestions[s.sugCursor];
     s.tab = "search";
     s.prompt = sg.title;
     loadSearch(s, draw);
@@ -598,15 +733,16 @@ function handleRecommend(key: string, s: State, draw: () => void) {
   } else if (key >= "1" && key <= "5" && s.suggestions[s.sugCursor]) {
     const sg = s.suggestions[s.sugCursor];
     const rating = parseInt(key);
-    omdb.resolve(sg.title).then(async results => {
+    omdb.resolve(sg.title, sg.type, sg.year).then(async results => {
       if (results[0]) {
         const item = await omdb.getById(results[0].imdbID);
         if (item) {
           const id = saveItem(item);
-          upsertRating(id, rating);
+          for (const pid of activeIds(s)) upsertRating(id, rating, pid);
           s.suggestions.splice(s.sugCursor, 1);
           if (s.sugCursor >= s.suggestions.length) s.sugCursor = Math.max(0, s.suggestions.length - 1);
-          s.status = `Rated ${sg.title} ${stars(rating)}`;
+          const names = s.activeProfiles.map(p => p.name).join(", ");
+          s.status = `Rated ${sg.title} ${stars(rating)} for ${names}`;
           draw();
         }
       }
@@ -617,7 +753,7 @@ function handleRecommend(key: string, s: State, draw: () => void) {
 function loadSugInfo(s: State, draw: () => void) {
   const sg = s.suggestions[s.sugCursor];
   if (!sg) return;
-  omdb.resolve(sg.title).then(async results => {
+  omdb.resolve(sg.title, sg.type, sg.year).then(async results => {
     if (results[0]) {
       const item = await omdb.getById(results[0].imdbID);
       s.sugInfo = item;
@@ -627,11 +763,11 @@ function loadSugInfo(s: State, draw: () => void) {
 }
 
 function filteredWatchlist(s: State) {
-  return getWatchlist().filter(it => matchesGenres(it.genre, s.genreSelected));
+  return getWatchlist(activeIds(s)).filter(it => matchesGenres(it.genre, s.genreSelected));
 }
 
 function filteredRatings(s: State) {
-  return getRatings().filter(it => matchesGenres(it.genre, s.genreSelected));
+  return getRatings(activeIds(s)).filter(it => matchesGenres(it.genre, s.genreSelected));
 }
 
 function handleWatchlist(key: string, s: State, draw: () => void) {
@@ -649,8 +785,10 @@ function handleWatchlist(key: string, s: State, draw: () => void) {
   } else if (key === "t" && items[s.wlCursor]) {
     openTrailer(items[s.wlCursor].title, items[s.wlCursor].year ?? undefined);
   } else if (key === "backspace" && items[s.wlCursor]) {
-    removeFromWatchlist(items[s.wlCursor].imdb_id);
-    s.status = `Removed ${items[s.wlCursor].title}`;
+    const it = items[s.wlCursor];
+    // remove from the owning profile's watchlist
+    removeFromWatchlist(it.imdb_id, it.profile_id);
+    s.status = `Removed ${it.title}` + (isGroup(s) ? ` from ${profileName(s, it.profile_id)}` : "");
     const remaining = filteredWatchlist(s);
     if (s.wlCursor >= remaining.length) s.wlCursor = Math.max(0, remaining.length - 1);
     loadWlInfo(s, draw);

@@ -210,6 +210,83 @@ export function tui<S>(opts: TuiOpts<S>): Promise<void> {
   });
 }
 
+// dialog (modal overlay for use inside a TUI loop)
+
+export interface DialogItem<T> {
+  name: string;
+  value: T;
+}
+
+export interface Dialog<T> {
+  title: string;
+  items: DialogItem<T>[];
+  cursor: number;
+  selected: Set<number>;
+  multi: boolean;
+  resolve: (result: T[] | null) => void;
+}
+
+export function dialogKeys(multi: boolean): Keys {
+  if (multi) {
+    return [["up", ""], ["down", ""], [" ", "toggle"], ["enter", "confirm"], ["esc", "cancel"]];
+  }
+  return [["up", ""], ["down", ""], ["enter", "select"], ["esc", "cancel"]];
+}
+
+export function handleDialogKey<T>(key: string, dialog: Dialog<T>): "done" | void {
+  if (key === "esc") {
+    dialog.resolve(null);
+    return "done";
+  }
+  if (key === "enter") {
+    if (dialog.multi) {
+      const result = [...dialog.selected].sort().map(i => dialog.items[i].value);
+      dialog.resolve(result.length ? result : null);
+    } else {
+      dialog.resolve([dialog.items[dialog.cursor].value]);
+    }
+    return "done";
+  }
+  if (key === "up" && dialog.cursor > 0) {
+    dialog.cursor--;
+  } else if (key === "down" && dialog.cursor < dialog.items.length - 1) {
+    dialog.cursor++;
+  } else if (key === " " && dialog.multi) {
+    if (dialog.selected.has(dialog.cursor)) {
+      dialog.selected.delete(dialog.cursor);
+    } else {
+      dialog.selected.add(dialog.cursor);
+    }
+  }
+}
+
+export function dialogLines<T>(dialog: Dialog<T>, width: number): string[] {
+  const lines: string[] = [];
+  const innerW = width - 4;
+  const top = "\u250c\u2500 " + truncVis(dialog.title, innerW - 2) + " " +
+    "\u2500".repeat(Math.max(0, innerW - visWidth(dialog.title) - 2)) + "\u2510";
+  lines.push(top);
+
+  for (let i = 0; i < dialog.items.length; i++) {
+    const arrow = i === dialog.cursor ? pc.yellow("\u25B6") : " ";
+    let check = "";
+    if (dialog.multi) {
+      check = dialog.selected.has(i) ? pc.green("\u25C9") + " " : pc.dim("\u25CB") + " ";
+    }
+    const name = truncVis(dialog.items[i].name, innerW - (dialog.multi ? 6 : 4));
+    lines.push(`\u2502 ${arrow} ${check}${name}${" ".repeat(Math.max(0, innerW - visWidth(`${arrow} ${check}${name}`) + 2))}\u2502`);
+  }
+
+  lines.push("\u2502" + " ".repeat(innerW + 2) + "\u2502");
+  const hint = dialog.multi
+    ? `${pc.dim("space")} toggle  ${pc.dim("\u21b5")} confirm  ${pc.dim("esc")} cancel`
+    : `${pc.dim("\u21b5")} select  ${pc.dim("esc")} cancel`;
+  lines.push(`\u2502 ${hint}${" ".repeat(Math.max(0, innerW - visWidth(hint)))} \u2502`);
+  lines.push("\u2514" + "\u2500".repeat(innerW + 2) + "\u2518");
+
+  return lines;
+}
+
 // prompts
 
 export function input(opts: {

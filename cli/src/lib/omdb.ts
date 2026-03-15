@@ -24,9 +24,10 @@ export interface SearchResult {
   Poster: string;
 }
 
-export async function searchOmdb(query: string, type?: string): Promise<SearchResult[]> {
+export async function searchOmdb(query: string, type?: string, year?: string): Promise<SearchResult[]> {
   const params: Record<string, string> = { apikey: OMDB_KEY, s: query };
   if (type) params.type = type;
+  if (year) params.y = year.replace(/\D.*/, "");
 
   const res = await fetch(`${OMDB_URL}?${new URLSearchParams(params)}`);
   const data = await res.json() as { Response: string; Search?: SearchResult[] };
@@ -42,6 +43,6 @@ export async function getById(imdbId: string): Promise<OmdbItem | null> {
   return data;
 }
 
-export async function resolve(query: string, type?: string): Promise<SearchResult[]> {
-  return searchOmdb(query, type);
+export async function resolve(query: string, type?: string, year?: string): Promise<SearchResult[]> {
+  return searchOmdb(query, type, year);
 }
