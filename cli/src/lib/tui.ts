@@ -85,25 +85,28 @@ export function startRaw(handler: (key: string) => void): () => void {
   };
 }
 
-let _drawing = false;
+let _buf: string[] | null = null;
 const _origWrite = process.stdout.write.bind(process.stdout);
+const _origLog = console.log.bind(console);
 
 export function clear() {
-  _drawing = true;
-  process.stdout.write = function(chunk: any, ...args: any[]) {
-    // append clear-to-EOL after each newline so leftover chars don't persist
-    if (typeof chunk === "string") {
-      chunk = chunk.replace(/\n/g, "\x1b[K\n");
-    }
-    return _origWrite(chunk, ...args);
-  } as any;
-  _origWrite("\x1b[?25l\x1b[H"); // hide cursor + home
+  _buf = [];
+  // redirect console.log to buffer
+  console.log = (...args: any[]) => {
+    const line = args.map(a => typeof a === "string" ? a : String(a)).join(" ");
+    _buf!.push(line);
+  };
 }
 
 export function flush() {
-  _origWrite("\x1b[J\x1b[?25h"); // clear below + show cursor
-  process.stdout.write = _origWrite;
-  _drawing = false;
+  const frame = _buf ?? [];
+  _buf = null;
+  console.log = _origLog;
+  // build frame: hide cursor, home, content with per-line clear, clear below, show cursor
+  const out = "\x1b[?25l\x1b[H" +
+    frame.map(l => l + "\x1b[K").join("\n") + "\n" +
+    "\x1b[J\x1b[?25h";
+  _origWrite(out);
 }
 
 // layout

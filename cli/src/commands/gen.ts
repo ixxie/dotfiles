@@ -181,9 +181,34 @@ function colorDiff(lines: string[]): string[] {
     if (l.startsWith("+") && !l.startsWith("+++")) return pc.green(l);
     if (l.startsWith("-") && !l.startsWith("---")) return pc.red(l);
     if (l.startsWith("@@")) return pc.cyan(l);
-    if (l.startsWith("diff ") || l.startsWith("index ")) return pc.bold(l);
+    if (l.startsWith("diff --git")) return `\n${pc.bold(pc.yellow(l))}`;
+    if (l.startsWith("---") || l.startsWith("+++")) return pc.dim(l);
+    if (l.startsWith("index ")) return pc.dim(l);
     return l;
   });
+}
+
+function diffSummary(raw: string): string[] {
+  const lines = raw.split("\n");
+  // extract --stat style summary (files changed, insertions, deletions)
+  const files = lines.filter(l => l.startsWith("diff --git"));
+  const adds = lines.filter(l => l.startsWith("+") && !l.startsWith("+++")).length;
+  const dels = lines.filter(l => l.startsWith("-") && !l.startsWith("---")).length;
+
+  const summary: string[] = [];
+  summary.push(pc.bold(`${files.length} file${files.length !== 1 ? "s" : ""} changed`) +
+    `  ${pc.green(`+${adds}`)}  ${pc.red(`-${dels}`)}`);
+  summary.push("");
+
+  // list changed files
+  for (const f of files) {
+    const m = f.match(/diff --git a\/(.+) b\//);
+    if (m) summary.push(`  ${pc.dim("\u2022")} ${m[1]}`);
+  }
+  summary.push("");
+  summary.push(pc.dim("\u2500".repeat(40)));
+  summary.push("");
+  return summary;
 }
 
 // dashboard
@@ -192,15 +217,17 @@ interface DashState {
   gens: Gen[];
   cursor: number;
   diff: string[];
+  rawDiff: string;
   status: string;
   scrollLeft: number;
   scrollRight: number;
+  focusDiff: boolean;
 }
 
 async function genDash() {
   const s: DashState = {
-    gens: [], cursor: 0, diff: [], status: "Loading...",
-    scrollLeft: 0, scrollRight: 0,
+    gens: [], cursor: 0, diff: [], rawDiff: "", status: "Loading...",
+    scrollLeft: 0, scrollRight: 0, focusDiff: false,
   };
 
   const cols = () => process.stdout.columns ?? 100;
@@ -259,25 +286,30 @@ async function genDash() {
 
     renderSplit(leftView, rightView, leftW);
 
-    const keys: Keys = [
-      ["up", "up"], ["down", "down"],
-      ["j", "scroll \u2193"], ["k", "scroll \u2191"],
-      ["r", "regen"], ["c", "commit"], ["g", "gc"],
-      ["esc", "quit"],
-    ];
+    const keys: Keys = s.focusDiff
+      ? [["up", ""], ["down", ""], ["esc", "back"]]
+      : [
+          ["up", ""], ["down", ""],
+          ["enter", "diff"], ["p", "pick"],
+          ["r", "regen"], ["c", "commit"], ["g", "gc"],
+          ["esc", "quit"],
+        ];
     menuBar(keys);
     flush();
   };
 
   async function loadDiff() {
-    if (!s.gens.length) { s.diff = []; return; }
+    if (!s.gens.length) { s.diff = []; s.rawDiff = ""; return; }
     const gen = s.gens[s.cursor];
     const prev = s.cursor < s.gens.length - 1 ? s.gens[s.cursor + 1] : null;
     s.status = "Loading diff...";
     s.scrollRight = 0;
+    s.focusDiff = false;
     draw();
     const raw = await genDiff(gen, prev);
-    s.diff = colorDiff(raw.split("\n"));
+    s.rawDiff = raw;
+    const summary = diffSummary(raw);
+    s.diff = [...summary, ...colorDiff(raw.split("\n"))];
     s.status = "";
     draw();
   }
@@ -384,6 +416,29 @@ async function genDash() {
     success("Cleanup complete!");
   }
 
+  async function doPickGen() {
+    if (!s.gens.length) return;
+    const gen = s.gens[s.cursor];
+    if (gen.current) {
+      log(sym.check, pc.dim("Already on this generation"));
+      return;
+    }
+    console.log(`\n  Switch to generation ${pc.bold(gen.id)}?`);
+    console.log(`  ${pc.dim(gen.date)}  ${gen.label || pc.dim("unlabeled")}\n`);
+    const confirm = await input({ message: "Type 'yes' to confirm" });
+    if (confirm !== "yes") {
+      log(sym.check, pc.dim("Cancelled"));
+      return;
+    }
+    const path = `${PROFILE}-${gen.id}-link`;
+    log(sym.refresh, pc.yellow(`Switching to generation ${gen.id}...`));
+    if (await run(["sudo", path + "/bin/switch-to-configuration", "switch"])) {
+      success(`Switched to generation ${gen.id}`);
+    } else {
+      error("Switch failed");
+    }
+  }
+
   // initial load
   await refresh();
 
@@ -391,6 +446,15 @@ async function genDash() {
   while (true) {
     const action = await new Promise<string>((resolve) => {
       const stop = startRaw(async (key) => {
+        if (s.focusDiff) {
+          if (key === "esc") { s.focusDiff = false; draw(); return; }
+          const contentH = Math.max(1, rows() - (3 + (s.status ? 2 : 0) + 2));
+          const maxScroll = Math.max(0, s.diff.length - contentH);
+          if (key === "up" && s.scrollRight > 0) { s.scrollRight--; draw(); }
+          else if (key === "down" && s.scrollRight < maxScroll) { s.scrollRight++; draw(); }
+          return;
+        }
+
         if (key === "esc" || key === "q") { stop(); resolve("quit"); return; }
 
         if (key === "up" && s.cursor > 0) {
@@ -399,12 +463,11 @@ async function genDash() {
         } else if (key === "down" && s.cursor < s.gens.length - 1) {
           s.cursor++;
           await loadDiff();
-        } else if (key === "j") {
-          const maxScroll = Math.max(0, s.diff.length - 10);
-          if (s.scrollRight < maxScroll) { s.scrollRight++; draw(); }
-        } else if (key === "k") {
-          if (s.scrollRight > 0) { s.scrollRight--; draw(); }
-        } else if (key === "r") { stop(); resolve("regen"); }
+        } else if (key === "enter" && s.diff.length) {
+          s.focusDiff = true;
+          draw();
+        } else if (key === "p") { stop(); resolve("pick"); }
+        else if (key === "r") { stop(); resolve("regen"); }
         else if (key === "c") { stop(); resolve("commit"); }
         else if (key === "g") { stop(); resolve("cleanup"); }
       });
@@ -416,6 +479,7 @@ async function genDash() {
     if (action === "regen") await doRegen();
     else if (action === "commit") await doCommit();
     else if (action === "cleanup") await doCleanup();
+    else if (action === "pick") await doPickGen();
 
     await waitForKey();
     s.cursor = 0;
