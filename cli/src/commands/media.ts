@@ -18,14 +18,39 @@ import { config } from "../lib/config.ts";
 
 // state
 
-type Tab = "watchlist" | "ratings" | "recommend" | "search" | "download";
-const TAB_ORDER: Tab[] = ["watchlist", "ratings", "recommend", "search", "download"];
+type Tab = "genres" | "watchlist" | "ratings" | "recommend" | "search" | "download";
+const TAB_ORDER: Tab[] = ["genres", "watchlist", "ratings", "recommend", "search", "download"];
+
+// genre helpers
+
+function allGenres(): string[] {
+  const seen = new Set<string>();
+  for (const r of getRatings()) {
+    if (r.genre) r.genre.split(",").map(g => g.trim()).filter(Boolean).forEach(g => seen.add(g));
+  }
+  for (const w of getWatchlist()) {
+    if (w.genre) w.genre.split(",").map(g => g.trim()).filter(Boolean).forEach(g => seen.add(g));
+  }
+  return [...seen].sort();
+}
+
+function matchesGenres(genre: string | null | undefined, selected: Set<string>): boolean {
+  if (!selected.size) return true;
+  if (!genre) return false;
+  const tags = genre.split(",").map(g => g.trim());
+  return tags.some(g => selected.has(g));
+}
 
 interface State {
   tab: Tab;
   prompt: string;
   promptActive: boolean;
   status: string;
+
+  // genres
+  genres: string[];
+  genreSelected: Set<string>;
+  genreCursor: number;
 
   // recommend
   suggestions: claude.Suggestion[];
@@ -59,7 +84,8 @@ interface State {
 
 function initState(): State {
   return {
-    tab: "watchlist", prompt: "", promptActive: false, status: "",
+    tab: "genres", prompt: "", promptActive: false, status: "",
+    genres: allGenres(), genreSelected: new Set(), genreCursor: 0,
     suggestions: [], sugCursor: 0, sugLoading: false, sugInfo: null,
     wlCursor: 0, wlInfo: null, ratCursor: 0, ratInfo: null,
     searchResults: [], searchCursor: 0, searchLoading: false, searchBest: -1,
@@ -125,7 +151,12 @@ function loadSuggestions(s: State, draw: () => void) {
     ...watchlist.map(w => `${w.title} (${w.year ?? "?"})`),
   ].join("\n");
 
-  claude.suggest(ratingsCtx, prefsCtx, excludeCtx, s.prompt || undefined)
+  const genreFilter = s.genreSelected.size
+    ? `Focus on these genres: ${[...s.genreSelected].join(", ")}`
+    : undefined;
+  const prompt = [s.prompt, genreFilter].filter(Boolean).join(". ") || undefined;
+
+  claude.suggest(ratingsCtx, prefsCtx, excludeCtx, prompt)
     .then(results => {
       s.suggestions = results;
       s.sugCursor = 0;
@@ -279,6 +310,32 @@ function renderState(s: State) {
   let right: string[] = [];
 
   switch (s.tab) {
+    case "genres": {
+      if (!s.genres.length) {
+        left.push(pc.dim("  No genres found"));
+      } else {
+        for (let i = 0; i < s.genres.length; i++) {
+          const g = s.genres[i];
+          const on = s.genreSelected.has(g);
+          const prefix = i === s.genreCursor ? pc.yellow("\u25B6 ") : "  ";
+          const check = on ? pc.green("\u25C9") : pc.dim("\u25CB");
+          left.push(`${prefix}${check} ${g}`);
+        }
+      }
+      const active = [...s.genreSelected];
+      if (active.length) {
+        right.push(pc.bold("Active filters:"));
+        right.push("");
+        for (const g of active) right.push(`  ${pc.green("\u2022")} ${g}`);
+      } else {
+        right.push(pc.dim("No genre filter active"));
+        right.push("");
+        right.push(pc.dim("Toggle genres to filter"));
+        right.push(pc.dim("watchlist, ratings &"));
+        right.push(pc.dim("recommendations"));
+      }
+      break;
+    }
     case "recommend": {
       if (!s.suggestions.length && !s.sugLoading) {
         left.push(pc.dim("  Press / to set a mood, or wait for auto-suggest"));
@@ -333,9 +390,9 @@ function renderState(s: State) {
       break;
     }
     case "watchlist": {
-      const items = getWatchlist();
+      const items = filteredWatchlist(s);
       if (!items.length) {
-        left.push(pc.dim("  Empty"));
+        left.push(pc.dim(s.genreSelected.size ? "  No matches for selected genres" : "  Empty"));
       } else {
         for (let i = 0; i < items.length; i++) {
           const it = items[i];
@@ -348,9 +405,9 @@ function renderState(s: State) {
       break;
     }
     case "ratings": {
-      const items = getRatings();
+      const items = filteredRatings(s);
       if (!items.length) {
-        left.push(pc.dim("  No ratings"));
+        left.push(pc.dim(s.genreSelected.size ? "  No matches for selected genres" : "  No ratings"));
       } else {
         for (let i = 0; i < items.length; i++) {
           const it = items[i];
@@ -411,6 +468,7 @@ function getTabKeys(s: State): Keys {
   const arrows: Keys = [["up", ""], ["down", ""]];
 
   switch (s.tab) {
+    case "genres": return [...arrows, ["enter", "toggle"], ["esc", "quit"]];
     case "recommend": return [...arrows, ["/", "query"], ["1-5", "rate"], ["enter", "search"], ["t", "trailer"], ["esc", "quit"]];
     case "search": return [...arrows, ["/", "query"], ["enter", "add"], ["esc", "quit"]];
     case "download":
@@ -482,11 +540,30 @@ async function handleKey(key: string, s: State, draw: () => void): Promise<"quit
 
   // tab-specific keys
   switch (s.tab) {
+    case "genres": return handleGenres(key, s, draw);
     case "recommend": return handleRecommend(key, s, draw);
     case "search": return handleSearch(key, s, draw);
     case "download": return handleDownload(key, s, draw);
     case "watchlist": return handleWatchlist(key, s, draw);
     case "ratings": return handleRatings(key, s, draw);
+  }
+}
+
+function handleGenres(key: string, s: State, draw: () => void) {
+  if (key === "up" && s.genreCursor > 0) {
+    s.genreCursor--;
+  } else if (key === "down" && s.genreCursor < s.genres.length - 1) {
+    s.genreCursor++;
+  } else if (key === "enter" && s.genres[s.genreCursor]) {
+    const g = s.genres[s.genreCursor];
+    if (s.genreSelected.has(g)) {
+      s.genreSelected.delete(g);
+    } else {
+      s.genreSelected.add(g);
+    }
+    // reset cursors since filtered lists changed
+    s.wlCursor = 0; s.wlInfo = null;
+    s.ratCursor = 0; s.ratInfo = null;
   }
 }
 
@@ -547,8 +624,16 @@ function loadSugInfo(s: State, draw: () => void) {
   }).catch(() => {});
 }
 
+function filteredWatchlist(s: State) {
+  return getWatchlist().filter(it => matchesGenres(it.genre, s.genreSelected));
+}
+
+function filteredRatings(s: State) {
+  return getRatings().filter(it => matchesGenres(it.genre, s.genreSelected));
+}
+
 function handleWatchlist(key: string, s: State, draw: () => void) {
-  const items = getWatchlist();
+  const items = filteredWatchlist(s);
   if (key === "up" && s.wlCursor > 0) {
     s.wlCursor--;
     loadWlInfo(s, draw);
@@ -564,13 +649,14 @@ function handleWatchlist(key: string, s: State, draw: () => void) {
   } else if (key === "backspace" && items[s.wlCursor]) {
     removeFromWatchlist(items[s.wlCursor].imdb_id);
     s.status = `Removed ${items[s.wlCursor].title}`;
-    if (s.wlCursor >= getWatchlist().length) s.wlCursor = Math.max(0, getWatchlist().length - 1);
+    const remaining = filteredWatchlist(s);
+    if (s.wlCursor >= remaining.length) s.wlCursor = Math.max(0, remaining.length - 1);
     loadWlInfo(s, draw);
   }
 }
 
 function handleRatings(key: string, s: State, draw: () => void) {
-  const items = getRatings();
+  const items = filteredRatings(s);
   if (key === "up" && s.ratCursor > 0) {
     s.ratCursor--;
     loadRatInfo(s, draw);
@@ -587,14 +673,14 @@ function handleRatings(key: string, s: State, draw: () => void) {
 }
 
 function loadWlInfo(s: State, draw: () => void) {
-  const items = getWatchlist();
+  const items = filteredWatchlist(s);
   const it = items[s.wlCursor];
   if (!it) return;
   fetchInfo(it.imdb_id, item => { s.wlInfo = item; }, draw);
 }
 
 function loadRatInfo(s: State, draw: () => void) {
-  const items = getRatings();
+  const items = filteredRatings(s);
   const it = items[s.ratCursor];
   if (!it) return;
   fetchInfo(it.imdb_id, item => { s.ratInfo = item; }, draw);

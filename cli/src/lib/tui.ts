@@ -29,13 +29,18 @@ export function truncVis(s: string, width: number): string {
 
 export function sliceVis(s: string, start: number, width: number): string {
   let vis = 0;
+  let prefix = "";
   let result = "";
   const re = /(\x1b\[[0-9;]*m)|(.)/g;
   let m;
   let taken = 0;
   while ((m = re.exec(s)) !== null) {
     if (m[1]) {
-      if (vis >= start) result += m[1];
+      if (vis < start) {
+        prefix += m[1];
+      } else {
+        result += m[1];
+      }
     } else {
       if (vis >= start) {
         if (taken >= width) break;
@@ -45,7 +50,7 @@ export function sliceVis(s: string, start: number, width: number): string {
       vis++;
     }
   }
-  return result;
+  return prefix + result;
 }
 
 export function padTo(s: string, width: number): string {
