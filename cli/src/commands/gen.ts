@@ -49,7 +49,7 @@ async function stdout(cmd: string[], opts?: { cwd?: string }): Promise<string> {
 }
 
 function sanitizeLabel(s: string): string {
-  return s.replace(/[^a-zA-Z0-9._:-]/g, "_").replace(/_+/g, "_").replace(/^_|_$/g, "").slice(0, 80);
+  return s.replace(/[^a-zA-Z0-9.-]/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "").toLowerCase().slice(0, 80);
 }
 
 interface CommitPlan {
