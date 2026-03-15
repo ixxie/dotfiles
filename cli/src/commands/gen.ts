@@ -153,6 +153,10 @@ async function saveDiff(genId: string, diff: string) {
   await writeFile(join(DIFF_DIR, `${genId}.diff`), diff);
 }
 
+async function commitMsg(hash: string): Promise<string> {
+  return await stdout(["git", "log", "-1", "--format=%B", hash], { cwd: DOTFILES });
+}
+
 async function genDiff(gen: Gen, prevGen: Gen | null): Promise<string> {
   const hash = extractHash(gen.label);
   const prevHash = prevGen ? extractHash(prevGen.label) : null;
@@ -223,12 +227,14 @@ interface DashState {
   scrollRight: number;
   scrollH: number;
   focusDiff: boolean;
+  gcMarked: Set<string>;
 }
 
 async function genDash() {
   const s: DashState = {
     gens: [], cursor: 0, diff: [], rawDiff: "", status: "Loading...",
     scrollLeft: 0, scrollRight: 0, scrollH: 0, focusDiff: false,
+    gcMarked: new Set(),
   };
 
   const cols = () => process.stdout.columns ?? 100;
@@ -252,14 +258,26 @@ async function genDash() {
 
     // left: generation list
     const left: string[] = [];
+    const gcActive = s.gcMarked.size > 0;
     for (let i = 0; i < s.gens.length; i++) {
       const g = s.gens[i];
+      const marked = s.gcMarked.has(g.id);
       const prefix = i === s.cursor ? pc.yellow("\u25B6 ") : "  ";
       const tag = g.current ? pc.green(" \u2022") : "";
       const isDefault = !g.label || /^\d+\.\d+\./.test(g.label) || g.label === "unlabeled";
       const label = isDefault ? pc.dim("unlabeled") : truncate(g.label, leftW - 16);
-      left.push(`${prefix}${pc.bold(g.id)} ${pc.dim(g.date)}${tag}`);
-      left.push(`    ${label}`);
+      if (marked) {
+        const gcTag = pc.red(" \u2717");
+        left.push(`${prefix}${pc.dim(g.id)} ${pc.dim(g.date)}${gcTag}`);
+        left.push(`    ${pc.strikethrough(pc.dim(String(label)))}`);
+      } else if (gcActive) {
+        const keepTag = pc.green(" \u2713");
+        left.push(`${prefix}${pc.bold(g.id)} ${pc.dim(g.date)}${keepTag}${tag}`);
+        left.push(`    ${label}`);
+      } else {
+        left.push(`${prefix}${pc.bold(g.id)} ${pc.dim(g.date)}${tag}`);
+        left.push(`    ${label}`);
+      }
       if (i < s.gens.length - 1) left.push("");
     }
     if (!s.gens.length) left.push(pc.dim("  No generations"));
@@ -289,8 +307,14 @@ async function genDash() {
 
     renderSplit(leftView, rightView, leftW);
 
+    const gcCount = s.gcMarked.size;
     const keys: Keys = s.focusDiff
       ? [["up", ""], ["down", ""], ["left", ""], ["right", ""], ["esc", "back"]]
+      : gcCount > 0
+      ? [
+          ["up", ""], ["down", ""],
+          ["space", "toggle"], ["enter", `delete ${gcCount}`], ["esc", "cancel"],
+        ]
       : [
           ["up", ""], ["down", ""],
           ["enter", "diff"], ["p", "pick"],
@@ -312,10 +336,18 @@ async function genDash() {
     draw();
     const raw = await genDiff(gen, prev);
     s.rawDiff = raw;
+    const hash = extractHash(gen.label);
+    const msg = hash ? await commitMsg(hash) : "";
+    const header: string[] = [];
+    if (msg) {
+      header.push(pc.bold(msg.split("\n")[0]));
+      const rest = msg.split("\n").slice(1).filter(l => l.trim());
+      if (rest.length) header.push(...rest.map(l => pc.dim(l)));
+      header.push("");
+    }
     const summary = diffSummary(raw);
-    s.diff = [...summary, ...colorDiff(raw.split("\n"))];
+    s.diff = [...header, ...summary, ...colorDiff(raw.split("\n"))];
     s.status = "";
-    draw();
   }
 
   async function refresh() {
@@ -367,57 +399,25 @@ async function genDash() {
     return !!g.label && !/^\d+\.\d+\./.test(g.label) && g.label !== "unlabeled";
   }
 
-  async function doCleanup() {
-    const gens = await listGens();
-    const labeled = gens.filter(g => isLabeled(g));
-    const unlabeled = gens.filter(g => !isLabeled(g));
+  function isRecent(g: Gen): boolean {
+    const d = new Date(g.date);
+    return !isNaN(d.getTime()) && Date.now() - d.getTime() < 14 * 24 * 60 * 60 * 1000;
+  }
 
-    // keep last 10 labeled, remove all unlabeled — never touch current
+  function computeGcMarked() {
+    const labeled = s.gens.filter(g => isLabeled(g));
+    const unlabeled = s.gens.filter(g => !isLabeled(g));
     const labeledToRemove = labeled.slice(10);
-    const toRemove = [...unlabeled, ...labeledToRemove].filter(g => !g.current);
-    const keepSet = new Set(toRemove.map(g => g.id));
-
-    if (!toRemove.length) {
-      log(sym.check, pc.dim("Nothing to clean up"));
-      return;
+    const toRemove = [
+      ...unlabeled.filter(g => !g.current),
+      ...labeledToRemove.filter(g => !g.current && !isRecent(g)),
+    ];
+    s.gcMarked = new Set(toRemove.map(g => g.id));
+    if (!s.gcMarked.size) {
+      s.status = "Nothing to clean up";
+    } else {
+      s.status = `${s.gcMarked.size} to remove, ${s.gens.length - s.gcMarked.size} to keep`;
     }
-
-    // preview
-    console.log(`\n  ${pc.bold("Cleanup preview:")}\n`);
-    for (const g of gens) {
-      const removing = keepSet.has(g.id);
-      const current = g.current ? pc.green(" (current)") : "";
-      const lbl = isLabeled(g) ? g.label : pc.dim("unlabeled");
-      if (removing) {
-        console.log(`  ${pc.red("✗")} ${pc.dim(g.id)}  ${pc.dim(g.date)}  ${pc.strikethrough(pc.dim(String(lbl)))}`);
-      } else {
-        console.log(`  ${pc.green("✓")} ${g.id}  ${g.date}  ${lbl}${current}`);
-      }
-    }
-    console.log(`\n  ${pc.yellow(`${toRemove.length} to remove, ${gens.length - toRemove.length} to keep`)}\n`);
-
-    // confirm
-    const msg = await input({
-      message: "Type 'yes' to confirm",
-    });
-    if (msg !== "yes") {
-      log(sym.check, pc.dim("Cancelled"));
-      return;
-    }
-
-    log(sym.broom, pc.yellow(`Removing ${toRemove.length} generation${toRemove.length > 1 ? "s" : ""}...`));
-
-    // remove generation profile symlinks
-    for (const g of toRemove) {
-      const link = `${PROFILE}-${g.id}-link`;
-      await run(["sudo", "rm", "-f", link], { silent: true });
-    }
-
-    // garbage collect
-    log(sym.gear, pc.yellow("Running garbage collection..."));
-    await run(["sudo", "nix-collect-garbage", "--delete-older-than", "14d"]);
-
-    success("Cleanup complete!");
   }
 
   async function doPickGen() {
@@ -445,6 +445,7 @@ async function genDash() {
 
   // initial load
   await refresh();
+  draw();
 
   // event loop: exits raw mode for shell commands, re-enters after
   while (true) {
@@ -461,21 +462,42 @@ async function genDash() {
           return;
         }
 
+        // gc preview mode
+        if (s.gcMarked.size > 0) {
+          if (key === "esc") { s.gcMarked = new Set(); s.status = ""; draw(); return; }
+          if (key === "enter") { stop(); resolve("gc-confirm"); return; }
+          if (key === "up" && s.cursor > 0) { s.cursor--; await loadDiff(); draw(); return; }
+          if (key === "down" && s.cursor < s.gens.length - 1) { s.cursor++; await loadDiff(); draw(); return; }
+          if (key === " " && s.gens[s.cursor] && !s.gens[s.cursor].current) {
+            const id = s.gens[s.cursor].id;
+            if (s.gcMarked.has(id)) s.gcMarked.delete(id); else s.gcMarked.add(id);
+            s.status = s.gcMarked.size
+              ? `${s.gcMarked.size} to remove, ${s.gens.length - s.gcMarked.size} to keep`
+              : "";
+            if (s.cursor < s.gens.length - 1) { s.cursor++; await loadDiff(); }
+            draw();
+            return;
+          }
+          return;
+        }
+
         if (key === "esc" || key === "q") { stop(); resolve("quit"); return; }
 
         if (key === "up" && s.cursor > 0) {
           s.cursor--;
           await loadDiff();
+          draw();
         } else if (key === "down" && s.cursor < s.gens.length - 1) {
           s.cursor++;
           await loadDiff();
+          draw();
         } else if (key === "enter" && s.diff.length) {
           s.focusDiff = true;
           draw();
         } else if (key === "p") { stop(); resolve("pick"); }
         else if (key === "r") { stop(); resolve("regen"); }
         else if (key === "c") { stop(); resolve("commit"); }
-        else if (key === "g") { stop(); resolve("cleanup"); }
+        else if (key === "g") { computeGcMarked(); draw(); }
       });
     });
 
@@ -484,7 +506,17 @@ async function genDash() {
     console.log();
     if (action === "regen") await doRegen();
     else if (action === "commit") await doCommit();
-    else if (action === "cleanup") await doCleanup();
+    else if (action === "gc-confirm") {
+      const toRemove = s.gens.filter(g => s.gcMarked.has(g.id));
+      log(sym.broom, pc.yellow(`Removing ${toRemove.length} generation${toRemove.length > 1 ? "s" : ""}...`));
+      for (const g of toRemove) {
+        await run(["sudo", "rm", "-f", `${PROFILE}-${g.id}-link`], { silent: true });
+      }
+      log(sym.gear, pc.yellow("Running garbage collection..."));
+      await run(["sudo", "nix-collect-garbage", "--delete-older-than", "14d"]);
+      success("Cleanup complete!");
+      s.gcMarked = new Set();
+    }
     else if (action === "pick") await doPickGen();
 
     await waitForKey();

@@ -564,6 +564,8 @@ function handleGenres(key: string, s: State, draw: () => void) {
     // reset cursors since filtered lists changed
     s.wlCursor = 0; s.wlInfo = null;
     s.ratCursor = 0; s.ratInfo = null;
+    // reload recommendations with new genre filter
+    loadSuggestions(s, draw);
   }
 }
 

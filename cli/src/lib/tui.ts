@@ -151,10 +151,11 @@ export function menuBar(keys: Keys) {
 export function renderSplit(leftLines: string[], rightLines: string[], leftWidth: number) {
   const max = Math.max(leftLines.length, rightLines.length);
   const sep = pc.dim("\u2502");
+  const reset = "\x1b[0m";
   for (let i = 0; i < max; i++) {
     const left = padTo(leftLines[i] ?? "", leftWidth);
     const right = rightLines[i] ?? "";
-    console.log(`${left} ${sep} ${right}`);
+    console.log(`${left}${reset} ${sep} ${right}${reset}`);
   }
 }
 
