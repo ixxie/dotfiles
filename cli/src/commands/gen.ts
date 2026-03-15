@@ -1,7 +1,7 @@
 import type { Command } from "commander";
 import pc from "picocolors";
 import {
-  input, search, clear, startRaw, menuBar, renderSplit,
+  input, search, clear, flush, startRaw, menuBar, renderSplit,
   type Keys,
 } from "../lib/tui.ts";
 import { readFile, writeFile, mkdir } from "node:fs/promises";
@@ -266,6 +266,7 @@ async function genDash() {
       ["esc", "quit"],
     ];
     menuBar(keys);
+    flush();
   };
 
   async function loadDiff() {

@@ -1,7 +1,7 @@
 import type { Command } from "commander";
 import pc from "picocolors";
 import {
-  clear, startRaw, menuBar, tabBar, renderSplit, wordWrap,
+  clear, flush, startRaw, menuBar, tabBar, renderSplit, wordWrap,
   truncVis, padTo, visWidth, stripAnsi,
   type Keys,
 } from "../lib/tui.ts";
@@ -711,6 +711,7 @@ async function mediaTui() {
     clear();
     renderState(s);
     menuBar(getTabKeys(s));
+    flush();
   };
 
   // initial loads

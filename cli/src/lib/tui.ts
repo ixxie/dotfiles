@@ -85,12 +85,25 @@ export function startRaw(handler: (key: string) => void): () => void {
   };
 }
 
+let _drawing = false;
+const _origWrite = process.stdout.write.bind(process.stdout);
+
 export function clear() {
-  process.stdout.write("\x1b[?25l\x1b[H"); // hide cursor + home
+  _drawing = true;
+  process.stdout.write = function(chunk: any, ...args: any[]) {
+    // append clear-to-EOL after each newline so leftover chars don't persist
+    if (typeof chunk === "string") {
+      chunk = chunk.replace(/\n/g, "\x1b[K\n");
+    }
+    return _origWrite(chunk, ...args);
+  } as any;
+  _origWrite("\x1b[?25l\x1b[H"); // hide cursor + home
 }
 
 export function flush() {
-  process.stdout.write("\x1b[J\x1b[?25h"); // clear below + show cursor
+  _origWrite("\x1b[J\x1b[?25h"); // clear below + show cursor
+  process.stdout.write = _origWrite;
+  _drawing = false;
 }
 
 // layout
@@ -140,6 +153,7 @@ export function tui<S>(opts: TuiOpts<S>): Promise<void> {
     render(state);
     const k = typeof keys === "function" ? keys(state) : keys;
     menuBar(k);
+    flush();
   };
   draw();
 
@@ -178,6 +192,7 @@ export function input(opts: {
     console.log(`  ${pc.bold(opts.message)}\n`);
     console.log(`  ${buf}\u2588`);
     menuBar([["enter", "confirm"], ["esc", "cancel"]]);
+    flush();
   };
   draw();
 
@@ -212,6 +227,7 @@ export function select<T>(opts: {
       console.log(pc.dim(`\n  ${cursor + 1}/${items.length}`));
     }
     menuBar([["up", "up"], ["down", "down"], ["enter", "select"], ["esc", "cancel"]]);
+    flush();
   };
   draw();
 
@@ -260,6 +276,7 @@ export function search<T>(opts: {
       }
     }
     menuBar([["up", "up"], ["down", "down"], ["enter", "select"], ["esc", "cancel"]]);
+    flush();
   };
   draw();
 
