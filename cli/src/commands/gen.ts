@@ -49,19 +49,40 @@ async function stdout(cmd: string[], opts?: { cwd?: string }): Promise<string> {
 }
 
 function sanitizeLabel(s: string): string {
-  return s.replace(/[^a-zA-Z0-9._:-]/g, "_").slice(0, 80);
+  return s.replace(/[^a-zA-Z0-9._:-]/g, "_").replace(/_+/g, "_").replace(/^_|_$/g, "").slice(0, 80);
 }
 
-async function generateMessage(): Promise<string | null> {
+interface CommitPlan {
+  files: string[];
+  message: string;
+}
+
+async function generateCommitPlan(): Promise<CommitPlan[] | null> {
   try {
-    log(sym.gear, pc.dim("Generating commit message..."));
-    const diff = await stdout(["git", "diff", "--cached", "--stat"], { cwd: DOTFILES });
+    log(sym.gear, pc.dim("Analyzing changes..."));
+    const diff = await stdout(["git", "diff", "--cached"], { cwd: DOTFILES });
+    const stat = await stdout(["git", "diff", "--cached", "--stat"], { cwd: DOTFILES });
     if (!diff) return null;
 
+    const prompt = `You are analyzing changes to a NixOS dotfiles repo. Create a commit plan using conventional commits (feat:, fix:, refactor:, chore:, docs:, style:, etc.).
+
+Rules:
+- Split into multiple atomic commits if the changes are logically independent
+- Each commit message: conventional commit subject line (max 72 chars), then a blank line, then a body with 1-3 short paragraphs explaining the why/what
+- Ignore flake.lock / flake input updates unless they are the only change
+- Group related file changes into one commit
+- Reply with ONLY a raw JSON array, no markdown fences
+
+Format: [{"files":["path/to/file",...],"message":"type: subject\\n\\nbody"},...]
+
+Stat:
+${stat}
+
+Diff:
+${diff}`;
+
     const proc = Bun.spawn(
-      ["claude", "-p",
-        `Summarize these dotfile changes in 3-5 words (max 8). No prefix, no quotes, lowercase. Ignore flake.lock / flake input updates — focus on actual config changes:\n\n${diff}`,
-        "--output-format", "json"],
+      ["claude", "-p", prompt, "--output-format", "json"],
       { stdout: "pipe", stderr: "pipe" },
     );
     const out = (await new Response(proc.stdout).text()).trim();
@@ -73,38 +94,45 @@ async function generateMessage(): Promise<string | null> {
       const wrapper = JSON.parse(text);
       text = typeof wrapper === "string" ? wrapper : wrapper.result ?? text;
     } catch {}
-    text = text.replace(/^["'\s]+|["'\s]+$/g, "").trim();
-    if (text && text.length > 0 && text.length <= 120) return text;
+    text = text.replace(/^```(?:json)?\s*\n?/m, "").replace(/\n?```\s*$/m, "").trim();
+
+    const start = text.indexOf("[");
+    const end = text.lastIndexOf("]");
+    if (start === -1 || end === -1) return null;
+
+    return JSON.parse(text.slice(start, end + 1));
   } catch {}
   return null;
 }
 
-async function commitMessage(): Promise<string | null> {
-  const generated = await generateMessage();
-  if (generated) {
-    log(sym.check, pc.dim(`Suggested: ${generated}`));
-  }
-  return await input({
-    message: "Commit message",
-    default: generated ?? new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19),
-  });
-}
-
-async function gitCommit(msg: string): Promise<string> {
-  if (!(await run(["git", "add", "-A"], { cwd: DOTFILES }))) {
-    error("git add failed");
-    process.exit(1);
-  }
-
-  const status = await stdout(["git", "status", "--porcelain"], { cwd: DOTFILES });
-  if (!status) {
-    log(sym.check, pc.dim("No changes to commit"));
-  } else {
-    if (!(await run(["git", "commit", "-m", msg], { cwd: DOTFILES }))) {
-      error("git commit failed");
-      process.exit(1);
+async function executeCommitPlan(plan: CommitPlan[]): Promise<string> {
+  for (const commit of plan) {
+    // reset staging
+    await run(["git", "reset", "HEAD"], { cwd: DOTFILES, silent: true });
+    // stage specific files
+    for (const f of commit.files) {
+      await run(["git", "add", f], { cwd: DOTFILES, silent: true });
     }
-    success(`Committed: ${msg}`);
+    const status = await stdout(["git", "status", "--porcelain"], { cwd: DOTFILES });
+    if (!status) {
+      log(sym.check, pc.dim(`Skipped (no changes): ${commit.message.split("\n")[0]}`));
+      continue;
+    }
+    if (!(await run(["git", "commit", "-m", commit.message], { cwd: DOTFILES }))) {
+      error(`Commit failed: ${commit.message.split("\n")[0]}`);
+      // stage everything remaining and bail
+      await run(["git", "add", "-A"], { cwd: DOTFILES, silent: true });
+      break;
+    }
+    success(commit.message.split("\n")[0]);
+  }
+
+  // catch any unstaged leftovers
+  await run(["git", "add", "-A"], { cwd: DOTFILES, silent: true });
+  const leftover = await stdout(["git", "status", "--porcelain"], { cwd: DOTFILES });
+  if (leftover) {
+    log(sym.gear, pc.dim("Committing remaining changes..."));
+    await run(["git", "commit", "-m", "chore: remaining changes"], { cwd: DOTFILES });
   }
 
   return await stdout(["git", "rev-parse", "--short", "HEAD"], { cwd: DOTFILES });
@@ -127,13 +155,46 @@ async function switchConfig(label: string) {
   }
 }
 
-async function genSwitch() {
+async function commitAndSwitch() {
   await run(["git", "add", "-A"], { cwd: DOTFILES });
-  const msg = await commitMessage();
-  if (!msg) return;
-  const hash = await gitCommit(msg);
-  const label = sanitizeLabel(`${hash}-${msg}`);
+  const plan = await generateCommitPlan();
+  if (!plan || !plan.length) {
+    log(sym.check, pc.dim("No changes to commit"));
+    return;
+  }
+  // preview
+  console.log(`\n  ${pc.bold("Commit plan:")}\n`);
+  for (const c of plan) {
+    const [subject, ...body] = c.message.split("\n");
+    console.log(`  ${pc.green("\u2022")} ${pc.bold(subject)}`);
+    for (const l of body) {
+      if (l.trim()) console.log(`    ${pc.dim(l)}`);
+    }
+    console.log(`    ${pc.dim(c.files.join(", "))}`);
+    console.log();
+  }
+  console.log(`  ${pc.yellow("enter")} confirm  ${pc.yellow("esc")} cancel`);
+
+  const confirmed = await new Promise<boolean>(resolve => {
+    const stop = startRaw((key) => {
+      if (key === "enter") { stop(); resolve(true); }
+      else if (key === "esc") { stop(); resolve(false); }
+    });
+  });
+  if (!confirmed) {
+    log(sym.check, pc.dim("Cancelled"));
+    return;
+  }
+
+  console.log();
+  const hash = await executeCommitPlan(plan);
+  const lastMsg = plan[plan.length - 1].message.split("\n")[0];
+  const label = sanitizeLabel(`${hash}-${lastMsg}`);
   await switchConfig(label);
+}
+
+async function genSwitch() {
+  await commitAndSwitch();
 }
 
 // diff helpers
@@ -163,11 +224,11 @@ async function genDiff(gen: Gen, prevGen: Gen | null): Promise<string> {
 
   // labeled gen with commit hash: show git diff between commits
   if (hash && prevHash) {
-    const diff = await stdout(["git", "diff", "--stat", "-p", `${prevHash}..${hash}`], { cwd: DOTFILES });
+    const diff = await stdout(["git", "diff", "-p", `${prevHash}..${hash}`], { cwd: DOTFILES });
     return diff || "(empty diff)";
   }
   if (hash) {
-    const diff = await stdout(["git", "show", "--stat", "-p", hash], { cwd: DOTFILES });
+    const diff = await stdout(["git", "show", "-p", "--format=", hash], { cwd: DOTFILES });
     return diff || "(empty diff)";
   }
 
@@ -296,8 +357,8 @@ async function genDash() {
     if (left.length <= contentH) {
       s.scrollLeft = 0;
     } else if (leftCursor >= 0) {
-      if (leftCursor < s.scrollLeft + margin) s.scrollLeft = Math.max(0, leftCursor - margin);
-      else if (leftCursor >= s.scrollLeft + contentH - margin) s.scrollLeft = Math.min(left.length - contentH, leftCursor - contentH + margin + 1);
+      if (leftCursor < s.scrollLeft) s.scrollLeft = leftCursor;
+      else if (leftCursor >= s.scrollLeft + contentH) s.scrollLeft = leftCursor - contentH + 1;
     }
 
     const leftView = left.slice(s.scrollLeft, s.scrollLeft + contentH);
@@ -329,11 +390,9 @@ async function genDash() {
     if (!s.gens.length) { s.diff = []; s.rawDiff = ""; return; }
     const gen = s.gens[s.cursor];
     const prev = s.cursor < s.gens.length - 1 ? s.gens[s.cursor + 1] : null;
-    s.status = "Loading diff...";
     s.scrollRight = 0;
     s.scrollH = 0;
     s.focusDiff = false;
-    draw();
     const raw = await genDiff(gen, prev);
     s.rawDiff = raw;
     const hash = extractHash(gen.label);
@@ -380,12 +439,7 @@ async function genDash() {
   }
 
   async function doCommit() {
-    await run(["git", "add", "-A"], { cwd: DOTFILES });
-    const msg = await commitMessage();
-    if (!msg) return;
-    const hash = await gitCommit(msg);
-    const label = sanitizeLabel(`${hash}-${msg}`);
-    await switchConfig(label);
+    await commitAndSwitch();
   }
 
   async function waitForKey() {
@@ -466,16 +520,16 @@ async function genDash() {
         if (s.gcMarked.size > 0) {
           if (key === "esc") { s.gcMarked = new Set(); s.status = ""; draw(); return; }
           if (key === "enter") { stop(); resolve("gc-confirm"); return; }
-          if (key === "up" && s.cursor > 0) { s.cursor--; await loadDiff(); draw(); return; }
-          if (key === "down" && s.cursor < s.gens.length - 1) { s.cursor++; await loadDiff(); draw(); return; }
+          if (key === "up" && s.cursor > 0) { s.cursor--; draw(); loadDiff().then(draw); return; }
+          if (key === "down" && s.cursor < s.gens.length - 1) { s.cursor++; draw(); loadDiff().then(draw); return; }
           if (key === " " && s.gens[s.cursor] && !s.gens[s.cursor].current) {
             const id = s.gens[s.cursor].id;
             if (s.gcMarked.has(id)) s.gcMarked.delete(id); else s.gcMarked.add(id);
             s.status = s.gcMarked.size
               ? `${s.gcMarked.size} to remove, ${s.gens.length - s.gcMarked.size} to keep`
               : "";
-            if (s.cursor < s.gens.length - 1) { s.cursor++; await loadDiff(); }
-            draw();
+            if (s.cursor < s.gens.length - 1) { s.cursor++; draw(); loadDiff().then(draw); }
+            else { draw(); }
             return;
           }
           return;
@@ -485,12 +539,14 @@ async function genDash() {
 
         if (key === "up" && s.cursor > 0) {
           s.cursor--;
-          await loadDiff();
+          s.scrollRight = 0; s.scrollH = 0;
           draw();
+          loadDiff().then(draw);
         } else if (key === "down" && s.cursor < s.gens.length - 1) {
           s.cursor++;
-          await loadDiff();
+          s.scrollRight = 0; s.scrollH = 0;
           draw();
+          loadDiff().then(draw);
         } else if (key === "enter" && s.diff.length) {
           s.focusDiff = true;
           draw();
