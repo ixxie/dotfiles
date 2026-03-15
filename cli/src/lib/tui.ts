@@ -27,6 +27,27 @@ export function truncVis(s: string, width: number): string {
   return result;
 }
 
+export function sliceVis(s: string, start: number, width: number): string {
+  let vis = 0;
+  let result = "";
+  const re = /(\x1b\[[0-9;]*m)|(.)/g;
+  let m;
+  let taken = 0;
+  while ((m = re.exec(s)) !== null) {
+    if (m[1]) {
+      if (vis >= start) result += m[1];
+    } else {
+      if (vis >= start) {
+        if (taken >= width) break;
+        result += m[2];
+        taken++;
+      }
+      vis++;
+    }
+  }
+  return result;
+}
+
 export function padTo(s: string, width: number): string {
   const vis = visWidth(s);
   if (vis >= width) return truncVis(s, width);

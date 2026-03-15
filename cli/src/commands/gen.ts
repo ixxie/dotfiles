@@ -1,7 +1,7 @@
 import type { Command } from "commander";
 import pc from "picocolors";
 import {
-  input, search, clear, flush, startRaw, menuBar, renderSplit,
+  input, search, clear, flush, startRaw, menuBar, renderSplit, sliceVis,
   type Keys,
 } from "../lib/tui.ts";
 import { readFile, writeFile, mkdir } from "node:fs/promises";
@@ -221,13 +221,14 @@ interface DashState {
   status: string;
   scrollLeft: number;
   scrollRight: number;
+  scrollH: number;
   focusDiff: boolean;
 }
 
 async function genDash() {
   const s: DashState = {
     gens: [], cursor: 0, diff: [], rawDiff: "", status: "Loading...",
-    scrollLeft: 0, scrollRight: 0, focusDiff: false,
+    scrollLeft: 0, scrollRight: 0, scrollH: 0, focusDiff: false,
   };
 
   const cols = () => process.stdout.columns ?? 100;
@@ -263,8 +264,10 @@ async function genDash() {
     }
     if (!s.gens.length) left.push(pc.dim("  No generations"));
 
-    // right: diff
-    const right = s.diff.length ? [...s.diff] : [pc.dim("No diff")];
+    // right: diff (horizontal scroll + truncate to pane width)
+    const right = s.diff.length
+      ? s.diff.map(l => sliceVis(l, s.scrollH, rightW))
+      : [pc.dim("No diff")];
 
     // viewport
     const used = 3 + (s.status ? 2 : 0) + 2; // header + status + menu
@@ -287,7 +290,7 @@ async function genDash() {
     renderSplit(leftView, rightView, leftW);
 
     const keys: Keys = s.focusDiff
-      ? [["up", ""], ["down", ""], ["esc", "back"]]
+      ? [["up", ""], ["down", ""], ["left", ""], ["right", ""], ["esc", "back"]]
       : [
           ["up", ""], ["down", ""],
           ["enter", "diff"], ["p", "pick"],
@@ -304,6 +307,7 @@ async function genDash() {
     const prev = s.cursor < s.gens.length - 1 ? s.gens[s.cursor + 1] : null;
     s.status = "Loading diff...";
     s.scrollRight = 0;
+    s.scrollH = 0;
     s.focusDiff = false;
     draw();
     const raw = await genDiff(gen, prev);
@@ -452,6 +456,8 @@ async function genDash() {
           const maxScroll = Math.max(0, s.diff.length - contentH);
           if (key === "up" && s.scrollRight > 0) { s.scrollRight--; draw(); }
           else if (key === "down" && s.scrollRight < maxScroll) { s.scrollRight++; draw(); }
+          else if (key === "right") { s.scrollH += 8; draw(); }
+          else if (key === "left" && s.scrollH > 0) { s.scrollH = Math.max(0, s.scrollH - 8); draw(); }
           return;
         }
 
