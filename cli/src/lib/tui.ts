@@ -86,7 +86,11 @@ export function startRaw(handler: (key: string) => void): () => void {
 }
 
 export function clear() {
-  process.stdout.write("\x1b[2J\x1b[H");
+  process.stdout.write("\x1b[?25l\x1b[H"); // hide cursor + home
+}
+
+export function flush() {
+  process.stdout.write("\x1b[J\x1b[?25h"); // clear below + show cursor
 }
 
 // layout

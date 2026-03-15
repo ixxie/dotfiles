@@ -262,7 +262,7 @@ async function genDash() {
     const keys: Keys = [
       ["up", "up"], ["down", "down"],
       ["j", "scroll \u2193"], ["k", "scroll \u2191"],
-      ["r", "regen"], ["c", "commit"],
+      ["r", "regen"], ["c", "commit"], ["g", "gc"],
       ["esc", "quit"],
     ];
     menuBar(keys);
@@ -326,6 +326,63 @@ async function genDash() {
     });
   }
 
+  function isLabeled(g: Gen): boolean {
+    return !!g.label && !/^\d+\.\d+\./.test(g.label) && g.label !== "unlabeled";
+  }
+
+  async function doCleanup() {
+    const gens = await listGens();
+    const labeled = gens.filter(g => isLabeled(g));
+    const unlabeled = gens.filter(g => !isLabeled(g));
+
+    // keep last 10 labeled, remove all unlabeled — never touch current
+    const labeledToRemove = labeled.slice(10);
+    const toRemove = [...unlabeled, ...labeledToRemove].filter(g => !g.current);
+    const keepSet = new Set(toRemove.map(g => g.id));
+
+    if (!toRemove.length) {
+      log(sym.check, pc.dim("Nothing to clean up"));
+      return;
+    }
+
+    // preview
+    console.log(`\n  ${pc.bold("Cleanup preview:")}\n`);
+    for (const g of gens) {
+      const removing = keepSet.has(g.id);
+      const current = g.current ? pc.green(" (current)") : "";
+      const lbl = isLabeled(g) ? g.label : pc.dim("unlabeled");
+      if (removing) {
+        console.log(`  ${pc.red("✗")} ${pc.dim(g.id)}  ${pc.dim(g.date)}  ${pc.strikethrough(pc.dim(String(lbl)))}`);
+      } else {
+        console.log(`  ${pc.green("✓")} ${g.id}  ${g.date}  ${lbl}${current}`);
+      }
+    }
+    console.log(`\n  ${pc.yellow(`${toRemove.length} to remove, ${gens.length - toRemove.length} to keep`)}\n`);
+
+    // confirm
+    const msg = await input({
+      message: "Type 'yes' to confirm",
+    });
+    if (msg !== "yes") {
+      log(sym.check, pc.dim("Cancelled"));
+      return;
+    }
+
+    log(sym.broom, pc.yellow(`Removing ${toRemove.length} generation${toRemove.length > 1 ? "s" : ""}...`));
+
+    // remove generation profile symlinks
+    for (const g of toRemove) {
+      const link = `${PROFILE}-${g.id}-link`;
+      await run(["sudo", "rm", "-f", link], { silent: true });
+    }
+
+    // garbage collect
+    log(sym.gear, pc.yellow("Running garbage collection..."));
+    await run(["sudo", "nix-collect-garbage", "--delete-older-than", "14d"]);
+
+    success("Cleanup complete!");
+  }
+
   // initial load
   await refresh();
 
@@ -348,6 +405,7 @@ async function genDash() {
           if (s.scrollRight > 0) { s.scrollRight--; draw(); }
         } else if (key === "r") { stop(); resolve("regen"); }
         else if (key === "c") { stop(); resolve("commit"); }
+        else if (key === "g") { stop(); resolve("cleanup"); }
       });
     });
 
@@ -356,6 +414,7 @@ async function genDash() {
     console.log();
     if (action === "regen") await doRegen();
     else if (action === "commit") await doCommit();
+    else if (action === "cleanup") await doCleanup();
 
     await waitForKey();
     s.cursor = 0;
