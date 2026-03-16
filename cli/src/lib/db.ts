@@ -2,6 +2,15 @@ import { Database } from "bun:sqlite";
 import { existsSync, mkdirSync } from "fs";
 import type { OmdbItem } from "./omdb.ts";
 
+export interface Trope {
+  id: number;
+  name: string;
+  emoji: string;
+  description: string;
+  profile_key: string;
+  item_count?: number;
+}
+
 const DB_DIR = `${process.env.HOME}/.local/share/yo`;
 const DB_PATH = `${DB_DIR}/media.db`;
 
@@ -32,6 +41,9 @@ function migrate(d: Database) {
   }
   if (!cols("preferences").has("profile_id")) {
     d.exec("ALTER TABLE preferences ADD COLUMN profile_id INTEGER NOT NULL DEFAULT 1 REFERENCES profiles(id)");
+  }
+  if (cols("tropes").size && !cols("tropes").has("emoji")) {
+    d.exec("ALTER TABLE tropes ADD COLUMN emoji TEXT NOT NULL DEFAULT ''");
   }
 }
 
@@ -113,6 +125,22 @@ export function db(): Database {
       added_at DATETIME DEFAULT CURRENT_TIMESTAMP,
       UNIQUE(item_id, profile_id)
     );
+
+    CREATE TABLE IF NOT EXISTS tropes (
+      id INTEGER PRIMARY KEY,
+      name TEXT NOT NULL,
+      emoji TEXT NOT NULL DEFAULT '',
+      description TEXT NOT NULL,
+      profile_key TEXT NOT NULL,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      UNIQUE(name, profile_key)
+    );
+
+    CREATE TABLE IF NOT EXISTS item_tropes (
+      item_id INTEGER NOT NULL REFERENCES items(id),
+      trope_id INTEGER NOT NULL REFERENCES tropes(id),
+      PRIMARY KEY (item_id, trope_id)
+    );
   `);
   migrate(_db);
   return _db;
@@ -145,6 +173,10 @@ export function upsertRating(itemId: number, rating: number, profileId = 1, note
     d.run("INSERT INTO ratings (item_id, profile_id, rating, notes) VALUES (?, ?, ?, ?)",
       [itemId, profileId, rating, notes ?? null]);
   }
+}
+
+export function removeRating(itemId: number, profileId: number) {
+  db().run("DELETE FROM ratings WHERE item_id = ? AND profile_id = ?", [itemId, profileId]);
 }
 
 export function addToWatchlist(itemId: number, profileId = 1, priority = 0) {
@@ -240,6 +272,148 @@ export function setPref(key: string, value: string, profileId = 1) {
   db().run(
     "INSERT OR REPLACE INTO preferences (profile_id, key, value) VALUES (?, ?, ?)",
     [profileId, key, value]
+  );
+}
+
+export function getActiveProfileIds(): number[] | null {
+  const row = db().query(
+    "SELECT value FROM preferences WHERE profile_id = 0 AND key = 'active_profiles'"
+  ).get() as { value: string } | null;
+  if (!row) return null;
+  const ids = row.value.split(",").map(Number).filter(n => !isNaN(n));
+  return ids.length ? ids : null;
+}
+
+export function setActiveProfileIds(ids: number[]) {
+  db().run(
+    "INSERT OR REPLACE INTO preferences (profile_id, key, value) VALUES (0, 'active_profiles', ?)",
+    [ids.join(",")]
+  );
+}
+
+// tropes
+
+export function profileKey(ids: number[]): string {
+  return [...ids].sort((a, b) => a - b).join(",");
+}
+
+export function saveTrope(name: string, description: string, pKey: string, emoji = ""): number {
+  const d = db();
+  d.run(
+    `INSERT INTO tropes (name, emoji, description, profile_key) VALUES (?, ?, ?, ?)
+     ON CONFLICT(name, profile_key) DO UPDATE SET emoji = excluded.emoji, description = excluded.description`,
+    [name, emoji, description, pKey],
+  );
+  const row = d.query(
+    "SELECT id FROM tropes WHERE name = ? AND profile_key = ?",
+  ).get(name, pKey) as { id: number };
+  return row.id;
+}
+
+export function linkItemTrope(itemId: number, tropeId: number) {
+  db().run(
+    "INSERT OR IGNORE INTO item_tropes (item_id, trope_id) VALUES (?, ?)",
+    [itemId, tropeId],
+  );
+}
+
+export function getTropes(pKey: string): Trope[] {
+  return db().query(`
+    SELECT t.id, t.name, t.emoji, t.description, t.profile_key,
+      (SELECT COUNT(*) FROM item_tropes it WHERE it.trope_id = t.id) AS item_count
+    FROM tropes t WHERE t.profile_key = ?
+    ORDER BY t.created_at DESC
+  `).all(pKey) as Trope[];
+}
+
+export function getItemsForTrope(tropeId: number): (ListItemRow & { imdb_id: string })[] {
+  return db().query(`
+    SELECT i.id, i.imdb_id, i.title, i.year, i.type, i.genre,
+      i.imdb_rating, i.poster, i.raw_json
+    FROM item_tropes it JOIN items i ON it.item_id = i.id
+    WHERE it.trope_id = ?
+    ORDER BY i.title
+  `).all(tropeId) as any[];
+}
+
+interface ListItemRow {
+  id: number;
+  title: string;
+  year: string | null;
+  type: string | null;
+  genre: string | null;
+  imdb_rating: string | null;
+  poster: string | null;
+  raw_json: string | null;
+}
+
+export function getItemInfo(imdbId: string): OmdbItem | null {
+  const row = db().query(
+    "SELECT raw_json, imdb_id, title, year, type, genre, director, actors, plot, poster, imdb_rating, runtime FROM items WHERE imdb_id = ?",
+  ).get(imdbId) as {
+    raw_json: string | null; imdb_id: string; title: string;
+    year: string | null; type: string | null; genre: string | null;
+    director: string | null; actors: string | null; plot: string | null;
+    poster: string | null; imdb_rating: string | null; runtime: string | null;
+  } | null;
+  if (!row) return null;
+  if (row.raw_json) {
+    try { return JSON.parse(row.raw_json); } catch {}
+  }
+  // fallback: reconstruct from columns
+  return {
+    imdbID: row.imdb_id, Title: row.title, Year: row.year ?? undefined,
+    Type: row.type ?? undefined, Genre: row.genre ?? undefined,
+    Director: row.director ?? undefined, Actors: row.actors ?? undefined,
+    Plot: row.plot ?? undefined, Poster: row.poster ?? undefined,
+    imdbRating: row.imdb_rating ?? undefined, Runtime: row.runtime ?? undefined,
+  };
+}
+
+export function deleteTrope(tropeId: number) {
+  const d = db();
+  d.run("DELETE FROM item_tropes WHERE trope_id = ?", [tropeId]);
+  d.run("DELETE FROM tropes WHERE id = ?", [tropeId]);
+}
+
+export function getLastRegenTime(pKey: string): Date | null {
+  const row = db().query(
+    "SELECT value FROM preferences WHERE profile_id = 0 AND key = 'last_regen'",
+  ).get() as { value: string } | null;
+  if (!row) return null;
+  // value stores "profileKey:ISO_DATE" entries separated by ;
+  const entries = row.value.split(";");
+  for (const e of entries) {
+    const idx = e.indexOf(":");
+    if (idx === -1) continue;
+    const k = e.slice(0, idx);
+    const v = e.slice(idx + 1);
+    if (k === pKey && v) return new Date(v);
+  }
+  return null;
+}
+
+export function setLastRegenTime(pKey: string) {
+  const d = db();
+  const row = d.query(
+    "SELECT value FROM preferences WHERE profile_id = 0 AND key = 'last_regen'",
+  ).get() as { value: string } | null;
+  const now = new Date().toISOString();
+  let entries: Record<string, string> = {};
+  if (row) {
+    for (const e of row.value.split(";")) {
+      const idx = e.indexOf(":");
+      if (idx === -1) continue;
+      const k = e.slice(0, idx);
+      const v = e.slice(idx + 1);
+      if (k && v) entries[k] = v;
+    }
+  }
+  entries[pKey] = now;
+  const value = Object.entries(entries).map(([k, v]) => `${k}:${v}`).join(";");
+  d.run(
+    "INSERT OR REPLACE INTO preferences (profile_id, key, value) VALUES (0, 'last_regen', ?)",
+    [value],
   );
 }
 

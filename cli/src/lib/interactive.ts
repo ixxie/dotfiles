@@ -28,8 +28,9 @@ export function fmtEta(seconds: number): string {
 
 export function progressBar(pct: number, width = 20): string {
   const filled = Math.round(pct * width);
-  const empty = width - filled;
-  const bar = pc.green("\u2588".repeat(filled)) + pc.dim("\u2591".repeat(empty));
+  const bar = Array.from({ length: width }, (_, i) =>
+    i < filled ? pc.dim(pc.green("\u2593")) : pc.dim("\u2591")
+  ).join("");
   return `${bar} ${(pct * 100).toFixed(0)}%`;
 }
 
