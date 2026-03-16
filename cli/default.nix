@@ -8,7 +8,15 @@ stdenv.mkDerivation {
   pname = "yo";
   version = "0.1.0";
 
-  src = ./.;
+  src = builtins.path {
+    path = ./.;
+    name = "yo-src";
+    filter = path: type:
+      let base = baseNameOf path; in
+      base != ".gitignore"
+      && base != "bun.nix"
+      && base != "default.nix";
+  };
 
   nativeBuildInputs = [makeWrapper];
 

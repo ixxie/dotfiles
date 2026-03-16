@@ -1,6 +1,5 @@
 {
   pkgs,
-  yo,
   config,
   inputs,
   ...
@@ -12,7 +11,7 @@ in {
   programs.fish.enable = true;
 
   home-manager.users.ixxie = {
-    home.packages = [hx-open pkgs.carapace yo];
+    home.packages = [hx-open pkgs.carapace];
     programs = {
       fish = {
         enable = true;
@@ -50,6 +49,7 @@ in {
           la = "eza -lah --icons";
           tree = "eza --tree --icons";
           cat = "bat";
+          yo = "bun $DOTFILES/cli/src/index.ts";
         };
         shellInit = ''
           set -gx MASCOPE_PATH /home/ixxie/repos/apps/mascope

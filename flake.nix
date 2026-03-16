@@ -70,24 +70,10 @@
   };
   outputs = inputs @ {
     nixpkgs,
-    bun2nix,
     ...
-  }: let
-    b2n = bun2nix.packages.x86_64-linux.default;
-    yo = b2n.mkDerivation {
-      pname = "yo";
-      version = "0.1.0";
-      src = ./cli;
-      bunDeps = b2n.fetchBunDeps {
-        bunNix = ./cli/bun.nix;
-      };
-      module = "src/index.ts";
-    };
-  in {
-    packages.x86_64-linux.yo = yo;
-
+  }: {
     nixosConfigurations.contingent = nixpkgs.lib.nixosSystem {
-      specialArgs = {inherit inputs yo;};
+      specialArgs = {inherit inputs;};
       modules = [
         # frameworks
         #inputs.orgos.nixosModules.default
