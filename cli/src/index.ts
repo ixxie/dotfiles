@@ -10,6 +10,7 @@ import open from "./commands/open.ts";
 import completions from "./commands/completions.ts";
 import media from "./commands/media.ts";
 import clip from "./commands/clip.ts";
+import gens from "./commands/gens.ts";
 
 program
   .name("org")
@@ -24,5 +25,6 @@ open(program);
 completions(program);
 media(program);
 clip(program);
+gens(program);
 
 program.parse();
