@@ -435,11 +435,12 @@ const GEN_TABS = [
 interface Build {
   id: number;
   genId?: string;
-  status: "running" | "success" | "error" | "cancelled";
+  status: "running" | "pending" | "success" | "error" | "cancelled";
   log: string[];
   startedAt: Date;
   label: string;
   proc?: ReturnType<typeof Bun.spawn>;
+  commitPlan?: CommitPlan[];
 }
 
 interface DashState {
@@ -593,6 +594,7 @@ export async function genDash() {
         const b = s.builds[i];
         const prefix = i === s.buildCursor ? pc.yellow("\u25B6 ") : "  ";
         const icon = b.status === "running" ? pc.yellow("\u25CB")
+          : b.status === "pending" ? pc.cyan("?")
           : b.status === "success" ? pc.green("\u2713")
           : b.status === "cancelled" ? pc.yellow("\u2717")
           : pc.red("\u2717");
@@ -641,7 +643,9 @@ export async function genDash() {
       ["up", ""], ["down", ""],
       ["left", ""], ["right", ""],
     ];
-    if (build?.status === "running") {
+    if (build?.status === "pending") {
+      keys.push(["enter", "confirm"], ["esc", "cancel"]);
+    } else if (build?.status === "running") {
       keys.push(["x", "cancel"]);
     } else {
       keys.push(["r", "regen"], ["c", "commit"]);
@@ -789,47 +793,140 @@ export async function genDash() {
     return stats;
   }
 
-  async function doCommit(): Promise<void> {
-    // exit raw mode for commit planning
-    await run(["git", "add", "-A"], { cwd: DOTFILES });
-    const plan = await generateCommitPlan();
-    if (!plan || !plan.length) {
-      log(sym.check, pc.dim("No changes to commit"));
-      return;
-    }
-    // preview
-    console.log(`\n  ${pc.bold("Commit plan:")}\n`);
-    for (const c of plan) {
-      const [subject, ...body] = c.message.split("\n");
-      console.log(`  ${pc.green("\u2022")} ${pc.bold(subject)}`);
-      for (const l of body) {
-        if (l.trim()) console.log(`    ${pc.dim(l)}`);
-      }
-      const stats = await fileStats(c.files);
-      const tree = buildTree(c.files, stats);
-      for (const line of renderTree(tree, "    ")) {
-        console.log(line);
-      }
-      console.log();
-    }
-    console.log(`  ${pc.yellow("enter")} confirm  ${pc.yellow("esc")} cancel`);
+  function startCommitBuild() {
+    const build: Build = {
+      id: s.buildNextId++,
+      status: "running",
+      log: [],
+      startedAt: new Date(),
+      label: "commit: analyzing...",
+    };
+    s.builds.unshift(build);
+    s.buildCursor = 0;
+    s.buildScroll = mkScroll();
+    s.tab = "builds";
+    draw();
 
-    const confirmed = await new Promise<boolean>(resolve => {
-      const stop = startRaw((key) => {
-        if (key === "enter") { stop(); resolve(true); }
-        else if (key === "esc") { stop(); resolve(false); }
-      });
-    });
-    if (!confirmed) {
-      log(sym.check, pc.dim("Cancelled"));
-      return;
-    }
+    (async () => {
+      const blogLine = (msg: string) => {
+        build.log.push(msg);
+        autoScrollLog(build);
+        draw();
+      };
 
-    console.log();
+      blogLine("Staging changes...");
+      await run(["git", "add", "-A"], { cwd: DOTFILES, silent: true });
+
+      blogLine("Analyzing changes with AI...");
+      const plan = await generateCommitPlan();
+      if (!plan?.length) {
+        blogLine("");
+        blogLine(pc.red("No changes to commit or plan generation failed."));
+        build.status = "error";
+        build.label = "commit: no changes";
+        draw();
+        return;
+      }
+
+      // show plan preview in build log
+      blogLine("");
+      blogLine(pc.bold("Commit plan:"));
+      blogLine("");
+      for (const c of plan) {
+        const [subject, ...body] = c.message.split("\n");
+        blogLine(`${pc.green("\u2022")} ${pc.bold(subject)}`);
+        for (const l of body) {
+          if (l.trim()) blogLine(`  ${pc.dim(l)}`);
+        }
+        const stats = await fileStats(c.files);
+        const tree = buildTree(c.files, stats);
+        for (const line of renderTree(tree, "  ")) {
+          blogLine(line);
+        }
+        blogLine("");
+      }
+      blogLine(pc.cyan("Press enter to confirm, esc to cancel"));
+
+      build.commitPlan = plan;
+      build.status = "pending";
+      build.label = `commit: ${plan.length} commit${plan.length > 1 ? "s" : ""} planned`;
+      draw();
+    })();
+  }
+
+  async function confirmCommitBuild(build: Build) {
+    const plan = build.commitPlan!;
+    build.commitPlan = undefined;
+    build.status = "running";
+    build.log.push("");
+    build.log.push("Executing commits...");
+    draw();
+
     const hash = await executeCommitPlan(plan);
     const lastMsg = plan[plan.length - 1].message.split("\n")[0];
     const label = sanitizeLabel(`${hash}-${lastMsg}`);
-    spawnBuild(label, `commit: ${lastMsg}`);
+    build.label = `commit: ${lastMsg}`;
+    build.log.push("");
+    build.log.push("Building configuration...");
+    draw();
+
+    // run nixos-rebuild
+    let envArgs: string[] = [];
+    try {
+      const envContent = await readFile(join(DOTFILES, ".env"), "utf-8");
+      envArgs = envContent.split("\n").filter(l => l.trim() && !l.startsWith("#"));
+    } catch {}
+    if (label) envArgs.push(`NIXOS_LABEL=${label}`);
+
+    const proc = Bun.spawn(
+      ["sudo", "env", ...envArgs, "nixos-rebuild", "switch", "--impure", "--flake", FLAKE],
+      { stdout: "pipe", stderr: "pipe" },
+    );
+    build.proc = proc;
+
+    const readStream = async (stream: ReadableStream<Uint8Array>) => {
+      const reader = stream.getReader();
+      const decoder = new TextDecoder();
+      let partial = "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        partial += decoder.decode(value, { stream: true });
+        const lines = partial.split("\n");
+        partial = lines.pop()!;
+        for (const line of lines) {
+          build.log.push(line);
+          autoScrollLog(build);
+          draw();
+        }
+      }
+      if (partial) {
+        build.log.push(partial);
+        autoScrollLog(build);
+        draw();
+      }
+    };
+
+    await Promise.all([
+      readStream(proc.stdout as ReadableStream<Uint8Array>),
+      readStream(proc.stderr as ReadableStream<Uint8Array>),
+    ]);
+
+    const code = await proc.exited;
+    if (build.status === "cancelled") {
+      // already marked
+    } else {
+      build.status = code === 0 ? "success" : "error";
+    }
+
+    if (code === 0 && build.status !== "cancelled") {
+      const gens = await listGens();
+      const current = gens.find(g => g.current);
+      if (current) build.genId = current.id;
+      s.gens = gens;
+      if (s.cursor >= s.gens.length) s.cursor = Math.max(0, s.gens.length - 1);
+    }
+    draw();
   }
 
   function isLabeled(g: Gen): boolean {
@@ -951,7 +1048,7 @@ export async function genDash() {
           if (s.pane === "left") {
             if (key === "p") { stop(); resolve("pick"); }
             else if (key === "r") { stop(); resolve("regen"); }
-            else if (key === "c") { stop(); resolve("commit"); }
+            else if (key === "c") { startCommitBuild(); draw(); }
             else if (key === "G") { computeGcMarked(); draw(); }
           }
           return;
@@ -986,9 +1083,21 @@ export async function genDash() {
             draw();
             return;
           }
+          if (build?.status === "pending") {
+            if (key === "enter") {
+              confirmCommitBuild(build);
+              draw();
+            } else if (key === "esc") {
+              build.status = "cancelled";
+              build.commitPlan = undefined;
+              build.log.push("", "Commit cancelled by user");
+              draw();
+            }
+            return;
+          }
           if (build?.status !== "running") {
             if (key === "r") { stop(); resolve("regen"); return; }
-            if (key === "c") { stop(); resolve("commit"); return; }
+            if (key === "c") { startCommitBuild(); draw(); return; }
             if (key === "s" && build?.genId) {
               s.tab = "generations";
               const idx = s.gens.findIndex(g => g.id === build.genId);
@@ -1010,14 +1119,6 @@ export async function genDash() {
     console.log();
     if (action === "regen") {
       doRegen();
-      draw();
-    } else if (action === "commit") {
-      await doCommit();
-      console.log(pc.dim("\nPress any key to return..."));
-      await new Promise<void>(r => {
-        const c = startRaw(() => { c(); r(); });
-      });
-      await refresh();
       draw();
     } else if (action === "gc-confirm") {
       const toRemove = s.gens.filter(g => s.gcMarked.has(g.id));
