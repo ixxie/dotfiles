@@ -11,6 +11,7 @@ import completions from "./commands/completions.ts";
 import media from "./commands/media.ts";
 import clip from "./commands/clip.ts";
 import gens from "./commands/gens.ts";
+import discord from "./commands/discord.ts";
 
 program
   .name("org")
@@ -26,5 +27,6 @@ completions(program);
 media(program);
 clip(program);
 gens(program);
+discord(program);
 
 program.parse();
