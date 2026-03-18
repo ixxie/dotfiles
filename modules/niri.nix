@@ -69,6 +69,7 @@ in {
         package = niri;
         settings = {
           spawn-at-startup = [
+            {command = ["noctalia-qs" "-c" "noctalia-shell"];}
             {command = ["wl-paste" "--watch" "cliphist" "store"];}
             {command = ["wl-paste" "--type" "image" "--watch" "cliphist" "store"];}
           ];

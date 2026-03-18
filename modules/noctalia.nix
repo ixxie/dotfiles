@@ -13,8 +13,6 @@ in {
     inputs.noctalia.nixosModules.default
   ];
 
-  services.noctalia-shell.enable = true;
-
   # home
   home-manager.users.ixxie = {
     imports = [
