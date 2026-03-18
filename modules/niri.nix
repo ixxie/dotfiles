@@ -61,7 +61,7 @@ in {
       [filechooser]
       cmd=${pkgs.xdg-desktop-portal-termfilechooser}/share/xdg-desktop-portal-termfilechooser/yazi-wrapper.sh
       default_dir=$HOME
-      env=TERMCMD=ghostty -e
+      env=TERMCMD=ghostty --title=filepicker -e
     '';
 
     programs = {
@@ -128,6 +128,11 @@ in {
             border.enable = false;
           };
           window-rules = [
+            {
+              matches = [{title = "filepicker";}];
+              open-floating = true;
+              open-focused = true;
+            }
             {
               matches = [];
               geometry-corner-radius = {
