@@ -69,7 +69,6 @@ in {
         package = niri;
         settings = {
           spawn-at-startup = [
-            {command = ["${inputs.noctalia-qs.packages.${pkgs.system}.default}/bin/quickshell" "-c" "noctalia-shell"];}
             {command = ["wl-paste" "--watch" "cliphist" "store"];}
             {command = ["wl-paste" "--type" "image" "--watch" "cliphist" "store"];}
           ];

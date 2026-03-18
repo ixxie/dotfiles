@@ -21,8 +21,8 @@ in {
 
     programs.noctalia-shell = {
       enable = true;
-      package = null;
-      #systemd.enable = true;
+      package = inputs.noctalia.packages.${pkgs.system}.default;
+      systemd.enable = true;
       colors = lib.mkForce {
         mError = "#dddddd";
         mOnError = "#111111";
