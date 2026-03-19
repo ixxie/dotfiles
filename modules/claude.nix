@@ -23,6 +23,7 @@
     theme = "light";
     preferredNotifChannel = "terminal";
     disabledMcpjsonServers = ["claude_ai_Notion"];
+    voiceEnabled = true;
   };
 
   nixSkill = ''
