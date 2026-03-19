@@ -5,6 +5,59 @@
 }: let
   niri = pkgs.niri-unstable;
 
+  yaziWrapper = pkgs.writeShellScript "yazi-filechooser.sh" ''
+    set -e
+    [ "$6" -ge 4 ] && set -x
+
+    multiple="$1"
+    directory="$2"
+    save="$3"
+    path="$4"
+    out="$5"
+
+    termcmd="''${TERMCMD:-ghostty --title=filepicker -e}"
+
+    if [ "$save" = "1" ]; then
+      set -- --chooser-file="$out" --cwd-file="$out.cwd" "$(dirname "$path")"
+    elif [ "$directory" = "1" ]; then
+      set -- --chooser-file="$out" --cwd-file="$out.1" "$path"
+    elif [ "$multiple" = "1" ]; then
+      set -- --chooser-file="$out" "$path"
+    else
+      set -- --chooser-file="$out" "$path"
+    fi
+
+    command="$termcmd yazi"
+    for arg in "$@"; do
+      escaped=$(printf "%s" "$arg" | sed 's/"/\\"/g')
+      command="$command \"$escaped\""
+    done
+    sh -c "$command"
+
+    # save mode: if yazi returned a directory, append the original filename
+    if [ "$save" = "1" ] && [ -f "$out" ]; then
+      selected=$(cat "$out")
+      if [ -d "$selected" ]; then
+        echo "''${selected%/}/$(basename "$path")" > "$out"
+      fi
+    elif [ "$save" = "1" ] && [ -f "$out.cwd" ]; then
+      # user didn't select a file, use cwd + original filename
+      cwd=$(cat "$out.cwd")
+      echo "''${cwd%/}/$(basename "$path")" > "$out"
+      rm -f "$out.cwd"
+    fi
+
+    # directory upload mode
+    if [ "$directory" = "1" ]; then
+      if [ ! -s "$out" ] && [ -s "$out.1" ]; then
+        cat "$out.1" > "$out"
+      fi
+      rm -f "$out.1"
+    fi
+
+    rm -f "$out.cwd"
+  '';
+
   # Utility to convert command string to noctalia-shell IPC format
   noctalia = cmd:
     [
