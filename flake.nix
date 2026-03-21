@@ -61,12 +61,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     gifplx.url = "path:/home/ixxie/repos/apps/gifplx";
-    # orgos = {
-    #   url = "path:/home/ixxie/repos/org/orgos";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    #   inputs.home-manager.follows = "home-manager";
-    #   inputs.microvm.follows = "microvm";
-    # };
+    cella = {
+      url = "path:/home/ixxie/repos/org/cell";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.microvm.follows = "microvm";
+    };
   };
   outputs = inputs @ {
     nixpkgs,
@@ -113,6 +112,7 @@
         ./modules/cli.nix
         ./modules/framework.nix
         ./modules/gifplx.nix
+        ./modules/cella.nix
       ];
     };
 
