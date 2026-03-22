@@ -48,7 +48,7 @@ in {
         };
         bar = {
           density = "compact";
-          position = "right";
+          position = "bottom";
           showCapsule = false;
           widgets = {
             left = [

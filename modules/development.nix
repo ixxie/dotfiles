@@ -22,7 +22,6 @@
     bun
     # data
     duckdb
-    sqlitebrowser
     # system
     nixd
     alejandra
@@ -93,5 +92,4 @@
 
   # docker daemon
   virtualisation.docker.enable = true;
-
 }

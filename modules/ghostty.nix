@@ -1,4 +1,8 @@
-{pkgs, config, ...}: let
+{
+  pkgs,
+  config,
+  ...
+}: let
   s = config.scheme;
   ghosttyCss = pkgs.writeText "ghostty-style.css" ''
     headerbar {

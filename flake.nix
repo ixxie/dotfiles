@@ -60,23 +60,21 @@
       url = "github:sadjow/claude-code-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    cyberdeck = {
+      url = "path:/home/ixxie/repos/org/cyberdeck";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     gifplx.url = "path:/home/ixxie/repos/apps/gifplx";
     cella = {
-      url = "path:/home/ixxie/repos/org/cell";
+      url = "path:/home/ixxie/repos/org/cella";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.microvm.follows = "microvm";
     };
   };
-  outputs = inputs @ {
-    nixpkgs,
-    ...
-  }: {
+  outputs = inputs @ {nixpkgs, ...}: {
     nixosConfigurations.contingent = nixpkgs.lib.nixosSystem {
       specialArgs = {inherit inputs;};
       modules = [
-        # frameworks
-        #inputs.orgos.nixosModules.default
-
         # host
         ./hardware.nix
         ./system.nix
@@ -85,7 +83,8 @@
 
         # desktop
         ./modules/niri.nix
-        ./modules/noctalia.nix
+        #./modules/noctalia.nix
+        ./modules/cyberdeck.nix
         ./modules/greeter.nix
 
         # tools
@@ -105,7 +104,6 @@
         ./modules/development.nix
         ./modules/claude.nix
         ./modules/opencode.nix
-        #./modules/orgos.nix
 
         # system
         ./modules/nix.nix

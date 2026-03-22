@@ -21,6 +21,34 @@
       };
       xdg = {
         enable = true;
+        desktopEntries = {
+          zen-beta = {
+            name = "Zen";
+            exec = "zen-beta --name zen-beta %U";
+            icon = "zen-browser";
+            genericName = "Web Browser";
+            startupNotify = true;
+            categories = [ "Network" "WebBrowser" ];
+            mimeType = [
+              "text/html" "text/xml" "application/xhtml+xml"
+              "application/vnd.mozilla.xul+xml"
+              "x-scheme-handler/http" "x-scheme-handler/https"
+            ];
+            settings.StartupWMClass = "zen-beta";
+          };
+          gimp = {
+            name = "GIMP";
+            exec = "gimp-3.0 %U";
+            icon = "gimp";
+            genericName = "Image Editor";
+            categories = [ "Graphics" "2DGraphics" "RasterGraphics" ];
+            mimeType = [
+              "image/bmp" "image/gif" "image/jpeg" "image/png"
+              "image/svg+xml" "image/tiff" "image/webp"
+            ];
+            settings.StartupWMClass = "gimp";
+          };
+        };
         mimeApps = {
           enable = true;
           defaultApplications = {

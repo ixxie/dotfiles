@@ -7,7 +7,6 @@
 
   yaziWrapper = pkgs.writeShellScript "yazi-filechooser.sh" ''
     set -e
-    [ "$6" -ge 4 ] && set -x
 
     multiple="$1"
     directory="$2"
@@ -18,8 +17,10 @@
     termcmd="''${TERMCMD:-ghostty --title=filepicker -e}"
 
     if [ "$save" = "1" ]; then
+      export YAZI_SAVE_MODE=1
       set -- --chooser-file="$out" --cwd-file="$out.cwd" "$(dirname "$path")"
     elif [ "$directory" = "1" ]; then
+      export YAZI_SAVE_MODE=1
       set -- --chooser-file="$out" --cwd-file="$out.1" "$path"
     elif [ "$multiple" = "1" ]; then
       set -- --chooser-file="$out" "$path"
@@ -32,6 +33,7 @@
       escaped=$(printf "%s" "$arg" | sed 's/"/\\"/g')
       command="$command \"$escaped\""
     done
+
     sh -c "$command"
 
     # save mode: if yazi returned a directory, append the original filename
@@ -41,7 +43,6 @@
         echo "''${selected%/}/$(basename "$path")" > "$out"
       fi
     elif [ "$save" = "1" ] && [ -f "$out.cwd" ]; then
-      # user didn't select a file, use cwd + original filename
       cwd=$(cat "$out.cwd")
       echo "''${cwd%/}/$(basename "$path")" > "$out"
       rm -f "$out.cwd"
@@ -112,7 +113,8 @@ in {
     # termfilechooser: use yazi via ghostty as file picker
     xdg.configFile."xdg-desktop-portal-termfilechooser/config".text = ''
       [filechooser]
-      cmd=${pkgs.xdg-desktop-portal-termfilechooser}/share/xdg-desktop-portal-termfilechooser/yazi-wrapper.sh
+      cmd=${yaziWrapper}
+      create_help_file=0
       default_dir=$HOME
       env=TERMCMD=ghostty --title=filepicker -e
     '';
@@ -185,6 +187,7 @@ in {
               matches = [{title = "filepicker";}];
               open-floating = true;
               open-focused = true;
+              opacity = 1.0;
             }
             {
               matches = [];
@@ -200,8 +203,8 @@ in {
           binds = with config.lib.niri.actions; {
             # apps
             "Mod+Return".action.spawn = "ghostty";
-            "Mod+Space".action.spawn = noctalia "launcher toggle";
-            "Mod+B".action.spawn = ["pkill" "-USR1" "retrobar"];
+            "Mod+Space".action.spawn = ["cyberdeck" "toggle-text"];
+            #"Mod+B".action.spawn = noctalia "launcher toggle";
             # session
             "Mod+Alt+P".action.spawn = "shutdown now";
             "Mod+Alt+R".action.spawn = "shutdown -r now";
@@ -281,11 +284,11 @@ in {
             "Print".action.screenshot = {};
             "Shift+Print".action.screenshot-screen = {};
             # fn
-            "XF86AudioLowerVolume".action.spawn = noctalia "volume decrease";
-            "XF86AudioRaiseVolume".action.spawn = noctalia "volume increase";
-            "XF86AudioMute".action.spawn = noctalia "volume muteOutput";
-            "XF86MonBrightnessDown".action.spawn = noctalia "brightness decrease";
-            "XF86MonBrightnessUp".action.spawn = noctalia "brightness increase";
+            "XF86AudioLowerVolume".action.spawn = ["cyberdeck" "run" "audio" "Down"];
+            "XF86AudioRaiseVolume".action.spawn = ["cyberdeck" "run" "audio" "Up"];
+            "XF86AudioMute".action.spawn = ["cyberdeck" "run" "audio" "m"];
+            "XF86MonBrightnessDown".action.spawn = ["cyberdeck" "run" "brightness" "Down"];
+            "XF86MonBrightnessUp".action.spawn = ["cyberdeck" "run" "brightness" "Up"];
             "XF86AudioPlay".action.spawn = [
               "playerctl"
               "play-pause"

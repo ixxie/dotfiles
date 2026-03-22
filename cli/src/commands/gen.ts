@@ -12,7 +12,6 @@ import { join } from "node:path";
 import { DOTFILES, FLAKE, sym, log, success, error, run } from "../utils.ts";
 import { truncate } from "../lib/interactive.ts";
 
-const GC_KEEP_DAYS = "7d";
 const PROFILE = "/nix/var/nix/profiles/system";
 const DATA_DIR = `${process.env.HOME}/.local/share/yo`;
 const DIFF_DIR = `${DATA_DIR}/gen-diffs`;
@@ -149,24 +148,54 @@ async function executeCommitPlan(plan: CommitPlan[]): Promise<string> {
   return await stdout(["git", "rev-parse", "--short", "HEAD"], { cwd: DOTFILES });
 }
 
-async function switchConfig(label: string) {
+async function localInputNames(): Promise<string[]> {
+  const flake = await readFile(join(DOTFILES, "flake.nix"), "utf-8");
+  const names: string[] = [];
+  const re = /(\w[\w-]*)(?:\s*=\s*\{[^}]*url\s*=\s*"path:|\.url\s*=\s*"path:)/g;
+  let m;
+  while ((m = re.exec(flake))) names.push(m[1]);
+  return names;
+}
+
+async function updateLocalInputs(): Promise<boolean> {
+  const names = await localInputNames();
+  if (!names.length) return true;
+  log(sym.gear, pc.dim(`Updating local inputs: ${names.join(", ")}`));
+  return run(["sudo", "nix", "flake", "update", ...names], { cwd: DOTFILES });
+}
+
+async function flakeUpdate(): Promise<boolean> {
+  log(sym.gear, pc.yellow("Updating all flake inputs..."));
+  return run(["sudo", "nix", "flake", "update"], { cwd: DOTFILES });
+}
+
+async function switchConfig(label: string): Promise<boolean> {
   log(sym.rocket, pc.magenta("Building and switching configuration..."));
   let envArgs: string[] = [];
   try {
     const envContent = await readFile(join(DOTFILES, ".env"), "utf-8");
     envArgs = envContent.split("\n").filter(l => l.trim() && !l.startsWith("#"));
   } catch {}
-  envArgs.push(`NIXOS_LABEL=${label}`);
+  if (label) envArgs.push(`NIXOS_LABEL=${label}`);
 
   if (await run(["sudo", "env", ...envArgs, "nixos-rebuild", "switch", "--impure", "--flake", FLAKE])) {
-    success(`Generation: ${label}`);
+    success(label ? `Generation: ${label}` : "Rebuild complete");
+    return true;
   } else {
     error("Switch failed");
-    process.exit(1);
+    return false;
   }
 }
 
-async function commitAndSwitch() {
+async function commitAndSwitch(opts?: { update?: boolean }) {
+  if (opts?.update && !(await flakeUpdate())) {
+    error("Flake update failed");
+    process.exit(1);
+  }
+  if (!(await updateLocalInputs())) {
+    error("Local input update failed");
+    process.exit(1);
+  }
   await run(["git", "add", "-A"], { cwd: DOTFILES });
   const plan = await generateCommitPlan();
   if (!plan || !plan.length) {
@@ -201,11 +230,40 @@ async function commitAndSwitch() {
   const hash = await executeCommitPlan(plan);
   const lastMsg = plan[plan.length - 1].message.split("\n")[0];
   const label = sanitizeLabel(`${hash}-${lastMsg}`);
-  await switchConfig(label);
+  const ok = await switchConfig(label);
+
+  // save to build history for TUI visibility
+  const build: SavedBuild = {
+    id: Date.now(),
+    status: ok ? "success" : "error",
+    log: [`commit: ${lastMsg}`, ok ? "Build succeeded" : "Build failed"],
+    startedAt: new Date().toISOString(),
+    label: `commit: ${lastMsg}`,
+  };
+  await saveBuild({ ...build, startedAt: new Date(build.startedAt) } as any);
+  if (!ok) process.exit(1);
 }
 
-async function genSwitch() {
-  await commitAndSwitch();
+async function switchOnly(opts?: { update?: boolean }) {
+  if (opts?.update && !(await flakeUpdate())) {
+    error("Flake update failed");
+    process.exit(1);
+  }
+  if (!(await updateLocalInputs())) {
+    error("Local input update failed");
+    process.exit(1);
+  }
+  await run(["git", "add", "-A"], { cwd: DOTFILES, silent: true });
+  const ok = await switchConfig("");
+  const build: SavedBuild = {
+    id: Date.now(),
+    status: ok ? "success" : "error",
+    log: ["switch", ok ? "Build succeeded" : "Build failed"],
+    startedAt: new Date().toISOString(),
+    label: "switch",
+  };
+  await saveBuild({ ...build, startedAt: new Date(build.startedAt) } as any);
+  if (!ok) process.exit(1);
 }
 
 // diff helpers
@@ -423,6 +481,45 @@ function diffSummary(raw: string): string[] {
   return summary;
 }
 
+// shared helpers
+
+function isLabeled(g: Gen): boolean {
+  return !!g.label && !/^\d+\.\d+\./.test(g.label) && g.label !== "unlabeled";
+}
+
+function isRecent(g: Gen): boolean {
+  const d = new Date(g.date);
+  return !isNaN(d.getTime()) && Date.now() - d.getTime() < 14 * 24 * 60 * 60 * 1000;
+}
+
+function computeGcSet(gens: Gen[]): Set<string> {
+  const labeled = gens.filter(g => isLabeled(g));
+  const unlabeled = gens.filter(g => !isLabeled(g));
+  const labeledToRemove = labeled.slice(10);
+  const toRemove = [
+    ...unlabeled.filter(g => !g.current),
+    ...labeledToRemove.filter(g => !g.current && !isRecent(g)),
+  ];
+  return new Set(toRemove.map(g => g.id));
+}
+
+async function performGc(gens: Gen[]) {
+  const toRemove = gens.filter(g => computeGcSet(gens).has(g.id));
+  if (!toRemove.length) {
+    log(sym.check, pc.dim("Nothing to clean up"));
+    return;
+  }
+  log(sym.broom, pc.yellow(`Removing ${toRemove.length} generation${toRemove.length !== 1 ? "s" : ""}...`));
+  for (const g of toRemove) {
+    await run(["sudo", "rm", "-f", `${PROFILE}-${g.id}-link`], { silent: true });
+  }
+  log(sym.gear, pc.yellow("Running garbage collection..."));
+  await run(["sudo", "nix-collect-garbage"]);
+  log(sym.gear, pc.yellow("Optimizing nix store..."));
+  await run(["nix-store", "--optimise"]);
+  success("Cleanup complete!");
+}
+
 // dashboard
 
 type GenTab = "generations" | "builds";
@@ -460,7 +557,7 @@ interface DashState {
   buildNextId: number;
 }
 
-export async function genDash() {
+async function genDash() {
   const s: DashState = {
     gens: [], cursor: 0, diff: [], rawDiff: "", status: "Loading...",
     leftScroll: mkScroll(), rightScroll: mkScroll(), pane: "left" as const,
@@ -634,7 +731,8 @@ export async function genDash() {
       }
       return [
         ["up", ""], ["down", ""], ["right", "diff"],
-        ["p", "pick"], ["r", "regen"], ["c", "commit"], ["G", "gc"],
+        ["p", "pick"], ["s", "switch"], ["S", "switch+upd"],
+        ["c", "commit"], ["C", "commit+upd"], ["G", "gc"],
       ];
     }
     // builds tab
@@ -648,8 +746,8 @@ export async function genDash() {
     } else if (build?.status === "running") {
       keys.push(["x", "cancel"]);
     } else {
-      keys.push(["r", "regen"], ["c", "commit"]);
-      if (build?.genId) keys.push(["s", "show gen"]);
+      keys.push(["s", "switch"], ["S", "switch+upd"], ["c", "commit"], ["C", "commit+upd"]);
+      if (build?.genId) keys.push(["g", "show gen"]);
     }
     return keys;
   }
@@ -746,7 +844,7 @@ export async function genDash() {
       }
 
       if (code === 0 && build.status !== "cancelled") {
-        // save diff for regen builds
+        // save diff for switch builds
         const diff = await stdout(["git", "diff"], { cwd: DOTFILES });
         const staged = await stdout(["git", "diff", "--cached"], { cwd: DOTFILES });
         const fullDiff = [staged, diff].filter(Boolean).join("\n");
@@ -775,9 +873,137 @@ export async function genDash() {
     }
   }
 
-  async function doRegen() {
-    await run(["git", "add", "-A"], { cwd: DOTFILES, silent: true });
-    spawnBuild("", "regen");
+  function doSwitch(opts?: { update?: boolean }) {
+    const label = opts?.update ? "switch (updated)" : "switch";
+    const build: Build = {
+      id: s.buildNextId++,
+      status: "running",
+      log: [],
+      startedAt: new Date(),
+      label,
+    };
+    s.builds.unshift(build);
+    s.buildCursor = 0;
+    s.buildScroll = mkScroll();
+    s.tab = "builds";
+    draw();
+
+    (async () => {
+      const blogLine = (msg: string) => {
+        build.log.push(msg);
+        autoScrollLog(build);
+        draw();
+      };
+
+      if (opts?.update) {
+        blogLine("Updating all flake inputs...");
+        const updProc = Bun.spawn(
+          ["sudo", "nix", "flake", "update"],
+          { stdout: "pipe", stderr: "pipe", cwd: DOTFILES },
+        );
+        const readPiped = async (stream: ReadableStream<Uint8Array>) => {
+          const reader = stream.getReader();
+          const decoder = new TextDecoder();
+          let partial = "";
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            partial += decoder.decode(value, { stream: true });
+            const lines = partial.split("\n");
+            partial = lines.pop()!;
+            for (const line of lines) blogLine(line);
+          }
+          if (partial) blogLine(partial);
+        };
+        await Promise.all([
+          readPiped(updProc.stdout as ReadableStream<Uint8Array>),
+          readPiped(updProc.stderr as ReadableStream<Uint8Array>),
+        ]);
+        if ((await updProc.exited) !== 0) {
+          blogLine("");
+          blogLine(pc.red("Flake update failed."));
+          build.status = "error";
+          build.label = "switch: update failed";
+          await saveBuild(build);
+          draw();
+          return;
+        }
+        blogLine("All flake inputs updated.");
+        blogLine("");
+      }
+
+      // always update local path: inputs
+      const localNames = await localInputNames();
+      if (localNames.length) {
+        blogLine(`Updating local inputs: ${localNames.join(", ")}...`);
+        const localProc = Bun.spawn(
+          ["sudo", "nix", "flake", "update", ...localNames],
+          { stdout: "pipe", stderr: "pipe", cwd: DOTFILES },
+        );
+        if ((await localProc.exited) !== 0) {
+          blogLine(pc.red("Local input update failed."));
+          build.status = "error";
+          build.label = "switch: local update failed";
+          await saveBuild(build);
+          draw();
+          return;
+        }
+        blogLine("Local inputs updated.");
+        blogLine("");
+      }
+
+      blogLine("Staging changes...");
+      await run(["git", "add", "-A"], { cwd: DOTFILES, silent: true });
+      blogLine("Building configuration...");
+
+      let envArgs: string[] = [];
+      try {
+        const envContent = await readFile(join(DOTFILES, ".env"), "utf-8");
+        envArgs = envContent.split("\n").filter(l => l.trim() && !l.startsWith("#"));
+      } catch {}
+
+      const proc = Bun.spawn(
+        ["sudo", "env", ...envArgs, "nixos-rebuild", "switch", "--impure", "--flake", FLAKE],
+        { stdout: "pipe", stderr: "pipe" },
+      );
+      build.proc = proc;
+
+      const readStream = async (stream: ReadableStream<Uint8Array>) => {
+        const reader = stream.getReader();
+        const decoder = new TextDecoder();
+        let partial = "";
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          partial += decoder.decode(value, { stream: true });
+          const lines = partial.split("\n");
+          partial = lines.pop()!;
+          for (const line of lines) blogLine(line);
+        }
+        if (partial) blogLine(partial);
+      };
+
+      await Promise.all([
+        readStream(proc.stdout as ReadableStream<Uint8Array>),
+        readStream(proc.stderr as ReadableStream<Uint8Array>),
+      ]);
+
+      const code = await proc.exited;
+      if (build.status !== "cancelled") {
+        build.status = code === 0 ? "success" : "error";
+      }
+
+      if (code === 0 && build.status !== "cancelled") {
+        const gens = await listGens();
+        const current = gens.find(g => g.current);
+        if (current) build.genId = current.id;
+        s.gens = gens;
+        if (s.cursor >= s.gens.length) s.cursor = Math.max(0, s.gens.length - 1);
+      }
+
+      await saveBuild(build);
+      draw();
+    })();
   }
 
   async function fileStats(files: string[]): Promise<Map<string, { add: number; del: number }>> {
@@ -793,7 +1019,7 @@ export async function genDash() {
     return stats;
   }
 
-  function startCommitBuild() {
+  function startCommitBuild(withUpdate?: boolean) {
     const build: Build = {
       id: s.buildNextId++,
       status: "running",
@@ -813,6 +1039,35 @@ export async function genDash() {
         autoScrollLog(build);
         draw();
       };
+
+      if (withUpdate) {
+        blogLine("Updating all flake inputs...");
+        if (!(await run(["sudo", "nix", "flake", "update"], { cwd: DOTFILES, silent: true }))) {
+          blogLine("");
+          blogLine(pc.red("Flake update failed."));
+          build.status = "error";
+          build.label = "commit: update failed";
+          draw();
+          return;
+        }
+        blogLine("All flake inputs updated.");
+        blogLine("");
+      }
+
+      // always update local path: inputs
+      const localNames = await localInputNames();
+      if (localNames.length) {
+        blogLine(`Updating local inputs: ${localNames.join(", ")}...`);
+        if (!(await run(["sudo", "nix", "flake", "update", ...localNames], { cwd: DOTFILES, silent: true }))) {
+          blogLine(pc.red("Local input update failed."));
+          build.status = "error";
+          build.label = "commit: local update failed";
+          draw();
+          return;
+        }
+        blogLine("Local inputs updated.");
+        blogLine("");
+      }
 
       blogLine("Staging changes...");
       await run(["git", "add", "-A"], { cwd: DOTFILES, silent: true });
@@ -929,24 +1184,8 @@ export async function genDash() {
     draw();
   }
 
-  function isLabeled(g: Gen): boolean {
-    return !!g.label && !/^\d+\.\d+\./.test(g.label) && g.label !== "unlabeled";
-  }
-
-  function isRecent(g: Gen): boolean {
-    const d = new Date(g.date);
-    return !isNaN(d.getTime()) && Date.now() - d.getTime() < 14 * 24 * 60 * 60 * 1000;
-  }
-
   function computeGcMarked() {
-    const labeled = s.gens.filter(g => isLabeled(g));
-    const unlabeled = s.gens.filter(g => !isLabeled(g));
-    const labeledToRemove = labeled.slice(10);
-    const toRemove = [
-      ...unlabeled.filter(g => !g.current),
-      ...labeledToRemove.filter(g => !g.current && !isRecent(g)),
-    ];
-    s.gcMarked = new Set(toRemove.map(g => g.id));
+    s.gcMarked = computeGcSet(s.gens);
     if (!s.gcMarked.size) {
       s.status = "Nothing to clean up";
     } else {
@@ -956,22 +1195,29 @@ export async function genDash() {
 
   async function doPickGen() {
     if (!s.gens.length) return;
-    const gen = s.gens[s.cursor];
-    if (gen.current) {
+    const selected = await search({
+      message: "Switch to generation",
+      source: (term) => {
+        const q = term.toLowerCase();
+        return s.gens
+          .filter((g) => !q || g.id.includes(q) || g.date.includes(q) || g.label.includes(q))
+          .reverse()
+          .map((g) => ({
+            name: `${g.id}  ${g.date}  ${g.label}${g.current ? pc.green(" *") : ""}`,
+            value: g.id,
+          }));
+      },
+    });
+    if (!selected) return;
+    const gen = s.gens.find(g => g.id === selected);
+    if (gen?.current) {
       log(sym.check, pc.dim("Already on this generation"));
       return;
     }
-    console.log(`\n  Switch to generation ${pc.bold(gen.id)}?`);
-    console.log(`  ${pc.dim(gen.date)}  ${gen.label || pc.dim("unlabeled")}\n`);
-    const confirm = await input({ message: "Type 'yes' to confirm" });
-    if (confirm !== "yes") {
-      log(sym.check, pc.dim("Cancelled"));
-      return;
-    }
-    const path = `${PROFILE}-${gen.id}-link`;
-    log(sym.refresh, pc.yellow(`Switching to generation ${gen.id}...`));
+    const path = `${PROFILE}-${selected}-link`;
+    log(sym.refresh, pc.yellow(`Switching to generation ${selected}...`));
     if (await run(["sudo", path + "/bin/switch-to-configuration", "switch"])) {
-      success(`Switched to generation ${gen.id}`);
+      success(`Switched to generation ${selected}`);
     } else {
       error("Switch failed");
     }
@@ -1047,8 +1293,10 @@ export async function genDash() {
 
           if (s.pane === "left") {
             if (key === "p") { stop(); resolve("pick"); }
-            else if (key === "r") { stop(); resolve("regen"); }
+            else if (key === "s") { stop(); resolve("switch"); }
+            else if (key === "S") { stop(); resolve("switch-update"); }
             else if (key === "c") { startCommitBuild(); draw(); }
+            else if (key === "C") { startCommitBuild(true); draw(); }
             else if (key === "G") { computeGcMarked(); draw(); }
           }
           return;
@@ -1096,9 +1344,11 @@ export async function genDash() {
             return;
           }
           if (build?.status !== "running") {
-            if (key === "r") { stop(); resolve("regen"); return; }
+            if (key === "s") { stop(); resolve("switch"); return; }
+            if (key === "S") { stop(); resolve("switch-update"); return; }
             if (key === "c") { startCommitBuild(); draw(); return; }
-            if (key === "s" && build?.genId) {
+            if (key === "C") { startCommitBuild(true); draw(); return; }
+            if (key === "g" && build?.genId) {
               s.tab = "generations";
               const idx = s.gens.findIndex(g => g.id === build.genId);
               if (idx >= 0) {
@@ -1116,18 +1366,21 @@ export async function genDash() {
 
     if (action === "quit") break;
 
-    console.log();
-    if (action === "regen") {
-      doRegen();
-      draw();
+    if (action === "switch") {
+      doSwitch();
+    } else if (action === "switch-update") {
+      doSwitch({ update: true });
     } else if (action === "gc-confirm") {
+      console.log();
       const toRemove = s.gens.filter(g => s.gcMarked.has(g.id));
       log(sym.broom, pc.yellow(`Removing ${toRemove.length} generation${toRemove.length > 1 ? "s" : ""}...`));
       for (const g of toRemove) {
         await run(["sudo", "rm", "-f", `${PROFILE}-${g.id}-link`], { silent: true });
       }
       log(sym.gear, pc.yellow("Running garbage collection..."));
-      await run(["sudo", "nix-collect-garbage", "--delete-older-than", "14d"]);
+      await run(["sudo", "nix-collect-garbage"]);
+      log(sym.gear, pc.yellow("Optimizing nix store..."));
+      await run(["nix-store", "--optimise"]);
       success("Cleanup complete!");
       s.gcMarked = new Set();
       console.log(pc.dim("\nPress any key to return..."));
@@ -1154,9 +1407,20 @@ export default function register(program: Command) {
     .description("NixOS generation management");
 
   gen
-    .command("switch")
+    .command("commit")
     .description("Commit, label, and rebuild NixOS configuration")
-    .action(genSwitch);
+    .option("-u, --update", "Update all flake inputs (local inputs are always updated)")
+    .action(async (opts) => {
+      await commitAndSwitch({ update: opts.update });
+    });
+
+  gen
+    .command("switch")
+    .description("Stage all changes and rebuild without committing")
+    .option("-u, --update", "Update all flake inputs (local inputs are always updated)")
+    .action(async (opts) => {
+      await switchOnly({ update: opts.update });
+    });
 
   gen
     .command("list")
@@ -1170,21 +1434,9 @@ export default function register(program: Command) {
       }
       for (const g of gens.slice(0, parseInt(opts.lines))) {
         const tag = g.current ? pc.green(" *") : "";
-        const isDefault = !g.label || /^\d+\.\d+\./.test(g.label) || g.label === "unlabeled";
-        const label = isDefault ? "" : pc.dim(`  ${g.label}`);
+        const label = isLabeled(g) ? pc.dim(`  ${g.label}`) : "";
         console.log(`${pc.bold(g.id)}  ${g.date}${label}${tag}`);
       }
-    });
-
-  gen
-    .command("update")
-    .description("Update flake inputs and switch")
-    .action(async () => {
-      if (!(await run(["sudo", "nix", "flake", "update"], { cwd: DOTFILES }))) {
-        error("Flake update failed");
-        process.exit(1);
-      }
-      await genSwitch();
     });
 
   gen
@@ -1192,7 +1444,16 @@ export default function register(program: Command) {
     .description("Rollback to previous generation")
     .action(async () => {
       log(sym.refresh, pc.yellow("Rolling back..."));
-      if (await run(["sudo", "nixos-rebuild", "switch", "--rollback"])) {
+      const ok = await run(["sudo", "nixos-rebuild", "switch", "--rollback"]);
+      const build: SavedBuild = {
+        id: Date.now(),
+        status: ok ? "success" : "error",
+        log: ["rollback", ok ? "Rolled back" : "Rollback failed"],
+        startedAt: new Date().toISOString(),
+        label: "rollback",
+      };
+      await saveBuild({ ...build, startedAt: new Date(build.startedAt) } as any);
+      if (ok) {
         success("Rolled back!");
       } else {
         error("Rollback failed");
@@ -1237,19 +1498,12 @@ export default function register(program: Command) {
     .command("gc")
     .description("Garbage collect old generations")
     .action(async () => {
-      log(sym.broom, pc.yellow("Cleaning up old generations..."));
-      if (!(await run(["sudo", "nix-collect-garbage", "--delete-older-than", GC_KEEP_DAYS]))) {
-        error("Garbage collection failed");
-        process.exit(1);
-      }
-      success("Old generations removed!");
-
-      log(sym.gear, pc.yellow("Optimizing nix store..."));
-      if (await run(["nix-store", "--optimise"])) {
-        success("Cleanup complete!");
-      } else {
-        error("Store optimization failed");
-        process.exit(1);
-      }
+      const gens = await listGens();
+      await performGc(gens);
     });
+
+  gen
+    .command("tui")
+    .description("Interactive NixOS generation & build dashboard")
+    .action(genDash);
 }
