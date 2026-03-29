@@ -76,22 +76,29 @@
       specialArgs = {inherit inputs;};
       modules = [
         # host
+        ./device.nix
         ./hardware.nix
+        ./nix.nix
         ./system.nix
         ./theme.nix
         ./user.nix
 
-        # desktop
-        ./modules/niri.nix
-        #./modules/noctalia.nix
-        ./modules/cyberdeck.nix
-        ./modules/greeter.nix
+        # lib
+        ./lib/secret.nix
 
-        # tools
+        # shell
+        ./modules/cli.nix
         ./modules/fish.nix
         ./modules/helix.nix
         ./modules/ghostty.nix
         ./modules/yazi.nix
+        ./modules/cella.nix
+
+        # desktop
+        ./modules/niri.nix
+        ./modules/cyberdeck.nix
+        ./modules/greeter.nix
+        ./modules/gifplx.nix
 
         # apps
         ./modules/browsers.nix
@@ -104,13 +111,6 @@
         ./modules/development.nix
         ./modules/claude.nix
         ./modules/opencode.nix
-
-        # system
-        ./modules/nix.nix
-        ./modules/cli.nix
-        ./modules/framework.nix
-        ./modules/gifplx.nix
-        ./modules/cella.nix
       ];
     };
 
