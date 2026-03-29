@@ -103,8 +103,8 @@
         "rust-overlay": "rust-overlay"
       },
       "locked": {
-        "lastModified": 1774209279,
-        "narHash": "sha256-+DLRHfHmMD5F85UqvQOYcksDLCFJEqmQZIB1Bs8Grsw=",
+        "lastModified": 1774782640,
+        "narHash": "sha256-dKmCryWq5Mmz0Oa2sApG1XrHdj0MFuSVmb7D/Xd1s2Q=",
         "path": "/home/ixxie/repos/org/cella",
         "type": "path"
       },
@@ -213,8 +213,8 @@
         "phosphor-icons": "phosphor-icons"
       },
       "locked": {
-        "lastModified": 1774212857,
-        "narHash": "sha256-bAPLOL8knOs3/1lb3ksvBHQ9PqzdcFYI1vSO7v7Tvh8=",
+        "lastModified": 1774781799,
+        "narHash": "sha256-UJpaneBE9knrLSsixsPy72E78UDUi5BYeBby2fuSxYY=",
         "path": "/home/ixxie/repos/org/cyberdeck",
         "type": "path"
       },

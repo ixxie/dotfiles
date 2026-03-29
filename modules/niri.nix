@@ -144,7 +144,7 @@ in {
             };
             DP-2 = {
               position = {
-                x = -2560;
+                x = 1440;
                 y = 0;
               };
             };
@@ -203,7 +203,7 @@ in {
           binds = with config.lib.niri.actions; {
             # apps
             "Mod+Return".action.spawn = "ghostty";
-            "Mod+Space".action.spawn = ["cyberdeck" "toggle-text"];
+            "Mod+Space".action.spawn = ["cyberdeck" "launcher"];
             #"Mod+B".action.spawn = noctalia "launcher toggle";
             # session
             "Mod+Alt+P".action.spawn = "shutdown now";
@@ -280,27 +280,16 @@ in {
             "Mod+BracketRight".action = consume-or-expel-window-right;
             "Mod+Comma".action = consume-window-into-column;
             "Mod+Period".action = expel-window-from-column;
-            # screenshots
-            "Print".action.screenshot = {};
-            "Shift+Print".action.screenshot-screen = {};
+            # screenshots (handled by cyberdeck screenshot module)
             # fn
-            "XF86AudioLowerVolume".action.spawn = ["cyberdeck" "run" "audio" "Down"];
-            "XF86AudioRaiseVolume".action.spawn = ["cyberdeck" "run" "audio" "Up"];
-            "XF86AudioMute".action.spawn = ["cyberdeck" "run" "audio" "m"];
-            "XF86MonBrightnessDown".action.spawn = ["cyberdeck" "run" "brightness" "Down"];
-            "XF86MonBrightnessUp".action.spawn = ["cyberdeck" "run" "brightness" "Up"];
-            "XF86AudioPlay".action.spawn = [
-              "playerctl"
-              "play-pause"
-            ];
-            "XF86AudioNext".action.spawn = [
-              "playerctl"
-              "next"
-            ];
-            "XF86AudioPrev".action.spawn = [
-              "playerctl"
-              "previous"
-            ];
+            "XF86AudioLowerVolume".action.spawn = ["cyberdeck" "outputs" "down"];
+            "XF86AudioRaiseVolume".action.spawn = ["cyberdeck" "outputs" "up"];
+            "XF86AudioMute".action.spawn = ["cyberdeck" "outputs" "mute"];
+            "XF86MonBrightnessDown".action.spawn = ["cyberdeck" "brightness" "down"];
+            "XF86MonBrightnessUp".action.spawn = ["cyberdeck" "brightness" "up"];
+            "XF86AudioPlay".action.spawn = ["cyberdeck" "media" "play"];
+            "XF86AudioNext".action.spawn = ["cyberdeck" "media" "next"];
+            "XF86AudioPrev".action.spawn = ["cyberdeck" "media" "prev"];
             # docs
             "Mod+H".action.spawn = [
               "firefox"

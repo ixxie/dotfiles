@@ -90,6 +90,8 @@
     };
   };
 
+  secretEnv."hetzner-api-key" = "HCLOUD_TOKEN";
+
   # docker daemon
   virtualisation.docker.enable = true;
 }
