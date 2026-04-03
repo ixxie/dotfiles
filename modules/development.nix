@@ -13,9 +13,9 @@
     # web
     nodejs_22
     vscode-langservers-extracted # html/css/json
-    nodePackages.typescript-language-server
-    nodePackages.svelte-language-server
-    nodePackages.prettier
+    typescript-language-server
+    svelte-language-server
+    prettier
     eslint_d
     postman
     marksman
@@ -25,7 +25,7 @@
     # system
     nixd
     alejandra
-    nodePackages.bash-language-server
+    bash-language-server
     # etc
     showmethekey
     android-tools
