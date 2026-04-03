@@ -3,7 +3,6 @@
     signal-desktop
     element-desktop
     discord
-    iamb
     cinny
   ];
 
