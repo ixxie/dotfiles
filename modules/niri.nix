@@ -4,69 +4,6 @@
   ...
 }: let
   niri = pkgs.niri-unstable;
-
-  yaziWrapper = pkgs.writeShellScript "yazi-filechooser.sh" ''
-    set -e
-
-    multiple="$1"
-    directory="$2"
-    save="$3"
-    path="$4"
-    out="$5"
-
-    termcmd="''${TERMCMD:-ghostty --title=filepicker -e}"
-
-    if [ "$save" = "1" ]; then
-      export YAZI_SAVE_MODE=1
-      set -- --chooser-file="$out" --cwd-file="$out.cwd" "$(dirname "$path")"
-    elif [ "$directory" = "1" ]; then
-      export YAZI_SAVE_MODE=1
-      set -- --chooser-file="$out" --cwd-file="$out.1" "$path"
-    elif [ "$multiple" = "1" ]; then
-      set -- --chooser-file="$out" "$path"
-    else
-      set -- --chooser-file="$out" "$path"
-    fi
-
-    command="$termcmd yazi"
-    for arg in "$@"; do
-      escaped=$(printf "%s" "$arg" | sed 's/"/\\"/g')
-      command="$command \"$escaped\""
-    done
-
-    sh -c "$command"
-
-    # save mode: if yazi returned a directory, append the original filename
-    if [ "$save" = "1" ] && [ -f "$out" ]; then
-      selected=$(cat "$out")
-      if [ -d "$selected" ]; then
-        echo "''${selected%/}/$(basename "$path")" > "$out"
-      fi
-    elif [ "$save" = "1" ] && [ -f "$out.cwd" ]; then
-      cwd=$(cat "$out.cwd")
-      echo "''${cwd%/}/$(basename "$path")" > "$out"
-      rm -f "$out.cwd"
-    fi
-
-    # directory upload mode
-    if [ "$directory" = "1" ]; then
-      if [ ! -s "$out" ] && [ -s "$out.1" ]; then
-        cat "$out.1" > "$out"
-      fi
-      rm -f "$out.1"
-    fi
-
-    rm -f "$out.cwd"
-  '';
-
-  # Utility to convert command string to noctalia-shell IPC format
-  noctalia = cmd:
-    [
-      "noctalia-shell"
-      "ipc"
-      "call"
-    ]
-    ++ (pkgs.lib.splitString " " cmd);
 in {
   nixpkgs.overlays = [
     inputs.niri.overlays.niri
@@ -92,11 +29,11 @@ in {
     extraPortals = with pkgs; [
       xdg-desktop-portal-wlr
       xdg-desktop-portal-gtk
-      xdg-desktop-portal-termfilechooser
     ];
-    config = {
-      niri."org.freedesktop.impl.portal.FileChooser" = "termfilechooser";
-      common."org.freedesktop.impl.portal.FileChooser" = "termfilechooser";
+    config.niri = {
+      default = pkgs.lib.mkForce ["gtk"];
+      "org.freedesktop.impl.portal.ScreenCast" = "wlr";
+      "org.freedesktop.impl.portal.Screenshot" = "wlr";
     };
   };
 
@@ -110,15 +47,6 @@ in {
     imports = [
       inputs.niri.homeModules.config
     ];
-    # termfilechooser: use yazi via ghostty as file picker
-    xdg.configFile."xdg-desktop-portal-termfilechooser/config".text = ''
-      [filechooser]
-      cmd=${yaziWrapper}
-      create_help_file=0
-      default_dir=$HOME
-      env=TERMCMD=ghostty --title=filepicker -e
-    '';
-
     programs = {
       niri = {
         package = niri;
@@ -204,13 +132,10 @@ in {
             # apps
             "Mod+Return".action.spawn = "ghostty";
             "Mod+Space".action.spawn = ["cyberdeck" "launcher"];
-            #"Mod+B".action.spawn = noctalia "launcher toggle";
             # session
             "Mod+Alt+P".action.spawn = "shutdown now";
             "Mod+Alt+R".action.spawn = "shutdown -r now";
             "Mod+Alt+Q".action = quit;
-            "Mod+P".action.spawn = noctalia "sessionMenu toggle";
-            "Mod+L".action.spawn = noctalia "lockScreen toggle";
             # workspaces
             "Mod+Tab".action = toggle-overview;
             "Mod+Shift+Up".action = move-workspace-up;
@@ -281,6 +206,7 @@ in {
             "Mod+Comma".action = consume-window-into-column;
             "Mod+Period".action = expel-window-from-column;
             # screenshots (handled by cyberdeck screenshot module)
+            "Mod+Print".action.spawn = ["cyberdeck" "screenshot" "snip"];
             # fn
             "XF86AudioLowerVolume".action.spawn = ["cyberdeck" "outputs" "down"];
             "XF86AudioRaiseVolume".action.spawn = ["cyberdeck" "outputs" "up"];
@@ -296,7 +222,6 @@ in {
               "https://github.com/YaLTeR/niri/wiki/Getting-Started"
               "https://github.com/sodiboo/niri-flake"
               "https://github.com/sodiboo/niri-flake/blob/main/docs.md"
-              "https://github.com/noctalia-dev/noctalia-shell"
             ];
           };
           hotkey-overlay.skip-at-startup = true;
