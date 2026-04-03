@@ -1,9 +1,9 @@
 {
   pkgs,
   config,
-  inputs,
   ...
 }: let
+  s = config.scheme;
   hx-open = pkgs.writeShellScriptBin "hx-open" ''
     exec ghostty -e hx "$@"
   '';
@@ -27,8 +27,6 @@ in {
             set -gx CR_PAT (cat $DOTFILES/secrets/github_token.txt)
           end
 
-          # base16 theme
-          source ${config.scheme {templateRepo = inputs.base16-fish;}}
         '';
         shellAbbrs = {
           "repo.root" = "cd (git rev-parse --show-toplevel)";
@@ -100,5 +98,35 @@ in {
         enableFishIntegration = true;
       };
     };
+
+    # base16 fish colors (source: https://github.com/tomyun/base16-fish)
+    xdg.configFile."fish/conf.d/base16-colors.fish".text = ''
+      set -g fish_color_autosuggestion ${s.base03}
+      set -g fish_color_cancel -r
+      set -g fish_color_command green
+      set -g fish_color_comment ${s.base03}
+      set -g fish_color_cwd green
+      set -g fish_color_cwd_root red
+      set -g fish_color_end brblack
+      set -g fish_color_error red
+      set -g fish_color_escape yellow
+      set -g fish_color_history_current --bold
+      set -g fish_color_host normal
+      set -g fish_color_match --background=brblue
+      set -g fish_color_normal normal
+      set -g fish_color_operator blue
+      set -g fish_color_param ${s.base04}
+      set -g fish_color_quote yellow
+      set -g fish_color_redirection cyan
+      set -g fish_color_search_match bryellow --background=${s.base02}
+      set -g fish_color_selection white --bold --background=${s.base02}
+      set -g fish_color_status red
+      set -g fish_color_user brgreen
+      set -g fish_color_valid_path --underline
+      set -g fish_pager_color_completion normal
+      set -g fish_pager_color_description yellow --dim
+      set -g fish_pager_color_prefix white --bold
+      set -g fish_pager_color_progress brwhite --background=cyan
+    '';
   };
 }
