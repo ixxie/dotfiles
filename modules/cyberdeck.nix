@@ -17,8 +17,7 @@ in {
       layout = "pills";
       gap = 8;
       theme = {
-        #color = "#${s.base00}";
-        #opacity = 0;
+        color = "#${s.base00}";
       };
       monitors = {
         "DP-2" = {scale = 0.8;};

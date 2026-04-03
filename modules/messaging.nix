@@ -4,6 +4,7 @@
     element-desktop
     discord
     iamb
+    cinny
   ];
 
   home-manager.users.ixxie = {
