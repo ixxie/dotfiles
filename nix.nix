@@ -8,6 +8,7 @@
 in {
   sops.secrets.nix-access-tokens = {
     mode = "0440";
+    owner = "ixxie";
     group = "nixbld";
   };
 
@@ -21,6 +22,15 @@ in {
     colmena
     sops
   ];
+
+  # user-level nix config so flake commands (not just daemon) have the token
+  sops.secrets.nix-access-tokens-user = {
+    sopsFile = ./secrets.yaml;
+    key = "nix-access-tokens";
+    mode = "0400";
+    owner = "ixxie";
+    path = "/home/ixxie/.config/nix/nix.conf";
+  };
 
   nix = {
     gc.automatic = true;
@@ -51,13 +61,4 @@ in {
     allowUnfree = true;
     allowBroken = true;
   };
-
-  # home-manager.users.ixxie.programs = {
-  #   direnv = {
-  #     enable = true;
-  #     enableNushellIntegration = true;
-  #     enableBashIntegration = true;
-  #     nix-direnv.enable = true;
-  #   };
-  # };
 }
