@@ -29,7 +29,7 @@
         "rust-overlay": "rust-overlay"
       },
       "locked": {
-        "lastModified": 1775219450,
+        "lastModified": 1775219629,
         "narHash": "sha256-7WrMqgMHby4j8iZdxIWPzqQ67YVkQ7M0T79PvZtx6no=",
         "path": "/home/ixxie/repos/org/cella",
         "type": "path"
