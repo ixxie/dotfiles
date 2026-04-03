@@ -33,15 +33,8 @@ export default function register(program: Command) {
             console.log(app.id);
           }
         }
-      } else if (command === "snip") {
-        const snipCmds = ["region", "screen", "rec"];
-        for (const cmd of snipCmds) {
-          if (!current || cmd.startsWith(current)) {
-            console.log(cmd);
-          }
-        }
       } else {
-        const commands = ["sys", "repos", "cd", "tree", "open", "snip", "completions"];
+        const commands = ["sys", "repos", "cd", "tree", "open", "completions"];
         for (const cmd of commands) {
           if (!current || cmd.startsWith(current)) {
             console.log(cmd);

@@ -151,7 +151,7 @@ async function executeCommitPlan(plan: CommitPlan[]): Promise<string> {
 async function localInputNames(): Promise<string[]> {
   const flake = await readFile(join(DOTFILES, "flake.nix"), "utf-8");
   const names: string[] = [];
-  const re = /(\w[\w-]*)(?:\s*=\s*\{[^}]*url\s*=\s*"path:|\.url\s*=\s*"path:)/g;
+  const re = /(\w[\w-]*)(?:\s*=\s*\{[^{}]*url\s*=\s*"path:|\.url\s*=\s*"path:)/g;
   let m;
   while ((m = re.exec(flake))) names.push(m[1]);
   return names;
