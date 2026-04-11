@@ -28,7 +28,7 @@ in {
 
   # torrent daemon
   services.transmission = {
-    enable = true;
+    enable = false;
     package = pkgs.transmission_4;
     user = "ixxie";
     group = "users";
