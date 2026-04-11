@@ -14,11 +14,9 @@ in {
     settings = {
       position = "bottom";
       font = "MonaspiceKr Nerd Font";
-      layout = "pills";
       gap = 8;
-      theme = {
-        color = "#${s.base00}";
-      };
+      theme = "transparent";
+      color = "#${s.base00}";
       monitors = {
         "DP-2" = {scale = 0.8;};
         "eDP-1" = {scale = 0.8;};
