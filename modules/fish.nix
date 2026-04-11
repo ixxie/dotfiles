@@ -18,6 +18,7 @@ in {
         interactiveShellInit = ''
           set fish_greeting
           starship init fish | source
+          cella hook fish | source
 
           # Carapace completions
           carapace _carapace | source
