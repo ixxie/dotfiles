@@ -53,6 +53,7 @@
     # icons
     gtk = {
       enable = true;
+      gtk4.theme = null;
       font = {
         name = "MonaspiceNe Nerd Font";
         size = 11;
