@@ -45,9 +45,6 @@ in {
     Standard git. Push to GitHub with `git push origin`.
     Git credentials are handled by the proxy automatically.
 
-    A nucleus pre-commit hook reviews all commits for security.
-    If the hook rejects your commit, fix the issues and retry.
-
     ## Restrictions
 
     - No sudo/root access

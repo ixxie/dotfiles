@@ -12,6 +12,7 @@
     client = {
       enable = true;
       user = "ixxie";
+      server = "grove";
       vmConfig = ./vm;
       servers.grove = "root@95.216.229.121";
       sync = ["~/.claude.json"];
@@ -49,8 +50,6 @@
           "*.anthropic.com"
         ];
       };
-
-      nucleus.enable = true;
 
       user = {
         name = "ixxie";
