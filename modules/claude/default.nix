@@ -23,6 +23,22 @@
     preferredNotifChannel = "terminal";
     disabledMcpjsonServers = ["claude_ai_Notion"];
     voiceEnabled = true;
+    enabledPlugins = {
+      "superpowers@claude-plugins-official" = true;
+    };
+    hooks = {
+      PreToolUse = [
+        {
+          matcher = "Write|Edit";
+          hooks = [
+            {
+              type = "command";
+              command = ''sh -c 'FILE_PATH=$(jq -r .tool_input.file_path); if echo "$FILE_PATH" | grep -q "/superpowers/"; then jq -n "{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"deny\",\"permissionDecisionReason\":\"Blocked: path contains superpowers folder\"}}"; else exit 0; fi' '';
+            }
+          ];
+        }
+      ];
+    };
   };
 
   claudeMd = builtins.readFile ./claude.md;
