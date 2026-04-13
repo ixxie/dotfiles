@@ -23,27 +23,11 @@
     preferredNotifChannel = "terminal";
     disabledMcpjsonServers = ["claude_ai_Notion"];
     voiceEnabled = true;
-    enabledPlugins = {
-      "superpowers@claude-plugins-official" = true;
-    };
-    hooks = {
-      PreToolUse = [
-        {
-          matcher = "Write|Edit";
-          hooks = [
-            {
-              type = "command";
-              command = ''sh -c 'FILE_PATH=$(jq -r .tool_input.file_path); if echo "$FILE_PATH" | grep -q "/superpowers/"; then jq -n "{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"deny\",\"permissionDecisionReason\":\"Blocked: path contains superpowers folder\"}}"; else exit 0; fi' '';
-            }
-          ];
-        }
-      ];
-    };
+    preferredReasoningEffort = "max";
   };
 
   claudeMd = builtins.readFile ./claude.md;
   nixSkill = builtins.readFile ./nix.md;
-  nlspecSkill = builtins.readFile ./nlspec.md;
   pythonSkill = builtins.readFile ./python.md;
 in {
   options.claude = {
@@ -81,7 +65,6 @@ in {
     home.file.".claude/settings.json".text = builtins.toJSON claudeSettings;
     home.file.".claude/CLAUDE.md".text = claudeMd;
     home.file.".claude/skills/nix/SKILL.md".text = nixSkill;
-    home.file.".claude/skills/nlspec/SKILL.md".text = nlspecSkill;
     home.file.".claude/skills/python/SKILL.md".text = pythonSkill;
     home.file.".npm/lib/node_modules/@anthropic-ai/sandbox-runtime/vendor/seccomp/x64".source = seccomp;
   };
