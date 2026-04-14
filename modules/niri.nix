@@ -232,13 +232,6 @@ in {
             "XF86AudioPlay".action.spawn = ["cyberdeck" "media" "play"];
             "XF86AudioNext".action.spawn = ["cyberdeck" "media" "next"];
             "XF86AudioPrev".action.spawn = ["cyberdeck" "media" "prev"];
-            # docs
-            "Mod+H".action.spawn = [
-              "firefox"
-              "https://github.com/YaLTeR/niri/wiki/Getting-Started"
-              "https://github.com/sodiboo/niri-flake"
-              "https://github.com/sodiboo/niri-flake/blob/main/docs.md"
-            ];
           };
           hotkey-overlay.skip-at-startup = true;
         };
