@@ -4,6 +4,22 @@
   ...
 }: let
   niri = pkgs.niri-unstable;
+  vimAliases = binds: let
+    inherit (pkgs.lib) any filterAttrs mapAttrs' nameValuePair splitString concatStringsSep;
+    arrowMap = {
+      Left = "H";
+      Down = "J";
+      Up = "K";
+      Right = "L";
+    };
+    tokensOf = name: splitString "+" name;
+    hasArrow = name: any (t: arrowMap ? ${t}) (tokensOf name);
+    replaceArrow = name:
+      concatStringsSep "+" (map (t: arrowMap.${t} or t) (tokensOf name));
+    aliased = mapAttrs'
+      (n: v: nameValuePair (replaceArrow n) v)
+      (filterAttrs (n: _: hasArrow n) binds);
+  in aliased // binds;
 in {
   nixpkgs.overlays = [
     inputs.niri.overlays.niri
@@ -128,7 +144,7 @@ in {
               clip-to-geometry = true;
             }
           ];
-          binds = with config.lib.niri.actions; {
+          binds = with config.lib.niri.actions; vimAliases {
             # apps
             "Mod+Return".action.spawn = "ghostty";
             "Mod+Space".action.spawn = ["cyberdeck" "launcher"];
