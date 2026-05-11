@@ -28,8 +28,7 @@ in {
       network.enable = true;
       session.enable = true;
       profiles.enable = true;
-      outputs.enable = true;
-      inputs.enable = true;
+      audio.enable = true;
       bluetooth.enable = true;
       system.enable = true;
       brightness.enable = true;
@@ -43,10 +42,7 @@ in {
       storage.enable = true;
 
       window.enable = true;
-      wallpaper = {
-        enable = true;
-        dir = "~/media/wallpapers";
-      };
+      wallpaper.enable = true;
     };
   };
 }
