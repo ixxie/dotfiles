@@ -60,9 +60,6 @@ in {
         window-padding-y = 10;
         gtk-wide-tabs = false;
         gtk-custom-css = "${ghosttyCss}";
-        keybind = [
-          "shift+enter=text:\x1b\r"
-        ];
       };
     };
 
