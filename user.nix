@@ -8,7 +8,9 @@
   ];
   home-manager = {
     backupFileExtension = "backup";
-    users.ixxie = {
+    users.ixxie = { config, ... }: let
+      home = config.home.homeDirectory;
+    in {
       nixpkgs.config.allowUnfree = true;
       home = {
         stateVersion = "24.05";
@@ -18,9 +20,25 @@
           BROWSER = "zen";
           TERMINAL = "ghostty";
         };
-      };
+};
       xdg = {
         enable = true;
+        userDirs = {
+          enable = true;
+          createDirectories = false;
+          setSessionVariables = true;
+          desktop = home;
+          documents = "${home}/docs";
+          download = "${home}/temp";
+          music = "${home}/media";
+          pictures = "${home}/media";
+          publicShare = home;
+          templates = "${home}/repos";
+          videos = "${home}/media";
+          extraConfig = {
+            SCREENSHOTS = "${home}/media/snips";
+          };
+        };
         desktopEntries = {
           zen-beta = {
             name = "Zen";
