@@ -21,6 +21,8 @@ export const sym = {
   folder: "📂",
   camera: "📸",
   record: "🔴",
+  warn: "⚠",
+  info: "ℹ",
 };
 
 export function log(symbol: string, msg: string) {
@@ -33,6 +35,10 @@ export function success(msg: string) {
 
 export function error(msg: string) {
   console.log(`${pc.red(sym.cross)} ${msg}`);
+}
+
+export function warn(msg: string) {
+  console.log(`${pc.red(sym.warn)} ${msg}`);
 }
 
 export async function run(cmd: string[], opts?: { cwd?: string; silent?: boolean }) {

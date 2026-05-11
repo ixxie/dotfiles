@@ -11,7 +11,7 @@ import media from "./commands/media.ts";
 import discord from "./commands/discord.ts";
 
 program
-  .name("org")
+  .name("yo")
   .description(pc.bold("System management CLI"))
   .version("0.1.0");
 
