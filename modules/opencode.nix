@@ -1,8 +1,16 @@
-{ ... }: {
-  secretEnv."opencode-api-key" = "OPENCODE_API_KEY";
+{inputs, ...}: {
+  config.home-manager.users.ixxie = {
+    home = {
+      packages = [inputs.opencode.packages.x86_64-linux.default];
 
-  home-manager.users.ixxie.programs.opencode = {
-    enable = true;
-    settings.theme = "everforest";
+      file.".config/opencode/opencode.json".text = builtins.toJSON {
+        tui.theme = "system";
+        disabled_providers = ["opencode" "opencode-go"];
+      };
+
+      shellAliases = {
+        code = "opencode";
+      };
+    };
   };
 }
