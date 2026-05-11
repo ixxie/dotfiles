@@ -1,4 +1,30 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  config,
+  paseo-pkg,
+  ...
+}: {
+  services.paseo = {
+    enable = true;
+    user = "ixxie";
+    package = paseo-pkg;
+  };
+
+  # Make PASEO_PASSWORD available to interactive shells (CLI).
+  # secretEnv declares the sops secret with owner=ixxie; we reuse that
+  # secret in the template below for the systemd unit.
+  secretEnv."paseo-password" = "PASEO_PASSWORD";
+
+  sops.templates."paseo.env" = {
+    content = ''
+      PASEO_PASSWORD=${config.sops.placeholder."paseo-password"}
+    '';
+    owner = "ixxie";
+  };
+
+  systemd.services.paseo.serviceConfig.EnvironmentFile =
+    config.sops.templates."paseo.env".path;
+
   environment.systemPackages = with pkgs; [
     # general
     gh
@@ -92,6 +118,7 @@
   };
 
   secretEnv."hetzner-api-key" = "HCLOUD_TOKEN";
+  secretEnv."openrouter-api-key" = "OPENROUTER_API_KEY";
 
   # docker daemon
   virtualisation.docker.enable = true;
