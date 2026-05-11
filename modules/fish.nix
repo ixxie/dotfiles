@@ -18,7 +18,6 @@ in {
         interactiveShellInit = ''
           set fish_greeting
           starship init fish | source
-          cella hook fish | source
 
           # Carapace completions
           carapace _carapace | source
@@ -51,7 +50,7 @@ in {
           yo = "bun $DOTFILES/cli/src/index.ts";
         };
         shellInit = ''
-          set -gx MASCOPE_PATH /home/ixxie/repos/apps/mascope
+          set -gx MASCOPE_PATH /home/ixxie/repos/archive/mascope
           set -gx DOTFILES /home/ixxie/repos/dotfiles
           set -gx QT_QPA_PLATFORM wayland
           set -gx LAUNCH_EDITOR hx-open

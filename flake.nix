@@ -1,9 +1,19 @@
 {
   description = "contingent - ixxie's Framework 13 Ryzen 7040 series";
 
-  outputs = inputs @ {nixpkgs, ...}: {
+  outputs = inputs @ {nixpkgs, ...}: let
+    pkgs = import nixpkgs {
+      overlays = [inputs.opencode.overlays.default];
+    };
+    # Upstream paseo's pinned npmDepsHash was computed against paseo's own
+    # nixpkgs revision; our follow'd nixpkgs computes a different one for the
+    # same package-lock.json. Override via .override (requires PR #923).
+    paseo-pkg = inputs.paseo.packages.x86_64-linux.default.override {
+      npmDepsHash = "sha256-FzJUt3N6JEd9S7GI6BB32AsSHLqqQsq8xXA85dissq4=";
+    };
+  in {
     nixosConfigurations.contingent = nixpkgs.lib.nixosSystem {
-      specialArgs = {inherit inputs;};
+      specialArgs = {inherit inputs paseo-pkg;};
       modules = [
         # host
         ./device.nix
@@ -22,13 +32,12 @@
         ./modules/helix.nix
         ./modules/ghostty.nix
         ./modules/yazi.nix
-        ./cella/cella.nix
 
         # desktop
         ./modules/niri.nix
         ./modules/cyberdeck.nix
         ./modules/greeter.nix
-        ./modules/gifplx.nix
+        ./modules/voyager/voyager.nix
 
         # apps
         ./modules/browsers.nix
@@ -41,16 +50,19 @@
         ./modules/development.nix
         ./modules/claude
         ./modules/opencode.nix
+        ./modules/pi.nix
+        ./modules/vitro.nix
+        inputs.paseo.nixosModules.paseo
       ];
     };
 
-    formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.alejandra;
+    formatter.x86_64-linux = pkgs.alejandra;
   };
 
   inputs = {
     base16.url = "github:SenchoPens/base16.nix";
-    cella = {
-      url = "path:/home/ixxie/repos/org/cella";
+    zapp = {
+      url = "path:/home/ixxie/repos/foss/zapp";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     claude-code = {
@@ -62,12 +74,15 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     cyberdeck = {
-      url = "path:/home/ixxie/repos/org/cyberdeck";
+      url = "path:/home/ixxie/repos/lab/cyberdeck";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    gifplx.url = "path:/home/ixxie/repos/apps/gifplx";
     home-manager = {
       url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    janeway = {
+      url = "path:/home/ixxie/repos/foss/janeway";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     niri = {
@@ -78,6 +93,22 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     sops-nix = {
       url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    opencode = {
+      url = "github:dan-online/opencode-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    paseo = {
+      url = "path:/home/ixxie/repos/foss/paseo";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    pi-mono = {
+      url = "github:lukasl-dev/pi-mono.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    vitro = {
+      url = "path:/home/ixxie/repos/lab/vitro";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     zen-browser = {
