@@ -19,11 +19,12 @@
 
   claudeSettings = {
     hasCompletedOnboarding = true;
-    theme = "light";
-    preferredNotifChannel = "terminal";
-    disabledMcpjsonServers = ["claude_ai_Notion"];
+    theme = "everforest";
+    preferredNotifChannel = "ghostty";
     voiceEnabled = true;
     preferredReasoningEffort = "max";
+    permissions.defaultMode = "auto";
+    skipAutoPermissionPrompt = true;
   };
 
   claudeMd = builtins.readFile ./claude.md;
