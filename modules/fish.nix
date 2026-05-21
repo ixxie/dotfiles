@@ -2,16 +2,25 @@
   pkgs,
   config,
   ...
-}: let
+}:
+let
   s = config.scheme;
   hx-open = pkgs.writeShellScriptBin "hx-open" ''
     exec ghostty -e hx "$@"
   '';
-in {
+  yo = pkgs.writeShellScriptBin "yo" ''
+    exec ${pkgs.bun}/bin/bun /home/ixxie/repos/dotfiles/cli/src/index.ts "$@"
+  '';
+in
+{
   programs.fish.enable = true;
 
   home-manager.users.ixxie = {
-    home.packages = [hx-open pkgs.carapace];
+    home.packages = [
+      hx-open
+      pkgs.carapace
+      yo
+    ];
     programs = {
       fish = {
         enable = true;
@@ -47,7 +56,6 @@ in {
           la = "eza -lah --icons";
           tree = "eza --tree --icons";
           cat = "bat";
-          yo = "bun $DOTFILES/cli/src/index.ts";
         };
         shellInit = ''
           set -gx MASCOPE_PATH /home/ixxie/repos/archive/mascope
@@ -57,6 +65,18 @@ in {
         '';
         functions = {
           mkcd = "mkdir -p $argv[1]; and cd $argv[1]";
+
+          # Tint terminal background when inside the qualia Claude profile
+          _claude_profile_tint = {
+            onVariable = "CLAUDE_CONFIG_DIR";
+            body = ''
+              if test "$CLAUDE_CONFIG_DIR" = "$HOME/.claude-qualia"
+                printf '\e]11;#332b27\a'
+              else
+                printf '\e]111\a'
+              end
+            '';
+          };
 
           "showkeys" = {
             body = ''

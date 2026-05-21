@@ -1,7 +1,7 @@
 secrets/*
-static/phosphor/*
 result
 .env
+.direnv
 
 # Claude Code sandbox artifacts (https://github.com/anthropics/claude-code/issues/17727)
 .claude/*

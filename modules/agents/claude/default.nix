@@ -1,5 +1,4 @@
 {
-  lib,
   pkgs,
   inputs,
   ...
@@ -16,33 +15,11 @@
       cp * $out/
       chmod +x $out/apply-seccomp
     '';
-
-  claudeSettings = {
-    hasCompletedOnboarding = true;
-    theme = "everforest";
-    preferredNotifChannel = "ghostty";
-    voiceEnabled = true;
-    preferredReasoningEffort = "max";
-    permissions.defaultMode = "auto";
-    skipAutoPermissionPrompt = true;
-  };
-
-  claudeMd = builtins.readFile ./claude.md;
-  nixSkill = builtins.readFile ./nix.md;
-  pythonSkill = builtins.readFile ./python.md;
 in {
-  options.claude = {
-    settings = lib.mkOption {
-      type = lib.types.attrs;
-      default = claudeSettings;
-      description = "Claude Code settings";
-    };
-    md = lib.mkOption {
-      type = lib.types.str;
-      default = claudeMd;
-      description = "CLAUDE.md content";
-    };
-  };
+  imports = [
+    ./personal.nix
+    ./qualia.nix
+  ];
 
   config.home-manager.users.ixxie = {
     home.packages = with pkgs; [
@@ -63,10 +40,6 @@ in {
         exec ${nodejs_22}/bin/npx playwright@${playwright-driver.version} "$@"
       '')
     ];
-    home.file.".claude/settings.json".text = builtins.toJSON claudeSettings;
-    home.file.".claude/CLAUDE.md".text = claudeMd;
-    home.file.".claude/skills/nix/SKILL.md".text = nixSkill;
-    home.file.".claude/skills/python/SKILL.md".text = pythonSkill;
     home.file.".npm/lib/node_modules/@anthropic-ai/sandbox-runtime/vendor/seccomp/x64".source = seccomp;
   };
 }

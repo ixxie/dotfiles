@@ -47,12 +47,14 @@ in {
         "https://niri.cachix.org"
         "https://nix-community.cachix.org"
         "https://microvm.cachix.org"
+        "https://pi.cachix.org"
       ];
       trusted-public-keys = [
         "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
         "niri.cachix.org-1:Wv0OmO7PsuocRKzfDoJ3mulSl7Z6oezYhGhR+3W2964="
         "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
         "microvm.cachix.org-1:oXnBc6hRE3eX5rSYdRyMYXnfzcCxC7yKPTbZXALsqys="
+        "pi.cachix.org-1:lGeoGJaZ5ZDabuRzkcD5EBTNnDM4HJ1vqeOxlWk1Flk="
       ];
     };
   };
@@ -60,5 +62,13 @@ in {
   nixpkgs.config = {
     allowUnfree = true;
     allowBroken = true;
+  };
+
+  home-manager.users.ixxie = {
+    programs.direnv = {
+      enable = true;
+      silent = true;
+      nix-direnv.enable = true;
+    };
   };
 }

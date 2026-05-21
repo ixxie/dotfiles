@@ -1,64 +1,4 @@
-{
-  pkgs,
-  config,
-  paseo-pkg,
-  ...
-}: {
-  services.paseo = {
-    enable = true;
-    user = "ixxie";
-    package = paseo-pkg;
-  };
-
-  # Make PASEO_PASSWORD available to interactive shells (CLI).
-  # secretEnv declares the sops secret with owner=ixxie; we reuse that
-  # secret in the template below for the systemd unit.
-  secretEnv."paseo-password" = "PASEO_PASSWORD";
-
-  sops.templates."paseo.env" = {
-    content = ''
-      PASEO_PASSWORD=${config.sops.placeholder."paseo-password"}
-    '';
-    owner = "ixxie";
-  };
-
-  systemd.services.paseo.serviceConfig.EnvironmentFile =
-    config.sops.templates."paseo.env".path;
-
-  environment.systemPackages = with pkgs; [
-    # general
-    gh
-    hcloud
-    infisical
-    concurrently
-    # python
-    python312Packages.python-lsp-server
-    ruff
-    uv
-    migrate-to-uv
-    # web
-    nodejs_22
-    vscode-langservers-extracted # html/css/json
-    typescript-language-server
-    svelte-language-server
-    prettier
-    eslint_d
-    postman
-    marksman
-    bun
-    # data
-    duckdb
-    # system
-    nixd
-    alejandra
-    bash-language-server
-    # etc
-    showmethekey
-    android-tools
-    # agents
-    socat
-  ];
-
+{...}: {
   home-manager.users.ixxie = {
     programs.direnv = {
       enable = true;
@@ -116,10 +56,4 @@
       };
     };
   };
-
-  secretEnv."hetzner-api-key" = "HCLOUD_TOKEN";
-  secretEnv."openrouter-api-key" = "OPENROUTER_API_KEY";
-
-  # docker daemon
-  virtualisation.docker.enable = true;
 }

@@ -1,4 +1,8 @@
-{pkgs, inputs, ...}: let
+{
+  pkgs,
+  inputs,
+  ...
+}: let
   label = builtins.getEnv "NIXOS_LABEL";
 in {
   imports = [inputs.sops-nix.nixosModules.sops];
@@ -8,7 +12,10 @@ in {
   };
   # host
   system.stateVersion = "24.05";
-  system.nixos.label = if label != "" then label else "unlabeled";
+  system.nixos.label =
+    if label != ""
+    then label
+    else "unlabeled";
   networking = {
     hostName = "contingent";
     networkmanager.enable = true;
@@ -42,4 +49,7 @@ in {
       size = 64 * 1024;
     }
   ];
+
+  # docker daemon
+  virtualisation.docker.enable = true;
 }
