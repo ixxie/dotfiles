@@ -1,7 +1,8 @@
+<p align="right">
+  <a href="https://codeberg.org/ixxie/bergmirror"><img src="https://ixxie.codeberg.page/bergmirror/badge.svg" alt="Codeberg → GitHub mirror"/></a>
+</p>
 
 ## [ixxie](https://shenhav.fyi)'s dotfiles
-
-[![Codeberg → GitHub mirror](https://ixxie.codeberg.page/bergmirror/badge.svg)](https://codeberg.org/ixxie/dotfiles)
 
 This repo stores my dotfiles, organized as a [NixOS](https://nixos.org) config in a Nix flake, with
 [Home-Manager](https://github.com/nix-community/home-manager) installed [as a NixOS module](https://nix-community.github.io/home-manager/index.xhtml#sec-install-nixos-module).
