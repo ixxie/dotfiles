@@ -1,6 +1,6 @@
-<p align="right">
+<div align="right">
   <a href="https://codeberg.org/ixxie/bergmirror"><img src="https://ixxie.codeberg.page/bergmirror/badge.svg" alt="Codeberg → GitHub mirror"/></a>
-</p>
+</div>
 
 ## [ixxie](https://shenhav.fyi)'s dotfiles
 
