@@ -1,5 +1,5 @@
 <div align="right">
-  <a href="https://ixxie.codeberg.page/bergmirror/r/?cb=ixxie/dotfiles&gh=ixxie/dotfiles"><img src="https://ixxie.codeberg.page/bergmirror/badge.svg" alt="Codeberg → GitHub mirror"/></a>
+  <a href="https://ixxie.codeberg.page/bergmirror/redirect/?cb=ixxie/dotfiles&gh=ixxie/dotfiles"><img src="https://ixxie.codeberg.page/bergmirror/badge.svg" alt="Codeberg → GitHub mirror"/></a>
 </div>
 
 ## [ixxie](https://shenhav.fyi)'s dotfiles
