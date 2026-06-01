@@ -49,6 +49,9 @@
           ./modules/git.nix
           ./modules/agents
           #./modules/vitro.nix
+
+          # ops
+          ./modules/restic-backup.nix
         ];
       };
 

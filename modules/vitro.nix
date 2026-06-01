@@ -9,7 +9,7 @@
     enable = true;
     user = "ixxie";
     hosts = {
-      cella-dev = "root@95.216.229.121";
+      amoeba = "root@95.216.229.121";
     };
   };
 }
