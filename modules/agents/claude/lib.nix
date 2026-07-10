@@ -75,6 +75,8 @@ in {
     themes ? {},
   }: let
     mergedSettings = lib.recursiveUpdate baseSettings settings;
+    settingsFile = builtins.toFile "claude-settings.json" (builtins.toJSON mergedSettings);
+    activationKey = "claudeSettings_" + lib.replaceStrings ["." "/" "-"] ["_" "_" "_"] dir;
     skillNames =
       if skills == null
       then builtins.attrNames allSkills
@@ -92,11 +94,27 @@ in {
         "${dir}/themes/${slug}.json"
         {text = builtins.toJSON theme;})
       themes;
-  in
-    {
-      "${dir}/settings.json" = {text = builtins.toJSON mergedSettings;};
-      "${dir}/CLAUDE.md" = {text = agentsMd;};
-    }
-    // skillFiles
-    // themeFiles;
+  in {
+    home.file =
+      {
+        "${dir}/CLAUDE.md" = {text = agentsMd;};
+      }
+      // skillFiles
+      // themeFiles;
+
+    # settings.json must stay writable: Claude Code mutates it at runtime
+    # (/voice, /theme, onboarding). A read-only store symlink makes those
+    # writes fail, so seed a real copy on activation instead of linking it.
+    # Declared values still win on each rebuild.
+    # DAG entry built literally (equivalent to hm.dag.entryAfter) since the
+    # home-manager lib isn't in scope at this NixOS-module call site.
+    home.activation.${activationKey} = {
+      after = ["writeBoundary"];
+      before = [];
+      data = ''
+        run rm -f "$HOME/${dir}/settings.json"
+        run install -Dm644 ${settingsFile} "$HOME/${dir}/settings.json"
+      '';
+    };
+  };
 }
