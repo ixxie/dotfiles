@@ -3,7 +3,6 @@
 , layout ? {}
 , colors ? {}
 , cache ? {}
-, logging ? {}
 , ...
 }:
 
@@ -39,10 +38,11 @@ let
     } // cache;
 
     logging = {
-      db_path = "~/.local/share/voyager/keylog.duckdb";
       socket_path = "~/.config/.keymapp/keymapp.sock";
-    } // logging;
+    };
   };
+
+  hashId = cfg.layout.hash_id or (throw "voyager.layout.hash_id must be set");
 
   tomlContent = ''
     [overlay]
@@ -62,7 +62,7 @@ let
     dim_text = "${cfg.colors.dim_text}"
 
     [layout]
-    hash_id = "${cfg.layout.hash_id or "dPWwD6"}"
+    hash_id = "${hashId}"
     keyboard = "${cfg.layout.keyboard}"
     layout_macro = "${cfg.layout.layout_macro}"
 
@@ -70,7 +70,6 @@ let
     dir = "${cfg.cache.dir}"
 
     [logging]
-    db_path = "${cfg.logging.db_path}"
     socket_path = "${cfg.logging.socket_path}"
   '';
 

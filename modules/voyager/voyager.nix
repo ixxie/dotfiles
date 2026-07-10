@@ -39,7 +39,6 @@ let
     };
     colors = resolvedColors;
     cache = cfg.cache;
-    logging = cfg.logging;
   };
 in
 {
@@ -47,7 +46,7 @@ in
     default = {};
     type = lib.types.submodule {
       options = {
-        enable = lib.mkEnableOption "voyager keyboard overlay and keylogger";
+        enable = lib.mkEnableOption "voyager keyboard layer overlay";
 
         overlay = {
           width = lib.mkOption {
@@ -123,13 +122,6 @@ in
           dir = lib.mkOption {
             type = lib.types.str;
             default = "~/.local/share/voyager/cache";
-          };
-        };
-
-        logging = {
-          db_path = lib.mkOption {
-            type = lib.types.str;
-            default = "~/.local/share/voyager/keylog.duckdb";
           };
         };
       };
