@@ -9,7 +9,7 @@ let
     exec ghostty -e hx "$@"
   '';
   yo = pkgs.writeShellScriptBin "yo" ''
-    exec ${pkgs.bun}/bin/bun /home/ixxie/repos/dotfiles/cli/src/index.ts "$@"
+    exec ${pkgs.bun}/bin/bun /home/ixxie/repos/lab/dotfiles/cli/src/index.ts "$@"
   '';
 in
 {
@@ -48,6 +48,7 @@ in
             complete -c yo -n "__fish_seen_subcommand_from sys" -a "(yo completions sys)"
             complete -c yo -n "__fish_seen_subcommand_from cell" -a "(yo completions cell)"
             complete -c yo -n "__fish_seen_subcommand_from open" -a "(yo completions open)"
+            complete -c yo -n "__fish_seen_subcommand_from noir" -a "(yo completions noir)"
           '';
         };
         shellAliases = {
@@ -58,8 +59,9 @@ in
           cat = "bat";
         };
         shellInit = ''
+          fish_add_path $HOME/.local/bin
           set -gx MASCOPE_PATH /home/ixxie/repos/archive/mascope
-          set -gx DOTFILES /home/ixxie/repos/dotfiles
+          set -gx DOTFILES /home/ixxie/repos/lab/dotfiles
           set -gx QT_QPA_PLATFORM wayland
           set -gx LAUNCH_EDITOR hx-open
         '';
