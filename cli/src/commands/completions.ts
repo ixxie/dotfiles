@@ -33,8 +33,12 @@ export default function register(program: Command) {
             console.log(app.id);
           }
         }
+      } else if (command === "noir") {
+        for (const s of ["on", "off", "toggle", "status"]) {
+          if (!current || s.startsWith(current)) console.log(s);
+        }
       } else {
-        const commands = ["sys", "repos", "cd", "tree", "open", "completions"];
+        const commands = ["sys", "repos", "cd", "tree", "open", "noir", "completions"];
         for (const cmd of commands) {
           if (!current || cmd.startsWith(current)) {
             console.log(cmd);

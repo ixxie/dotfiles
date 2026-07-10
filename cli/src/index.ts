@@ -9,6 +9,7 @@ import open from "./commands/open.ts";
 import completions from "./commands/completions.ts";
 import media from "./commands/media.ts";
 import discord from "./commands/discord.ts";
+import noir from "./commands/noir.ts";
 
 program
   .name("yo")
@@ -22,5 +23,6 @@ open(program);
 completions(program);
 media(program);
 discord(program);
+noir(program);
 
 program.parse();
