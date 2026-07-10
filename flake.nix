@@ -40,6 +40,7 @@
           # apps
           ./modules/browsers.nix
           ./modules/messaging.nix
+          ./modules/proton.nix
           ./modules/media.nix
           ./modules/design.nix
           ./modules/tailscale.nix
@@ -70,7 +71,7 @@
   inputs = {
     base16.url = "github:SenchoPens/base16.nix";
     zapp = {
-      url = "git+file:///home/ixxie/repos/foss/zapp";
+      url = "github:zsa/zapp";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     claude-code = {
