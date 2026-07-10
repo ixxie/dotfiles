@@ -74,6 +74,9 @@
     export RESTIC_PASSWORD_FILE=${config.sops.secrets.restic-password.path}
     export RESTIC_REPOSITORY=${repo}
 
+    # clear stale locks from interrupted prior runs before we take our own
+    ${pkgs.restic}/bin/restic unlock
+
     ${pkgs.restic}/bin/restic backup \
       --host contingent \
       --tag daily \
