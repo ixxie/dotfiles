@@ -41,6 +41,7 @@ in {
     sway-launcher-desktop
     grim
     slurp
+    wayfreeze
     wl-screenrec
     wl-clipboard
     screenkey
