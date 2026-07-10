@@ -19,6 +19,8 @@
           EDITOR = "hx";
           BROWSER = "zen";
           TERMINAL = "ghostty";
+          GOPATH = "${config.xdg.dataHome}/go";
+          GOMODCACHE = "${config.xdg.cacheHome}/go/mod";
         };
 };
       xdg = {
