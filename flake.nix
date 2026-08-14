@@ -98,7 +98,13 @@
       url = "github:sodiboo/niri-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+    nixos-hardware = {
+      url = "github:NixOS/nixos-hardware/master";
+      # Module-only flake, so following costs nothing and drops a second,
+      # stale nixpkgs from the lock. (Not so for flakes whose prebuilt
+      # packages we want from a binary cache — see niri.)
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     sops-nix = {
       url = "github:Mic92/sops-nix";
@@ -108,10 +114,6 @@
       url = "github:dan-online/opencode-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # paseo = {
-    #   url = "path:/home/ixxie/repos/foss/paseo";
-    #   inputs.nixpkgs.follows = "nixpkgs";
-    # };
     # vitro = {
     #   url = "path:/home/ixxie/repos/lab/vitro";
     #   inputs.nixpkgs.follows = "nixpkgs";

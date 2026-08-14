@@ -24,6 +24,20 @@
     aliased // binds;
 in {
   nixpkgs.overlays = [
+    # nixpkgs removed the libdisplay-info_0_2 alias (2026-08-04) but niri-flake
+    # still asserts on it; re-provide the real 0.2.0 until upstream catches up.
+    (_: prev: {
+      libdisplay-info_0_2 = prev.libdisplay-info.overrideAttrs (_: rec {
+        version = "0.2.0";
+        src = prev.fetchFromGitLab {
+          domain = "gitlab.freedesktop.org";
+          owner = "emersion";
+          repo = "libdisplay-info";
+          tag = version;
+          hash = "sha256-6xmWBrPHghjok43eIDGeshpUEQTuwWLXNHg7CnBUt3Q=";
+        };
+      });
+    })
     inputs.niri.overlays.niri
   ];
   environment.systemPackages = with pkgs; [
