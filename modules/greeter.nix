@@ -1,6 +1,13 @@
 {pkgs, config, ...}: let
   s = config.scheme;
   tuigreet = "${pkgs.tuigreet}/bin/tuigreet";
+  # The aggregated wayland/x session files (niri lands here via
+  # programs.niri.enable). Point tuigreet at this explicitly: without it,
+  # tuigreet falls back to /usr/share (empty on NixOS) and login works only
+  # because --remember-session cached an absolute store path to a session
+  # file — which dangles the moment a rebuild + GC moves and removes it,
+  # giving "no command defined" with no session list to recover from.
+  sessions = "${config.services.displayManager.sessionData.desktops}/share/wayland-sessions";
   theme = builtins.concatStringsSep ";" [
     "border=${s.base0D}"
     "text=${s.base05}"
@@ -34,7 +41,10 @@ in {
   services.greetd = {
     enable = true;
     settings.default_session = {
-      command = "${tuigreet} --time --remember-session --asterisks --theme '${theme}'";
+      # --sessions makes the picker find niri fresh every boot; --cmd is the
+      # last-resort command so a missing/empty session list can never again
+      # strand login at "no command defined".
+      command = "${tuigreet} --time --remember-session --sessions ${sessions} --cmd niri-session --asterisks --theme '${theme}'";
       user = "greeter";
     };
   };
