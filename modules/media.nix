@@ -18,16 +18,23 @@
         "bluez5.enable-sbc-xq" = true;
         "bluez5.enable-msbc" = true;
         "bluez5.enable-hw-volume" = true;
+        # a2dp for hi-fi, hfp_ag for headset mics (we are the gateway).
+        # hsp dropped: legacy profile whose SDP lookups kept failing against
+        # modern earbuds and racing the hfp connect. bap dropped: LE Audio
+        # needs ISO sockets bluetoothd doesn't have enabled — it only
+        # produced "Failed to set default system config" noise at boot.
         "bluez5.roles" = [
           "a2dp_sink"
           "a2dp_source"
-          "bap_sink"
-          "bap_source"
-          "hsp_hs"
-          "hsp_ag"
-          "hfp_hf"
           "hfp_ag"
         ];
+      };
+      # Profile choreography is owned by cyberdeck's audio backend, which
+      # switches explicitly and verifies each stage. The on-demand autoswitch
+      # raced flaky HFP links (RFCOMM reset mid-open) and fought explicit
+      # switches, producing connect/disconnect loops.
+      "wireplumber.settings" = {
+        "bluetooth.autoswitch-to-headset-profile" = false;
       };
     };
   };

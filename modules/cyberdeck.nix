@@ -30,6 +30,7 @@ in {
       profiles.enable = true;
       audio.enable = true;
       bluetooth.enable = true;
+      airplane.enable = true;
       system.enable = true;
       brightness.enable = true;
       notifications.enable = true;
