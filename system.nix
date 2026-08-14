@@ -29,6 +29,10 @@ in {
     # Use the gummiboot efi boot loader.
     loader = {
       systemd-boot.enable = true;
+      # The ESP is 512M and the disk has no free space to grow it into, so
+      # cap the generations that keep a kernel + initrd there. At ~25M each,
+      # 10 leaves the partition half empty; unbounded fills it in ~20.
+      systemd-boot.configurationLimit = 10;
       efi.canTouchEfiVariables = true;
     };
   };
