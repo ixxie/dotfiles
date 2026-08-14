@@ -149,7 +149,9 @@ async function executeCommitPlan(plan: CommitPlan[]): Promise<string> {
 }
 
 async function localInputNames(): Promise<string[]> {
-  const flake = await readFile(join(DOTFILES, "flake.nix"), "utf-8");
+  const raw = await readFile(join(DOTFILES, "flake.nix"), "utf-8");
+  // strip comments so disabled inputs are not treated as live
+  const flake = raw.replace(/^\s*#.*$/gm, "");
   const names: string[] = [];
   const re = /(\w[\w-]*)(?:\s*=\s*\{[^{}]*url\s*=\s*"path:|\.url\s*=\s*"path:)/g;
   let m;
@@ -487,18 +489,24 @@ function isLabeled(g: Gen): boolean {
   return !!g.label && !/^\d+\.\d+\./.test(g.label) && g.label !== "unlabeled";
 }
 
-function isRecent(g: Gen): boolean {
+const KEEP_LABELED = 10;
+const MAX_AGE_DAYS = 60;
+
+// Invalid dates parse to 0 days old, so they are never age-expired.
+function olderThan(g: Gen, days: number): boolean {
   const d = new Date(g.date);
-  return !isNaN(d.getTime()) && Date.now() - d.getTime() < 14 * 24 * 60 * 60 * 1000;
+  return !isNaN(d.getTime()) && Date.now() - d.getTime() > days * 24 * 60 * 60 * 1000;
 }
 
 function computeGcSet(gens: Gen[]): Set<string> {
   const labeled = gens.filter(g => isLabeled(g));
   const unlabeled = gens.filter(g => !isLabeled(g));
-  const labeledToRemove = labeled.slice(10);
   const toRemove = [
     ...unlabeled.filter(g => !g.current),
-    ...labeledToRemove.filter(g => !g.current && !isRecent(g)),
+    ...labeled.slice(KEEP_LABELED).filter(g => !g.current && olderThan(g, 14)),
+    // Old generations pin their kernel + initrd in the ESP, so labeled
+    // gens expire by age even within the keep budget.
+    ...labeled.slice(0, KEEP_LABELED).filter(g => !g.current && olderThan(g, MAX_AGE_DAYS)),
   ];
   return new Set(toRemove.map(g => g.id));
 }
@@ -518,6 +526,24 @@ async function performGc(gens: Gen[]) {
   log(sym.gear, pc.yellow("Optimizing nix store..."));
   await run(["nix-store", "--optimise"]);
   success("Cleanup complete!");
+  await reportBoot();
+}
+
+// Removing a generation leaves its kernel + initrd on the ESP until the next
+// switch reinstalls the bootloader, so report the partition rather than
+// implying gc reclaimed it. A full ESP fails the switch that would clean it.
+async function reportBoot() {
+  const proc = Bun.spawn(["df", "--output=pcent,avail", "-h", "/boot"], { stdout: "pipe" });
+  const out = await new Response(proc.stdout).text();
+  if ((await proc.exited) !== 0) return;
+  const [pcent, avail] = out.trim().split("\n").pop()!.trim().split(/\s+/);
+  const used = parseInt(pcent, 10);
+  const line = `/boot ${pcent} used, ${avail} free — freed on next switch`;
+  if (used >= 80) {
+    log(sym.broom, pc.yellow(line));
+  } else {
+    log(sym.check, pc.dim(line));
+  }
 }
 
 // dashboard
@@ -1382,6 +1408,7 @@ async function genDash() {
       log(sym.gear, pc.yellow("Optimizing nix store..."));
       await run(["nix-store", "--optimise"]);
       success("Cleanup complete!");
+      await reportBoot();
       s.gcMarked = new Set();
       console.log(pc.dim("\nPress any key to return..."));
       await new Promise<void>(r => {
