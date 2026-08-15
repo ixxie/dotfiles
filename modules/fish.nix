@@ -52,10 +52,10 @@ in
           '';
         };
         shellAliases = {
-          ls = "eza --icons";
-          ll = "eza -lh --icons";
-          la = "eza -lah --icons";
-          tree = "eza --tree --icons";
+          ls = "eza --icons=auto";
+          ll = "eza -lh --icons=auto";
+          la = "eza -lah --icons=auto";
+          tree = "eza --tree --icons=auto";
           cat = "bat";
         };
         shellInit = ''
