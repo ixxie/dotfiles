@@ -2,20 +2,19 @@
   pkgs,
   inputs,
   ...
-}: let
+}:
+let
   label = builtins.getEnv "NIXOS_LABEL";
-in {
-  imports = [inputs.sops-nix.nixosModules.sops];
+in
+{
+  imports = [ inputs.sops-nix.nixosModules.sops ];
   sops = {
     defaultSopsFile = ./secrets.yaml;
     age.keyFile = "/home/ixxie/.config/sops/age/keys.txt";
   };
   # host
   system.stateVersion = "24.05";
-  system.nixos.label =
-    if label != ""
-    then label
-    else "unlabeled";
+  system.nixos.label = if label != "" then label else "unlabeled";
   networking = {
     hostName = "contingent";
     networkmanager.enable = true;
@@ -40,7 +39,7 @@ in {
   services.printing.enable = true;
 
   # environment
-  time.timeZone = "Europe/Paris";
+  time.timeZone = "Europe/Helsinki";
   i18n.defaultLocale = "en_IE.UTF-8";
 
   # nix-ld for running unpatched binaries
