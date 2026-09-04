@@ -1,9 +1,10 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }: let
-  inherit (import ./lib.nix {inherit lib;}) mkProfile mkPalette;
+  inherit (import ./lib.nix {inherit lib pkgs;}) mkProfile mkPalette;
 in {
   config.home-manager.users.ixxie = mkProfile {
     dir = ".claude";

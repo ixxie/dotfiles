@@ -11,6 +11,9 @@ let
   yo = pkgs.writeShellScriptBin "yo" ''
     exec ${pkgs.bun}/bin/bun /home/ixxie/repos/lab/dotfiles/cli/src/index.ts "$@"
   '';
+  # Everything under here is a qualia clone, so everything under here
+  # belongs to the qualia Claude Code profile.
+  workTree = "$HOME/repos/work";
 in
 {
   programs.fish.enable = true;
@@ -30,6 +33,10 @@ in
 
           # Carapace completions
           carapace _carapace | source
+
+          # --on-variable PWD doesn't fire at startup, and a terminal opened
+          # directly in a work repo never cds.
+          _claude_profile
 
           # Load secrets
           if test -f $DOTFILES/secrets/github_token.txt
@@ -67,6 +74,26 @@ in
         '';
         functions = {
           mkcd = "mkdir -p $argv[1]; and cd $argv[1]";
+
+          # The work tree decides which Claude Code account is in play: every
+          # repo under ~/repos/work belongs to qualia, and that profile carries
+          # its own login, plugins and settings. Set by hand it was set wrong —
+          # `q setup` installed the shared skills into the personal profile,
+          # silently, because that is what the shell was pointed at.
+          _claude_profile = {
+            onVariable = "PWD";
+            body = ''
+              switch $PWD
+                case "${workTree}" "${workTree}/*"
+                  set -gx CLAUDE_CONFIG_DIR $HOME/.claude-qualia
+                case '*'
+                  # Erasing rather than naming the personal path: unset is what
+                  # Claude Code reads as ~/.claude, and a value written here
+                  # would outlive this shell's idea of where it is.
+                  set -q CLAUDE_CONFIG_DIR; and set -e CLAUDE_CONFIG_DIR
+              end
+            '';
+          };
 
           # Tint terminal background when inside the qualia Claude profile
           _claude_profile_tint = {
