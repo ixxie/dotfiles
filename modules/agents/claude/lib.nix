@@ -7,6 +7,12 @@
     theme = "dark";
     preferredNotifChannel = "ghostty";
     voiceEnabled = true;
+    # Push-to-talk. Declared, so /voice is overridden at the next rebuild —
+    # change it here rather than in a session.
+    voice = {
+      enabled = true;
+      mode = "tap";
+    };
     preferredReasoningEffort = "max";
     permissions.defaultMode = "auto";
     skipAutoPermissionPrompt = true;
