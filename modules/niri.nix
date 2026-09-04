@@ -67,11 +67,16 @@ in {
     wlr.enable = true;
     extraPortals = with pkgs; [
       xdg-desktop-portal-wlr
+      xdg-desktop-portal-gnome
       xdg-desktop-portal-gtk
     ];
     config.niri = {
       default = pkgs.lib.mkForce ["gtk"];
-      "org.freedesktop.impl.portal.ScreenCast" = "wlr";
+      # screencast via gnome, which talks niri's native Mutter ScreenCast API.
+      # the wlr backend hands out tiled+DCC amd dmabufs that discord's vulkan
+      # importer reads once and never re-syncs, so shares froze on frame one.
+      # gnome also exposes window sources; wlr only ever offered whole monitors.
+      "org.freedesktop.impl.portal.ScreenCast" = "gnome";
       "org.freedesktop.impl.portal.Screenshot" = "wlr";
     };
   };
