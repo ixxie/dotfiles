@@ -39,7 +39,7 @@ in
   services.printing.enable = true;
 
   # environment
-  time.timeZone = "Europe/Helsinki";
+  time.timeZone = "Europe/Paris";
   i18n.defaultLocale = "en_IE.UTF-8";
 
   # nix-ld for running unpatched binaries
