@@ -58,7 +58,7 @@
           };
           gimp = {
             name = "GIMP";
-            exec = "gimp-3.0 %U";
+            exec = "gimp %U";
             icon = "gimp";
             genericName = "Image Editor";
             categories = [ "Graphics" "2DGraphics" "RasterGraphics" ];
