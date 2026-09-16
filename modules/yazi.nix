@@ -79,7 +79,7 @@ in {
       shellWrapperName = "y";
       theme.flavor.use = "base16";
       keymap = {
-        manager.prepend_keymap = [
+        mgr.prepend_keymap = [
           {
             on = ["<Enter>"];
             run = "plugin smart-enter";
@@ -96,7 +96,7 @@ in {
         opener = {
           open = [
             {
-              run = ''xdg-open "$@"'';
+              run = "xdg-open %s";
               orphan = true;
               desc = "Open with default application";
             }
@@ -114,14 +114,15 @@ in {
     };
 
     # smart-enter plugin: in save/directory mode, Enter on a dir confirms and quits
-    xdg.configFile."yazi/plugins/smart-enter.yazi/init.lua".text = ''
+    xdg.configFile."yazi/plugins/smart-enter.yazi/main.lua".text = ''
+      --- @sync entry
       return {
         entry = function()
           local h = cx.active.current.hovered
           if h and h.cha.is_dir and os.getenv("YAZI_SAVE_MODE") == "1" then
-            ya.manager_emit("quit", {})
+            ya.emit("quit", {})
           else
-            ya.manager_emit("open", {})
+            ya.emit("open", {})
           end
         end,
       }
