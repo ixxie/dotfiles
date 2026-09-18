@@ -1,6 +1,7 @@
 {
   imports = [
     ./claude
+    ./codex.nix
     ./opencode.nix
   ];
 
