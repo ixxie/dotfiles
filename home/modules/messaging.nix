@@ -3,7 +3,12 @@
   environment.systemPackages = with pkgs; [
     signal-desktop
     element-desktop
-    discord
+    # bwrap's --die-with-parent races niri's spawn double-fork: the intermediate
+    # child exits after bwrap has armed PDEATHSIG, so discord is SIGKILLed on
+    # launch. keep the FHS env (krisp needs the unpatched binary).
+    (discord.override {
+      buildFHSEnv = args: buildFHSEnv (args // {dieWithParent = false;});
+    })
     cinny
   ];
 
