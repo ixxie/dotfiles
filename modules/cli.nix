@@ -14,6 +14,7 @@
     ];
     noDisplay = true;
   };
+  vercel = pkgs.callPackage ../pkgs/vercel.nix {};
 in {
   # Basic Package Suite
   environment.systemPackages = with pkgs; [
@@ -49,6 +50,7 @@ in {
     testdisk
     tree
     unzip
+    vercel
     wget
     # desktop utilities
     tumbler
