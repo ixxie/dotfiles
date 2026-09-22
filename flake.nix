@@ -53,6 +53,7 @@
 
           # ops
           ./modules/restic-backup.nix
+          ./modules/hetzner.nix
         ];
       };
 
