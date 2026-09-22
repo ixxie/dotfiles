@@ -50,6 +50,7 @@ in {
     testdisk
     tree
     unzip
+    uv
     vercel
     wget
     # desktop utilities
