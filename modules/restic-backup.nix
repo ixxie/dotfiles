@@ -1,10 +1,13 @@
-# restic-backup — daily snapshot of contingent's $HOME to amoeba.
+# restic-backup — daily snapshot of contingent's $HOME to bacillus.
 #
-# Stop-gap design: single repo on amoeba's secondary SSD, accessed over
-# SFTP as ixxie@amoeba. Password lives in sops; exclude list is
-# hand-curated below. Forget policy keeps 7d/4w/6m.
+# Single repo on a Hetzner volume mounted at /var/backup on bacillus (the
+# volume outlives the VM), accessed over SFTP as ixxie@bacillus via
+# tailscale. Password lives in sops; exclude list is hand-curated below.
+# Forget policy keeps 7d/4w/6m. The whole home goes, except temp/, the
+# office group (client data never lands on the personal server) and
+# regenerable caches/artifacts.
 #
-# Restore: `restic -r sftp:ixxie@95.216.229.121:/var/backup/restic/contingent snapshots`
+# Restore: `restic -r sftp:ixxie@bacillus:/var/backup/restic/contingent snapshots`
 {
   config,
   pkgs,
@@ -32,9 +35,12 @@
     .pnpm-store
     .bun/install/cache
 
-    # large opaque blobs the user can re-acquire
+    # scratch — never backed up
     temp
-    media
+
+    # client work — never on the personal server (old and new layout)
+    projects/office
+    repos/work
 
     # build artifacts everywhere under repos/
     repos/*/target
@@ -51,24 +57,25 @@
     repos/**/.direnv
     repos/**/dist
 
-    # foss/ is just upstream clones — re-cloneable, large
+    # upstream clones — re-cloneable, large (old and new layout)
     repos/foss
+    projects/community
+    projects/**/target
+    projects/**/result
+    projects/**/node_modules
+    projects/**/.direnv
 
-    # cella's heavy artifacts
-    repos/lab/cella/target
-
-    # vitro env state lives on amoeba already
-    repos/lab/cella/.vitro/state
-    repos/lab/vitro/.vitro/state
+    # parked checkouts
+    repos/lab/.archive
 
     # nix-related noise
     .nix-profile
     .local/state/nix
   '';
 
-  repo = "sftp:ixxie@95.216.229.121:/var/backup/restic/contingent";
+  repo = "sftp:ixxie@bacillus:/var/backup/restic/contingent";
 
-  backupScript = pkgs.writeShellScript "restic-backup-amoeba" ''
+  backupScript = pkgs.writeShellScript "restic-backup-bacillus" ''
     set -euo pipefail
 
     export RESTIC_PASSWORD_FILE=${config.sops.secrets.restic-password.path}
@@ -97,8 +104,8 @@ in {
     mode = "0400";
   };
 
-  systemd.services.restic-backup-amoeba = {
-    description = "restic backup of /home/ixxie to amoeba";
+  systemd.services.restic-backup-bacillus = {
+    description = "restic backup of /home/ixxie to bacillus";
     after = ["network-online.target"];
     wants = ["network-online.target"];
 
@@ -115,8 +122,8 @@ in {
     };
   };
 
-  systemd.timers.restic-backup-amoeba = {
-    description = "daily restic backup to amoeba";
+  systemd.timers.restic-backup-bacillus = {
+    description = "daily restic backup to bacillus";
     wantedBy = ["timers.target"];
     timerConfig = {
       OnCalendar = "03:00";
