@@ -1,13 +1,14 @@
 # restic-backup — daily snapshot of contingent's $HOME to bacillus.
 #
 # Single repo on a Hetzner volume mounted at /var/backup on bacillus (the
-# volume outlives the VM), accessed over SFTP as ixxie@bacillus via
-# tailscale. Password lives in sops; exclude list is hand-curated below.
+# volume outlives the VM), accessed over SFTP as ixxie@bacillus.corpus.pub
+# (public DNS, key-only ssh; no tailnet is involved). Password lives in
+# sops; exclude list is hand-curated below.
 # Forget policy keeps 7d/4w/6m. The whole home goes, except temp/, the
 # office group (client data never lands on the personal server) and
 # regenerable caches/artifacts.
 #
-# Restore: `restic -r sftp:ixxie@bacillus:/var/backup/restic/contingent snapshots`
+# Restore: `restic -r sftp:ixxie@bacillus.corpus.pub:/var/backup/restic/contingent snapshots`
 {
   config,
   pkgs,
@@ -73,7 +74,7 @@
     .local/state/nix
   '';
 
-  repo = "sftp:ixxie@bacillus:/var/backup/restic/contingent";
+  repo = "sftp:ixxie@bacillus.corpus.pub:/var/backup/restic/contingent";
 
   backupScript = pkgs.writeShellScript "restic-backup-bacillus" ''
     set -euo pipefail
