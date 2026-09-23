@@ -34,5 +34,5 @@ work.
   laptop, readable with the restic password, which lives in sops and so
   depends on the operator's age key.
 - Failures are only in the journal
-  ([backup failures are silent](corpus:issue/26-09-23-backup-failures-are-silent)).
+  ([backup failures are silent](corpus:ticket/26-09-23-backup-failures-are-silent)).
 - See [backup](corpus:guide/backup).

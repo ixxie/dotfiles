@@ -30,6 +30,6 @@ to run when no session is chosen or found.
   a moved niri no longer strands login.
 - `--remember-session` still caches a path; the fallback covers it, but
   the watch item stays open
-  ([greeter remembered session](corpus:issue/26-09-23-greeter-remembered-session-still-cached)).
+  ([greeter remembered session](corpus:ticket/26-09-23-greeter-remembered-session-still-cached)).
 - The general rule for this config: nothing at boot may depend on a
   remembered store path.

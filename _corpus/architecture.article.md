@@ -201,7 +201,7 @@ Most modules configure the user, and most of them do it from NixOS: they set
   `GANDI_TOKEN` (the Gandi module is staged but not yet committed), so an
   agent can provision without being handed a token.
 - `modules/vitro.nix` is kept but commented out of the flake; see
-  [the vitro module is dead](corpus:issue/26-09-23-vitro-module-is-dead).
+  [the vitro module is dead](corpus:ticket/26-09-23-vitro-module-is-dead).
 
 ## The yo CLI
 
@@ -237,5 +237,5 @@ Under `modules/`, most files are user config expressed as NixOS modules,
 and several (`niri.nix`, `media.nix`, `greeter.nix`, `torrent.nix`,
 `restic-backup.nix`) are genuinely both. The flake's own grouping comments
 (host · lib · shell · desktop · apps · dev · ops) are the closest thing to
-a map. [Splitting host and user config](corpus:issue/26-09-23-split-host-and-user-config)
+a map. [Splitting host and user config](corpus:ticket/26-09-23-split-host-and-user-config)
 tracks the intended separation.

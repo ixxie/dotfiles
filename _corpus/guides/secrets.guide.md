@@ -27,7 +27,7 @@ By name only:
 
 Three more keys are in the file and used by nothing:
 `cella-credentials`, `opencode-api-key`, `paseo-password` (see
-[orphan secrets](corpus:issue/26-09-23-orphan-secrets-and-a-dead-token-path)).
+[orphan secrets](corpus:ticket/26-09-23-orphan-secrets-and-a-dead-token-path)).
 
 ## Add a secret
 

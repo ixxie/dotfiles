@@ -28,5 +28,5 @@ outgrows a file becomes a directory (`modules/agents/`,
 - Deleting a feature is deleting a file and a line in `flake.nix`.
 - Host and user config are mixed within files. That is the point of the
   layout, and also what makes the
-  [host/user split](corpus:issue/26-09-23-split-host-and-user-config) a
+  [host/user split](corpus:ticket/26-09-23-split-host-and-user-config) a
   real refactor rather than a move.

@@ -57,9 +57,9 @@ systemctl list-timers restic-backup-bacillus
 ```
 
 A failed run is only visible there; nothing notifies (see
-[backup failures are silent](corpus:issue/26-09-23-backup-failures-are-silent)).
+[backup failures are silent](corpus:ticket/26-09-23-backup-failures-are-silent)).
 The first run against bacillus still waits on a switch (see
-[the first run](corpus:issue/26-09-23-backup-first-run-waits-on-a-switch)).
+[the first run](corpus:ticket/26-09-23-backup-first-run-waits-on-a-switch)).
 
 ## Restore
 

@@ -32,4 +32,4 @@ module is enabled alongside.
   this changes.
 - Idle bluetooth disconnects, if they return, point at USB autosuspend,
   which is not declared here
-  ([btusb autosuspend](corpus:issue/26-09-23-btusb-autosuspend-not-declared)).
+  ([btusb autosuspend](corpus:ticket/26-09-23-btusb-autosuspend-not-declared)).

@@ -35,7 +35,7 @@ The two halves are not separated. Most modules under `modules/` set NixOS
 options and `home-manager.users.ixxie` options side by side, one file per
 concern, so "the host" and "the user" are a reading of the code rather than
 a directory. [Architecture](corpus:article/architecture) maps it, and
-[splitting the host and user config](corpus:issue/26-09-23-split-host-and-user-config)
+[splitting the host and user config](corpus:ticket/26-09-23-split-host-and-user-config)
 is the open plan to change it.
 
 ## How it is applied

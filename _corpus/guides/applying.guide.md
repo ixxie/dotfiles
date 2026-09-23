@@ -48,11 +48,11 @@ What `yo gen switch` does, in order:
 
 1. with `-u`, `sudo nix flake update`;
 2. updates local `path:` inputs by name (see
-   [yo misses git+file local inputs](corpus:issue/26-09-23-yo-misses-git-file-local-inputs):
+   [yo misses git+file local inputs](corpus:ticket/26-09-23-yo-misses-git-file-local-inputs):
    cyberdeck and janeway are `git+file:` and are not caught);
 3. `git add -A` in the repository, which stages every change, including
    ones you meant to keep out of the index (see
-   [yo gen switch stages the whole tree](corpus:issue/26-09-23-yo-gen-switch-stages-the-whole-tree));
+   [yo gen switch stages the whole tree](corpus:ticket/26-09-23-yo-gen-switch-stages-the-whole-tree));
 4. `sudo env <.env lines> NIXOS_LABEL=<label> nixos-rebuild switch --impure --flake ~/repos/lab/dotfiles#contingent`.
 
 `--impure` is needed because `system.nix` reads `NIXOS_LABEL` from the

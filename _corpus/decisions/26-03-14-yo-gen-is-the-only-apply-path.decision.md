@@ -33,6 +33,6 @@ laptop are not permitted `sudo`, `yo` or `nixos-rebuild`.
   the operator, and agents must say so rather than work around it.
 - `yo`'s behavior is part of the apply path: its `git add -A` and its
   local-input detection matter
-  ([stages the whole tree](corpus:issue/26-09-23-yo-gen-switch-stages-the-whole-tree),
-  [misses git+file inputs](corpus:issue/26-09-23-yo-misses-git-file-local-inputs)).
+  ([stages the whole tree](corpus:ticket/26-09-23-yo-gen-switch-stages-the-whole-tree),
+  [misses git+file inputs](corpus:ticket/26-09-23-yo-misses-git-file-local-inputs)).
 - See [applying changes](corpus:guide/applying).

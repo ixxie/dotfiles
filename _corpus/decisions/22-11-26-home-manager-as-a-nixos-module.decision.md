@@ -27,7 +27,7 @@ halves; one generation holds both.
   (see [flat modules by concern](corpus:decision/25-03-04-flat-modules-by-concern)).
 - The user half cannot be applied without root, and cannot be reused on a
   machine that is not this NixOS host. That is the cost the
-  [host/user split](corpus:issue/26-09-23-split-host-and-user-config)
+  [host/user split](corpus:ticket/26-09-23-split-host-and-user-config)
   wants to undo.
 - home-manager backs up clobbered files with the `backup` extension
   instead of failing the switch.
