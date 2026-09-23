@@ -25,6 +25,7 @@ in {
   config.home-manager.users.ixxie = {
     home.packages = with pkgs; [
       inputs.claude-code.packages.x86_64-linux.default
+      (pkgs.callPackage ./usage-record.nix {})
       curl
       wget
       jq

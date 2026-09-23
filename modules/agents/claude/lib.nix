@@ -18,6 +18,14 @@
     preferredReasoningEffort = "max";
     permissions.defaultMode = "auto";
     skipAutoPermissionPrompt = true;
+    # corpus:decision/26-09-24-autonomous-usage-stays-under-80-of-the-session-limit
+    # Records rate_limits (when Claude Code passes them) to
+    # ~/.local/state/claude/usage.json and prints "5h NN% · 7d MM%" —
+    # the laptop half of the budget guard bacillus's claude-worker reads.
+    statusLine = {
+      type = "command";
+      command = "claude-usage-record";
+    };
   };
 
   agentsMd = builtins.readFile ../AGENTS.md;
