@@ -1,3 +1,4 @@
+# corpus:article/architecture
 {pkgs, ...}: {
   environment.systemPackages = with pkgs; [
     spotify

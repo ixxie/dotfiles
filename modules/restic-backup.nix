@@ -1,3 +1,5 @@
+# corpus:article/architecture
+# corpus:guide/backup
 # restic-backup — daily snapshot of contingent's $HOME to bacillus.
 #
 # Single repo on a Hetzner volume mounted at /var/backup on bacillus (the

@@ -1,3 +1,5 @@
+# corpus:article/architecture
+# corpus:issue/26-09-23-vitro-module-is-dead
 # vitro — laptop-side client config.
 # Declares the host registry and client preferences. The vitro module
 # materializes ~/.config/vitro/hosts.toml from this; the vitro CLI

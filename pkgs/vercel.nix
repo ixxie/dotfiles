@@ -1,3 +1,4 @@
+# corpus:article/architecture
 # Vercel CLI is not in nixpkgs (it went away with nodePackages), and the npm
 # package pulls a dependency tree that is not fully published. Vercel ships an
 # official standalone binary per platform, so we take that.

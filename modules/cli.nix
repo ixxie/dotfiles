@@ -1,3 +1,4 @@
+# corpus:article/architecture
 {pkgs, ...}: let
   viu-desktop = pkgs.makeDesktopItem {
     name = "viu";

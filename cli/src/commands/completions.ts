@@ -1,3 +1,4 @@
+// corpus:article/architecture#the-yo-cli
 import type { Command } from "commander";
 import { findRepos } from "./repos.ts";
 import { findApps } from "./open.ts";

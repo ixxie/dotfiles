@@ -1,3 +1,4 @@
+# corpus:article/architecture
 {pkgs, ...}: {
   services.tailscale = {
     enable = true;

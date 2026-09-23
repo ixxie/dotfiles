@@ -1,3 +1,4 @@
+# corpus:article/architecture
 { lib, writeText
 , overlay ? {}
 , layout ? {}

@@ -1,3 +1,4 @@
+# corpus:article/architecture
 {config, ...}: {
   home-manager.users.ixxie = {
     programs.helix = {

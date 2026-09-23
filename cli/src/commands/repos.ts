@@ -1,3 +1,4 @@
+// corpus:article/architecture#the-yo-cli
 import type { Command } from "commander";
 import pc from "picocolors";
 import { readdir, stat } from "node:fs/promises";

@@ -1,3 +1,4 @@
+// corpus:article/architecture#the-yo-cli
 import type { Command } from "commander";
 import { rm } from "node:fs/promises";
 import { HOME, sym, log, success, error, run } from "../utils.ts";

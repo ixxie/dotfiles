@@ -1,3 +1,4 @@
+# corpus:article/architecture
 {inputs, ...}: let
   agentsMd = builtins.readFile ./AGENTS.md;
 in {

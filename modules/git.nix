@@ -1,3 +1,4 @@
+# corpus:article/architecture
 {pkgs, ...}: let
   bergConfig = (pkgs.formats.toml {}).generate "berg.toml" {
     base_url = "codeberg.org";

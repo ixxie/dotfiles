@@ -1,3 +1,4 @@
+# corpus:article/architecture
 {pkgs, ...}:
 with pkgs; {
   environment.systemPackages = [

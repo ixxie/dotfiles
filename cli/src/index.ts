@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+// corpus:article/architecture#the-yo-cli
 import { program } from "commander";
 import pc from "picocolors";
 

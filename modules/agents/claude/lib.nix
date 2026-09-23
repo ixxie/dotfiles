@@ -1,3 +1,5 @@
+# corpus:article/architecture
+# corpus:decision/26-09-04-claude-settings-merge-and-follow-the-work-tree
 {
   lib,
   pkgs,

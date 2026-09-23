@@ -1,3 +1,6 @@
+# corpus:article/architecture
+# corpus:guide/secrets
+# corpus:decision/26-03-29-secretenv-exports-secrets-to-shells
 {config, lib, ...}: let
   cfg = config.secretEnv;
 in {

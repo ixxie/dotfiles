@@ -1,3 +1,4 @@
+// corpus:article/architecture#the-yo-cli
 import type { Command } from "commander";
 import { run } from "../utils.ts";
 

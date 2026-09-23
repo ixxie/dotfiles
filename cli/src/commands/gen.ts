@@ -1,3 +1,6 @@
+// corpus:article/architecture#the-yo-cli
+// corpus:guide/applying
+// corpus:decision/26-03-14-yo-gen-is-the-only-apply-path
 import type { Command } from "commander";
 import pc from "picocolors";
 import {

@@ -1,3 +1,4 @@
+# corpus:article/architecture
 {pkgs, ...}: {
   # Hetzner Cloud from any shell, agents included: the token rides the same
   # secretEnv path as the other keys (sops → exported at shell init). Add

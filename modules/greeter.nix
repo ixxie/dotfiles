@@ -1,3 +1,5 @@
+# corpus:article/architecture
+# corpus:decision/26-08-14-greeter-sessions-come-from-the-closure
 {pkgs, config, ...}: let
   s = config.scheme;
   tuigreet = "${pkgs.tuigreet}/bin/tuigreet";
