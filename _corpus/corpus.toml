@@ -1,0 +1,19 @@
+# The corpus of contingent's config: the NixOS flake, its modules and the
+# `yo` CLI. Nothing is enforced yet; the gate has no required citations
+# until the host/user split settles what the code paths are.
+
+[types.decision]
+frozen = true               # accepted decisions are never edited again
+
+# Decisions here were recorded after the fact from the git history, so most
+# are cited by no commit. That gap is a worklist, not a defect.
+[drift]
+uncited = "warn"
+
+# The architecture article draws the stack with strata (lab/strata).
+[diagram.strata]
+command = ["strata"]
+
+[[nav]]
+title = "Start here"
+docs = ["article/overview", "article/architecture"]
