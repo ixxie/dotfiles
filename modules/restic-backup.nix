@@ -81,6 +81,11 @@
     export RESTIC_PASSWORD_FILE=${config.sops.secrets.restic-password.path}
     export RESTIC_REPOSITORY=${repo}
 
+    # first run against a fresh volume: initialize the repository
+    if ! ${pkgs.restic}/bin/restic snapshots --quiet >/dev/null 2>&1; then
+      ${pkgs.restic}/bin/restic init
+    fi
+
     # clear stale locks from interrupted prior runs before we take our own
     ${pkgs.restic}/bin/restic unlock
 
