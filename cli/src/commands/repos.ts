@@ -22,20 +22,21 @@ export async function findRepos(): Promise<{ name: string; path: string }[]> {
     if (!entry.isDirectory()) continue;
     const fullPath = join(REPOS, entry.name);
 
+    // A group is itself a meta-repo whose members are untracked siblings
+    // inside it, so a group is listed and still descended into.
     if (await isGitRepo(fullPath)) {
       repos.push({ name: entry.name, path: fullPath });
-    } else {
-      try {
-        const subEntries = await readdir(fullPath, { withFileTypes: true });
-        for (const sub of subEntries) {
-          if (!sub.isDirectory()) continue;
-          const subPath = join(fullPath, sub.name);
-          if (await isGitRepo(subPath)) {
-            repos.push({ name: `${entry.name}/${sub.name}`, path: subPath });
-          }
-        }
-      } catch {}
     }
+    try {
+      const subEntries = await readdir(fullPath, { withFileTypes: true });
+      for (const sub of subEntries) {
+        if (!sub.isDirectory()) continue;
+        const subPath = join(fullPath, sub.name);
+        if (await isGitRepo(subPath)) {
+          repos.push({ name: `${entry.name}/${sub.name}`, path: subPath });
+        }
+      }
+    } catch {}
   }
 
   return repos.sort((a, b) => a.name.localeCompare(b.name));
@@ -44,7 +45,7 @@ export async function findRepos(): Promise<{ name: string; path: string }[]> {
 export default function register(program: Command) {
   program
     .command("repos")
-    .description("List repos in ~/repos")
+    .description("List repos in ~/projects")
     .action(async () => {
       const repos = await findRepos();
 
@@ -61,7 +62,7 @@ export default function register(program: Command) {
       }
 
       if (rootRepos.length > 0) {
-        console.log(pc.cyan("\nrepos/"));
+        console.log(pc.cyan("\nprojects/"));
         for (const r of rootRepos) {
           console.log(pc.white(`  ${r.name}`));
         }

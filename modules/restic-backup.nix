@@ -6,7 +6,7 @@
 # volume outlives the VM), accessed over SFTP as ixxie@bacillus.corpus.pub
 # (public DNS, key-only ssh; no tailnet is involved). Password lives in
 # sops; exclude list is hand-curated below.
-# Forget policy keeps 7d/4w/6m. The whole home goes, except temp/, the
+# Forget policy keeps 7d/4w/6m. The whole home goes, except temp/, inbox/, the
 # office group (client data never lands on the personal server) and
 # regenerable caches/artifacts.
 #
@@ -41,9 +41,14 @@
     # scratch — never backed up
     temp
 
-    # client work — never on the personal server (old and new layout)
+    # capture zone — 30-day retention, never backed up
+    inbox
+
+    # client work — never on the personal server
     projects/office
-    repos/work
+
+    # prototypes — no backup; members live on their remotes
+    projects/playground
 
     # build artifacts everywhere under repos/
     repos/*/target
@@ -60,16 +65,21 @@
     repos/**/.direnv
     repos/**/dist
 
-    # upstream clones — re-cloneable, large (old and new layout)
-    repos/foss
+    # upstream clones — re-cloneable, large
     projects/community
     projects/**/target
     projects/**/result
     projects/**/node_modules
     projects/**/.direnv
 
+    # cold storage keeps sources, not artifacts
+    archive/**/target
+    archive/**/result
+    archive/**/node_modules
+    archive/**/.direnv
+
     # parked checkouts
-    repos/lab/.archive
+    projects/workshop/.archive
 
     # nix-related noise
     .nix-profile
