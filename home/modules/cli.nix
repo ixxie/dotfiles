@@ -15,7 +15,7 @@
     ];
     noDisplay = true;
   };
-  vercel = pkgs.callPackage ../pkgs/vercel.nix {};
+  vercel = pkgs.callPackage ../../pkgs/vercel.nix {};
 in {
   # Basic Package Suite
   environment.systemPackages = with pkgs; [

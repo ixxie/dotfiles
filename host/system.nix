@@ -10,7 +10,7 @@ in
 {
   imports = [ inputs.sops-nix.nixosModules.sops ];
   sops = {
-    defaultSopsFile = ./secrets.yaml;
+    defaultSopsFile = ../secrets.yaml;
     age.keyFile = "/home/ixxie/.config/sops/age/keys.txt";
   };
   # host

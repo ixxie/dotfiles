@@ -26,7 +26,7 @@ in {
 
   # user-level nix config so flake commands (not just daemon) have the token
   sops.secrets.nix-access-tokens-user = {
-    sopsFile = ./secrets.yaml;
+    sopsFile = ../secrets.yaml;
     key = "nix-access-tokens";
     mode = "0400";
     owner = "ixxie";
