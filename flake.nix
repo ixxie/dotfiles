@@ -54,6 +54,7 @@
           # ops
           ./modules/restic-backup.nix
           ./modules/hetzner.nix
+          ./modules/gandi.nix
         ];
       };
 
@@ -88,7 +89,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     cyberdeck = {
-      url = "git+file:///home/ixxie/repos/lab/cyberdeck";
+      url = "git+file:///home/ixxie/projects/playground/cyberdeck";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     home-manager = {
@@ -96,7 +97,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     janeway = {
-      url = "git+file:///home/ixxie/repos/foss/janeway";
+      url = "git+file:///home/ixxie/projects/community/janeway";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     niri = {

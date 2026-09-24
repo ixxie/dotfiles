@@ -41,9 +41,11 @@
     # scratch — never backed up
     temp
 
-    # client work — never on the personal server (old and new layout)
+    # client work — never on the personal server
     projects/office
-    repos/work
+
+    # prototypes — no backup; members live on their remotes
+    projects/playground
 
     # build artifacts everywhere under repos/
     repos/*/target
@@ -60,16 +62,21 @@
     repos/**/.direnv
     repos/**/dist
 
-    # upstream clones — re-cloneable, large (old and new layout)
-    repos/foss
+    # upstream clones — re-cloneable, large
     projects/community
     projects/**/target
     projects/**/result
     projects/**/node_modules
     projects/**/.direnv
 
+    # cold storage keeps sources, not artifacts
+    archive/**/target
+    archive/**/result
+    archive/**/node_modules
+    archive/**/.direnv
+
     # parked checkouts
-    repos/lab/.archive
+    projects/workshop/.archive
 
     # nix-related noise
     .nix-profile

@@ -1,7 +1,7 @@
 import pc from "picocolors";
 
 export const HOME = process.env.HOME ?? "/home/ixxie";
-export const DOTFILES = `${HOME}/repos/lab/dotfiles`;
+export const DOTFILES = `${HOME}/projects/workshop/dotfiles`;
 export const FLAKE = `${DOTFILES}#contingent`;
 export const REPOS = `${HOME}/repos`;
 

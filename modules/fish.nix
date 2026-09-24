@@ -10,11 +10,11 @@ let
     exec ghostty -e hx "$@"
   '';
   yo = pkgs.writeShellScriptBin "yo" ''
-    exec ${pkgs.bun}/bin/bun /home/ixxie/repos/lab/dotfiles/cli/src/index.ts "$@"
+    exec ${pkgs.bun}/bin/bun /home/ixxie/projects/workshop/dotfiles/cli/src/index.ts "$@"
   '';
   # Everything under here is a qualia clone, so everything under here
   # belongs to the qualia Claude Code profile.
-  workTree = "$HOME/repos/work";
+  workTree = "$HOME/projects/office";
 in
 {
   programs.fish.enable = true;
@@ -69,7 +69,7 @@ in
         shellInit = ''
           fish_add_path $HOME/.local/bin
           set -gx MASCOPE_PATH /home/ixxie/repos/archive/mascope
-          set -gx DOTFILES /home/ixxie/repos/lab/dotfiles
+          set -gx DOTFILES /home/ixxie/projects/workshop/dotfiles
           set -gx QT_QPA_PLATFORM wayland
           set -gx LAUNCH_EDITOR hx-open
         '';
@@ -77,7 +77,7 @@ in
           mkcd = "mkdir -p $argv[1]; and cd $argv[1]";
 
           # The work tree decides which Claude Code account is in play: every
-          # repo under ~/repos/work belongs to qualia, and that profile carries
+          # repo under ~/projects/office belongs to qualia, and that profile carries
           # its own login, plugins and settings. Set by hand it was set wrong —
           # `q setup` installed the shared skills into the personal profile,
           # silently, because that is what the shell was pointed at.
