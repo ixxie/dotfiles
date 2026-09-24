@@ -32,7 +32,7 @@
           setSessionVariables = true;
           desktop = home;
           documents = "${home}/docs";
-          download = "${home}/temp";
+          download = "${home}/inbox";
           music = "${home}/media";
           pictures = "${home}/media";
           publicShare = home;

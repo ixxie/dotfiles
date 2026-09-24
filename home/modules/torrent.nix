@@ -34,8 +34,8 @@ in {
     user = "ixxie";
     group = "users";
     settings = {
-      download-dir = "/home/ixxie/temp";
-      incomplete-dir = "/home/ixxie/temp/.incomplete";
+      download-dir = "/home/ixxie/inbox";
+      incomplete-dir = "/home/ixxie/inbox/.incomplete";
       incomplete-dir-enabled = true;
       port-forwarding-enabled = true;
       peer-port = 49164;

@@ -68,7 +68,6 @@ in
         };
         shellInit = ''
           fish_add_path $HOME/.local/bin
-          set -gx MASCOPE_PATH /home/ixxie/repos/archive/mascope
           set -gx DOTFILES /home/ixxie/projects/workshop/dotfiles
           set -gx QT_QPA_PLATFORM wayland
           set -gx LAUNCH_EDITOR hx-open
