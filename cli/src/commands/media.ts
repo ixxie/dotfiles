@@ -631,6 +631,7 @@ function torrentInfoLines(r: searchLib.Result | null, best: boolean, width: numb
   lines.push(pc.dim("Seeds: ") + pc.green(String(r.seeds)));
   lines.push(pc.dim("Peers: ") + pc.cyan(String(r.peers)));
   lines.push(pc.dim("Size: ") + pc.magenta(r.size));
+  lines.push(pc.dim("Source: ") + r.source + (r.trusted ? pc.green(" ✓ trusted") : ""));
   if (best) {
     lines.push("");
     lines.push(pc.green("\u2605 Best match"));
