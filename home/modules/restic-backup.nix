@@ -44,6 +44,9 @@
     # capture zone — 30-day retention, never backed up
     inbox
 
+    # kept media, re-downloadable — the one subtree of ~/files left out
+    files/library
+
     # client work — never on the personal server
     projects/office
 

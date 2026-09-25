@@ -30,7 +30,7 @@ in {
     programs.mbsync.enable = true;
 
     accounts.email = {
-      maildirBasePath = "mail";
+      maildirBasePath = "files/mail";
       accounts.proton = {
         primary = true;
         address = protonEmail;

@@ -31,15 +31,17 @@
           createDirectories = false;
           setSessionVariables = true;
           desktop = home;
-          documents = "${home}/docs";
+          # Files by topic, not by media type: one tree under ~/files,
+          # with library/ the one subtree the backup leaves out.
+          documents = "${home}/files/docs";
           download = "${home}/inbox";
-          music = "${home}/media";
-          pictures = "${home}/media";
+          music = "${home}/files/media";
+          pictures = "${home}/files/media";
           publicShare = home;
-          templates = "${home}/repos";
-          videos = "${home}/media";
+          templates = "${home}/files";
+          videos = "${home}/files/media";
           extraConfig = {
-            SCREENSHOTS = "${home}/media/snips";
+            SCREENSHOTS = "${home}/files/media/snips";
           };
         };
         desktopEntries = {
