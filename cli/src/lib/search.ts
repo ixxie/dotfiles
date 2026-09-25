@@ -106,19 +106,27 @@ async function torrentsCSV(query: string, limit: number): Promise<Result[]> {
     }>;
   };
 
-  return data.torrents.map(t => ({
-    title: t.name,
-    seeds: t.seeders ?? 0,
-    peers: t.leechers ?? 0,
-    bytes: t.size_bytes ?? 0,
-    size: fmtSize(t.size_bytes ?? 0),
-    magnet: magnetFromHash(t.infohash, t.name),
-    source: "torrents-csv",
-  }));
+  // torrents-csv matches loosely ("Planetes" finds every "Planet" film),
+  // so keep only titles that carry every term of the query
+  const terms = queryTerms(query).toLowerCase().split(" ").filter(Boolean);
+  return data.torrents
+    .filter(t => {
+      const name = t.name.toLowerCase();
+      return terms.every(term => name.includes(term));
+    })
+    .map(t => ({
+      title: t.name,
+      seeds: t.seeders ?? 0,
+      peers: t.leechers ?? 0,
+      bytes: t.size_bytes ?? 0,
+      size: fmtSize(t.size_bytes ?? 0),
+      magnet: magnetFromHash(t.infohash, t.name),
+      source: "torrents-csv",
+    }));
 }
 
 // nyaa matches whole words, so title punctuation only hurts
-function nyaaTerms(s: string): string {
+function queryTerms(s: string): string {
   return s.replace(/['`’]/g, "").replace(/[:"!?.,()[\]]/g, " ").replace(/\s+/g, " ").trim();
 }
 
@@ -156,8 +164,8 @@ async function nyaaPage(q: string, limit: number): Promise<Result[]> {
 // English anime titles are often "Name: Subtitle" while uploads carry the
 // romaji name, so the part before the colon or dash is searched as well
 async function nyaa(query: string, limit: number): Promise<Result[]> {
-  const full = nyaaTerms(query);
-  const short = nyaaTerms(query.split(/:|\s[-–—]\s/)[0]);
+  const full = queryTerms(query);
+  const short = queryTerms(query.split(/:|\s[-–—]\s/)[0]);
   const queries = short && short !== full ? [full, short] : [full];
   const pages = await Promise.all(queries.map(q => nyaaPage(q, limit)));
   return pages.flat();
