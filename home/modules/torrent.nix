@@ -33,6 +33,15 @@ in {
   systemd.tmpfiles.rules = [
     "d /home/ixxie/inbox 0755 ixxie users -"
     "d /home/ixxie/inbox/.incomplete 0755 ixxie users -"
+    "d /home/ixxie/files/library 0755 ixxie users -"
+  ];
+
+  # Kept torrents live in ~/files/library (the one subtree the backup
+  # leaves out); the sandbox has to be told, or the daemon cannot seed
+  # from there. After a switch: transmission-remote -t all --find
+  # /home/ixxie/files/library
+  systemd.services.transmission.serviceConfig.ReadWritePaths = [
+    "/home/ixxie/files/library"
   ];
 
   # torrent daemon
