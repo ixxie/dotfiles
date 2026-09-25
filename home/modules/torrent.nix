@@ -27,6 +27,14 @@ in {
     proxy = "http://127.0.0.1:${toString proxyPort}";
   };
 
+  # The daemon's sandbox binds both directories before it starts, so they
+  # have to exist; the first switch after the inbox move failed on the
+  # incomplete one.
+  systemd.tmpfiles.rules = [
+    "d /home/ixxie/inbox 0755 ixxie users -"
+    "d /home/ixxie/inbox/.incomplete 0755 ixxie users -"
+  ];
+
   # torrent daemon
   services.transmission = {
     enable = true;
