@@ -30,6 +30,13 @@ if [ -n "$rate_limits" ]; then
     record="$(jq -n --argjson recorded_at "$now" --argjson rate_limits "$rate_limits" \
       '{recorded_at: $recorded_at, rate_limits: $rate_limits}' 2>/dev/null)" || record=""
     if [ -n "$record" ]; then
+      # History for calibrating tokens per point: one line per changed
+      # reading, not per status-line refresh.
+      prev="$(jq -c '.rate_limits // empty' "$usage_file" 2>/dev/null)" || prev=""
+      if [ "$prev" != "$rate_limits" ]; then
+        printf '%s\n' "$record" | jq -c --arg host "$(uname -n 2>/dev/null || echo unknown)" '. + {host: $host}' \
+          >> "$state_dir/usage.jsonl" 2>/dev/null || true
+      fi
       tmp="$(mktemp "$state_dir/usage.json.XXXXXX" 2>/dev/null)" || tmp=""
       if [ -n "$tmp" ]; then
         if printf '%s' "$record" > "$tmp" 2>/dev/null; then
