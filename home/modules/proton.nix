@@ -12,7 +12,7 @@ in {
   #   1. `nix shell nixpkgs#protonmail-bridge -c protonmail-bridge --cli`
   #      then in the REPL: `login` → Proton creds + 2FA → `info` (copy the
   #      16-char IMAP password) → `exit`.
-  #   2. `sops ~/projects/workshop/dotfiles/secrets.yaml` → add line:
+  #   2. `sops ~/config/secrets.yaml` → add line:
   #        proton-bridge-password: <that-password>
   #   3. `yo gen switch`
   #   4. `proton.sync DKIM`  (or any other Proton folder name)

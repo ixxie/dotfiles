@@ -10,7 +10,7 @@ let
     exec ghostty -e hx "$@"
   '';
   yo = pkgs.writeShellScriptBin "yo" ''
-    exec ${pkgs.bun}/bin/bun /home/ixxie/projects/workshop/dotfiles/cli/src/index.ts "$@"
+    exec ${pkgs.bun}/bin/bun /home/ixxie/config/cli/src/index.ts "$@"
   '';
   # Everything under here is a qualia clone, so everything under here
   # belongs to the qualia Claude Code profile.
@@ -68,7 +68,7 @@ in
         };
         shellInit = ''
           fish_add_path $HOME/.local/bin
-          set -gx DOTFILES /home/ixxie/projects/workshop/dotfiles
+          set -gx DOTFILES /home/ixxie/config
           set -gx QT_QPA_PLATFORM wayland
           set -gx LAUNCH_EDITOR hx-open
         '';

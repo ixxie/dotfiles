@@ -53,7 +53,7 @@ What `yo gen switch` does, in order:
 3. `git add -A` in the repository, which stages every change, including
    ones you meant to keep out of the index (see
    [yo gen switch stages the whole tree](corpus:ticket/26-09-23-yo-gen-switch-stages-the-whole-tree));
-4. `sudo env <.env lines> NIXOS_LABEL=<label> nixos-rebuild switch --impure --flake ~/repos/lab/dotfiles#contingent`.
+4. `sudo env <.env lines> NIXOS_LABEL=<label> nixos-rebuild switch --impure --flake ~/config#contingent`.
 
 `--impure` is needed because `system.nix` reads `NIXOS_LABEL` from the
 environment. `yo gen commit` builds the label from the new HEAD's short hash

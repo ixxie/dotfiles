@@ -31,19 +31,19 @@ quiet stretches in between, and a history that reaches back to 2016 (see
   bridge.
 - **The `yo` CLI** under `cli/`.
 
-The two halves are not separated. Most modules under `modules/` set NixOS
-options and `home-manager.users.ixxie` options side by side, one file per
-concern, so "the host" and "the user" are a reading of the code rather than
-a directory. [Architecture](corpus:article/architecture) maps it, and
-[splitting the host and user config](corpus:ticket/26-09-23-split-host-and-user-config)
-is the open plan to change it.
+The two halves are directories, `host/` and `home/`, but the line is by
+file: most modules under `home/modules/` set NixOS options and
+`home-manager.users.ixxie` options side by side, one file per concern.
+[Architecture](corpus:article/architecture) maps it. Both halves live
+here, at `~/config`
+([the decision](corpus:decision/26-09-28-contingent-lives-whole-in-config)).
 
 ## How it is applied
 
 The config is applied by the **operator**, on the laptop, with
 `yo gen switch` (or `yo gen commit`, which first commits the working tree
 with an AI-written commit plan). Both end in
-`sudo nixos-rebuild switch --impure --flake ~/repos/lab/dotfiles#contingent`,
+`sudo nixos-rebuild switch --impure --flake ~/config#contingent`,
 with a generation label in `NIXOS_LABEL`. `yo gen back` and `yo gen pick`
 roll back; `yo gen gc` prunes generations. See
 [applying changes](corpus:guide/applying) and the decision that

@@ -81,6 +81,9 @@
     archive/**/node_modules
     archive/**/.direnv
 
+    # the config repo's cli deps
+    config/**/node_modules
+
     # parked checkouts
     projects/workshop/.archive
 

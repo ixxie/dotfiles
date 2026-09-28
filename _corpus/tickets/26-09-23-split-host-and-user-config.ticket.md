@@ -1,5 +1,5 @@
 ---
-status: todo
+status: done
 title: Split the host config from the user config
 assignee: ixxie
 ---
@@ -39,3 +39,15 @@ module); and where contingent's host config goes.
 The user half builds and applies on its own from `~/config`, contingent's
 host config lives with the other hosts, and this repository is retired or
 reduced to one of the two.
+
+## Thread
+
+### 2026-09-28 the operator's session
+
+Closed short of its "done when", on purpose. The split landed in place:
+`host/` and `home/`, each with a `default.nix`, the flake importing both
+(`ae94de2`). The rest is rescinded by
+[contingent lives whole in ~/config](corpus:decision/26-09-28-contingent-lives-whole-in-config):
+contingent is a personal laptop, so its host config does not go to cella,
+and the repository moves to `~/config` whole rather than being reduced to
+its user half.

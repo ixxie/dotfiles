@@ -229,13 +229,12 @@ not part of the system closure and its edits need no switch.
 
 ## Where host and user mix
 
-The directory layout does not separate the machine from the person. The
-top-level files (`device.nix`, `hardware.nix`, `system.nix`, `nix.nix`)
-are host config, but `nix.nix` also configures the user's direnv and
-`nix.conf`; `theme.nix` is both; `user.nix` is mostly home-manager.
-Under `modules/`, most files are user config expressed as NixOS modules,
-and several (`niri.nix`, `media.nix`, `greeter.nix`, `torrent.nix`,
-`restic-backup.nix`) are genuinely both. The flake's own grouping comments
-(host · lib · shell · desktop · apps · dev · ops) are the closest thing to
-a map. [Splitting host and user config](corpus:ticket/26-09-23-split-host-and-user-config)
-tracks the intended separation.
+The machine and the person are two directories: `host/` (`device.nix`,
+`hardware.nix`, `system.nix`, `nix.nix`) and `home/` (`user.nix`,
+`theme.nix`, `modules/`), each with a `default.nix` the flake imports.
+The line is by file, not by option: `nix.nix` also configures the user's
+direnv and `nix.conf`, `theme.nix` sets system fonts beside the user's
+GTK theme, and several modules under `home/modules/` (`niri.nix`,
+`media.nix`, `greeter.nix`, `torrent.nix`, `restic-backup.nix`) set NixOS
+options too. Both halves stay in this repository at `~/config`; see
+[contingent lives whole in ~/config](corpus:decision/26-09-28-contingent-lives-whole-in-config).
