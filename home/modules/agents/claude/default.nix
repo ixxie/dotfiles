@@ -54,7 +54,7 @@ in {
     serviceConfig = {
       Type = "oneshot";
       Nice = 10;
-      ExecStart = "${pkgs.bash}/bin/bash -c '%h/projects/workshop/.claude/tools/usage-extract.sh 1 && rsync -a --mkpath -e \"ssh -o BatchMode=yes -o ConnectTimeout=10\" %h/.local/state/telemetry/ ixxie@89.167.41.205:telemetry/contingent/'";
+      ExecStart = "${pkgs.bash}/bin/bash -c '%h/projects/workshop/.claude/tools/usage-extract.sh 1 && rsync -a --mkpath --exclude readings.jsonl -e \"ssh -o BatchMode=yes -o ConnectTimeout=10\" %h/.local/state/telemetry/ ixxie@89.167.41.205:telemetry/contingent/'";
     };
   };
   config.systemd.user.timers.claude-telemetry = {

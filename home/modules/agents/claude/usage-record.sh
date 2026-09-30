@@ -13,7 +13,14 @@
 # two Nix packages (bacillus's system closure, the operator's home
 # profile) wrap this same script text.
 
-state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/claude"
+# One state dir per Claude profile: ~/.claude records to claude/, and a
+# profile under CLAUDE_CONFIG_DIR (~/.claude-qualia, the work account) to
+# its own (claude-qualia/), so one account's bars never stand in for
+# another's and only the personal account's reach the budget guard.
+profile="${CLAUDE_CONFIG_DIR:-$HOME/.claude}"
+profile="${profile%/}"
+profile="${profile##*/}"
+state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/${profile#.}"
 usage_file="$state_dir/usage.json"
 
 input="$(cat 2>/dev/null)" || input=""
