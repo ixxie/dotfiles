@@ -35,7 +35,12 @@ in
       systemd-boot.configurationLimit = 10;
       efi.canTouchEfiVariables = true;
     };
+    tmp.cleanOnBoot = true;
   };
+
+  # `nix develop -c` execs into its command, so its TMPDIR is never removed;
+  # agents running pytest+postgres this way leaked ~230G into /tmp
+  systemd.tmpfiles.rules = [ "e /tmp/nix-shell.* - - - 3d" ];
 
   services.printing.enable = true;
 
