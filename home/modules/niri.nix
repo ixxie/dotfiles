@@ -253,7 +253,7 @@ in {
               "Mod+Shift+F".action = fullscreen-window;
               "Mod+BackSpace".action = close-window;
               "Mod+C".action = center-column;
-              "Mod+Shift+C".action.spawn = lib.getExe even;
+              "Mod+P".action.spawn = lib.getExe even;
               "Mod+Shift+W".action = switch-preset-column-width;
               "Mod+Shift+H".action = switch-preset-window-height;
               "Mod+Ctrl+H".action = reset-window-height;
