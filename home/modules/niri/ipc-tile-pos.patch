@@ -1,0 +1,33 @@
+Report tile_pos_in_workspace_view for scrolling-layout tiles, not only
+floating ones, so IPC clients can tell which columns are on screen.
+
+--- a/src/layout/scrolling.rs
++++ b/src/layout/scrolling.rs
+@@ -2420,15 +2420,23 @@
+     pub fn tiles_with_ipc_layouts(&self) -> impl Iterator<Item = (&Tile<W>, WindowLayout)> {
+-        self.columns
+-            .iter()
++        let scale = self.scale;
++        // Use the target view position to avoid IPC spam during view animations.
++        let view_off = Point::from((-self.target_view_pos(), 0.));
++        zip(&self.columns, self.column_xs(self.data.iter().copied()))
+             .enumerate()
+-            .flat_map(move |(col_idx, col)| {
+-                col.tiles().enumerate().map(move |(tile_idx, (tile, _))| {
++            .flat_map(move |(col_idx, (col, col_x))| {
++                let col_off = Point::from((col_x, 0.));
++                col.tiles().enumerate().map(move |(tile_idx, (tile, tile_off))| {
++                    let pos = view_off + col_off + tile_off;
++                    // Round to physical pixels.
++                    let pos = pos.to_physical_precise_round(scale).to_logical(scale);
++
+                     let layout = WindowLayout {
+                         // Our indices are 1-based, consistent with the actions.
+                         pos_in_scrolling_layout: Some((col_idx + 1, tile_idx + 1)),
++                        tile_pos_in_workspace_view: Some(pos.into()),
+                         ..tile.ipc_layout_template()
+                     };
+                     (tile, layout)
+                 })
+             })
+     }

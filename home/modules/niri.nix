@@ -4,7 +4,51 @@
   inputs,
   ...
 }: let
-  niri = pkgs.niri-unstable;
+  niri = pkgs.niri-unstable.overrideAttrs (old: {
+    patches = (old.patches or []) ++ [./niri/ipc-tile-pos.patch];
+  });
+  # give every column that is mostly on screen an equal share of the view
+  even = pkgs.writeShellApplication {
+    name = "niri-even";
+    runtimeInputs = [niri pkgs.jq];
+    text = ''
+      ws=$(niri msg -j workspaces | jq '.[] | select(.is_focused) | .id')
+      view=$(niri msg -j focused-output | jq '.logical.width')
+      wins=$(niri msg -j windows | jq --argjson ws "$ws" \
+        '[.[] | select(.workspace_id == $ws and (.is_floating | not))]')
+      focus=$(jq '.[] | select(.is_focused) | .layout.pos_in_scrolling_layout[0]' <<<"$wins")
+      if [[ -z $focus ]]; then
+        exit 0
+      fi
+      mapfile -t cols < <(jq -r --argjson view "$view" '
+        map(select(.layout.tile_pos_in_workspace_view != null) | {
+          c: .layout.pos_in_scrolling_layout[0],
+          x: .layout.tile_pos_in_workspace_view[0],
+          w: .layout.tile_size[0]
+        })
+        | group_by(.c)
+        | map({c: .[0].c, x: (map(.x) | min), w: (map(.w) | max)})
+        | map(select(([.x + .w, $view] | min) - ([.x, 0] | max) > .w / 2))
+        | .[].c' <<<"$wins")
+      if ((''${#cols[@]} == 0)); then
+        cols=("$focus")
+      fi
+
+      pct=$(jq -n "100 / ''${#cols[@]}")
+      for c in "''${cols[@]}"; do
+        niri msg action focus-column "$c"
+        niri msg action set-column-width "$pct%"
+      done
+
+      # widths now sum to the view, so whichever edge niri aligns to, every
+      # column ends up fully visible and centering snaps them flush
+      niri msg action focus-column "''${cols[0]}"
+      niri msg action center-visible-columns
+      if [[ " ''${cols[*]} " == *" $focus "* ]]; then
+        niri msg action focus-column "$focus"
+      fi
+    '';
+  };
   vimAliases = binds: let
     inherit (pkgs.lib) any filterAttrs mapAttrs' nameValuePair splitString concatStringsSep;
     arrowMap = {
@@ -209,6 +253,7 @@ in {
               "Mod+Shift+F".action = fullscreen-window;
               "Mod+BackSpace".action = close-window;
               "Mod+C".action = center-column;
+              "Mod+Shift+C".action.spawn = lib.getExe even;
               "Mod+Shift+W".action = switch-preset-column-width;
               "Mod+Shift+H".action = switch-preset-window-height;
               "Mod+Ctrl+H".action = reset-window-height;
