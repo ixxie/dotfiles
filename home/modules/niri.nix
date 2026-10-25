@@ -136,6 +136,16 @@ in {
     imports = [
       inputs.niri.homeModules.config
     ];
+    # niri wakes the monitors on its own at the next input
+    services.swayidle = {
+      enable = true;
+      timeouts = [
+        {
+          timeout = 600;
+          command = "${niri}/bin/niri msg action power-off-monitors";
+        }
+      ];
+    };
     programs = {
       niri = {
         package = niri;
