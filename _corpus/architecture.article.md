@@ -184,8 +184,8 @@ Most modules configure the user, and most of them do it from NixOS: they set
 
 ## Dev and agents
 
-- **git** (`modules/git.nix`): identity, aliases, gh and codeberg-cli
-  (`berg`, configured for codeberg.org).
+- **git** (`modules/git.nix`): identity, aliases, gh and forgejo-cli
+  (`fj`, falling back to codeberg.org outside a Forgejo repo).
 - **Agents** (`modules/agents/`): Claude Code, Codex and OpenCode share one
   `AGENTS.md` and one `skills/` directory. Claude Code has two profiles
   built by `mkProfile` in `claude/lib.nix`: personal (`~/.claude`) and

@@ -1,21 +1,13 @@
 # corpus:article/architecture
-{pkgs, ...}: let
-  bergConfig = (pkgs.formats.toml {}).generate "berg.toml" {
-    base_url = "codeberg.org";
-    enable_https = true;
-    editor = "hx";
-    fancy_tables = true;
-    no_color = false;
-    max_width = 80;
-  };
-in {
+{pkgs, ...}: {
   home-manager.users.ixxie = {
     home.packages = with pkgs; [
       gh
-      codeberg-cli
+      forgejo-cli
     ];
 
-    xdg.configFile."berg-cli/berg.toml".source = bergConfig;
+    # Without a Forgejo remote to read the host from, fj has none at all.
+    home.sessionVariables.FJ_FALLBACK_HOST = "https://codeberg.org";
 
     programs.direnv = {
       enable = true;
