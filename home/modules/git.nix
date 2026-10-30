@@ -3,11 +3,7 @@
   home-manager.users.ixxie = {
     home.packages = with pkgs; [
       gh
-      forgejo-cli
     ];
-
-    # Without a Forgejo remote to read the host from, fj has none at all.
-    home.sessionVariables.FJ_FALLBACK_HOST = "https://codeberg.org";
 
     programs.direnv = {
       enable = true;

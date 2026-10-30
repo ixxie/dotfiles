@@ -1,7 +1,3 @@
-<div align="right">
-  <a href="https://ixxie.codeberg.page/bergmirror/redirect/?cb=ixxie/dotfiles&gh=ixxie/dotfiles"><img src="https://ixxie.codeberg.page/bergmirror/badge.svg" alt="Codeberg → GitHub mirror"/></a>
-</div>
-
 ## [ixxie](https://shenhav.fyi)'s dotfiles
 
 This repo stores my dotfiles, organized as a [NixOS](https://nixos.org) config in a Nix flake, with
